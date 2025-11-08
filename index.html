@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بازی کهکشانی سینمایی</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌌</text></svg>">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- دوربین سینمایی -->
+    <div id="cameraContainer">
+        <div id="cameraView">
+            <!-- کهکشان پس‌زمینه -->
+            <div id="galaxyBackground"></div>
+            
+            <!-- محوطه بازی دایره‌ای -->
+            <div id="gameArena">
+                <!-- کهکشان‌های دوردست -->
+                <div class="distant-galaxy" id="galaxy1"></div>
+                <div class="distant-galaxy" id="galaxy2"></div>
+                <div class="distant-galaxy" id="galaxy3"></div>
+                <div class="distant-galaxy" id="galaxy4"></div>
+                
+                <!-- سحابی‌ها -->
+                <div class="nebula" id="nebula1"></div>
+                <div class="nebula" id="nebula2"></div>
+                <div class="nebula" id="nebula3"></div>
+                
+                <!-- صفحه اصلی -->
+                <div id="mainScreen">
+                    <div class="header">
+                        <h1>🌌 بازی کهکشانی سینمایی</h1>
+                        <p class="subtitle">تجربه‌ای فراتر از فضا و زمان</p>
+                    </div>
+                    
+                    <div class="main-buttons">
+                        <button class="main-btn start" onclick="startGame()">
+                            <span class="btn-icon">🎮</span>
+                            <span class="btn-text">شروع ماجراجویی</span>
+                        </button>
+                        <button class="main-btn" onclick="showAchievements()">
+                            <span class="btn-icon">🏆</span>
+                            <span class="btn-text">گالری افتخارات</span>
+                        </button>
+                        <button class="main-btn" onclick="showInstructions()">
+                            <span class="btn-icon">📖</span>
+                            <span class="btn-text">راهنمای سفر</span>
+                        </button>
+                        <button class="management-btn" onclick="showManagement()">
+                            <span class="btn-icon">🔔</span>
+                            <span class="btn-text">پیام مرکز کنترل</span>
+                        </button>
+                    </div>
+                    
+                    <div class="stats-panel">
+                        <div class="stats">
+                            <div class="stat-item">
+                                <div class="stat-label">رکورد کیهانی</div>
+                                <div class="stat-value" id="highScore">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">دوردست‌ترین سفر</div>
+                                <div class="stat-value" id="highLevel">1</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">سیارات کشف‌شده</div>
+                                <div class="stat-value" id="achievementsCount">0/100</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">انرژی جمع‌آوری‌شده</div>
+                                <div class="stat-value" id="totalCoinsCollected">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- صفحه بازی -->
+                <div id="gameScreen" class="hidden">
+                    <!-- بازیکن -->
+                    <div id="player" class="player cinematic">
+                        <div class="spaceship-model">
+                            <div class="spaceship-body"></div>
+                            <div class="spaceship-wings"></div>
+                            <div class="spaceship-engine"></div>
+                            <div class="engine-flame"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- سیارات -->
+                    <div id="coinsContainer"></div>
+                    
+                    <!-- سیاهچاله‌ها -->
+                    <div id="enemiesContainer"></div>
+                    
+                    <!-- مسیر حرکت -->
+                    <div id="trailContainer"></div>
+                </div>
+                
+                <!-- نشانگر سوخت -->
+                <div class="fuel-indicator cinematic hidden">
+                    <div class="fuel-gauge">
+                        <div class="fuel-fill" id="fuelFill"></div>
+                    </div>
+                    <div class="fuel-text">⛽ انرژی: <span id="fuelValue">100</span>%</div>
+                </div>
+                
+                <!-- دکمه بمب کیهانی -->
+                <button id="bombButton" class="bomb-button cinematic hidden" onclick="useBomb()">
+                    <div class="bomb-icon">💣</div>
+                    <div class="bomb-text">بمب کیهانی</div>
+                </button>
+                <div id="bombTimer" class="bomb-timer cinematic hidden">بمب: 10s</div>
+                
+                <!-- نشانگر زمان امن -->
+                <div id="safeTimeIndicator" class="safe-time-indicator cinematic hidden">
+                    <div class="safe-time-glow"></div>
+                    <div class="safe-time-text">زمان امن: 5s</div>
+                </div>
+                
+                <!-- کنترل لمسی -->
+                <div class="touch-controls cinematic hidden">
+                    <div class="joystick-base"></div>
+                    <div class="joystick">
+                        <div class="joystick-handle"></div>
+                    </div>
+                </div>
+                
+                <!-- صفحه پایان مرحله -->
+                <div id="levelComplete" class="cinematic">
+                    <div class="level-complete-content">
+                        <div class="completion-badge">
+                            <div class="badge-icon">🌠</div>
+                            <div class="badge-glow"></div>
+                        </div>
+                        <h2 class="completion-title">تبریک! سفر کیهانی موفقیت‌آمیز بود</h2>
+                        <p class="completion-message">مرحله <span id="completedLevel">1</span> از سفر بین‌کهکشانی تکمیل شد!</p>
+                        <p class="completion-submessage">آماده کشف ناشناخته‌های بعدی هستید؟</p>
+                        <button id="nextLevelButton" class="next-level-btn">
+                            <span class="btn-glow"></span>
+                            <span class="btn-text">پرواز به کهکشان بعدی</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- افکت‌های سینمایی -->
+            <div id="cinematicEffects">
+                <div class="lens-flare"></div>
+                <div class="star-twinkle"></div>
+                <div class="space-dust"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- لودینگ سینمایی -->
+    <div id="loadingScreen" class="cinematic-loading hidden">
+        <div class="loading-universe">
+            <div class="loading-galaxy">
+                <div class="galaxy-core"></div>
+                <div class="galaxy-arms">
+                    <div class="galaxy-arm"></div>
+                    <div class="galaxy-arm"></div>
+                    <div class="galaxy-arm"></div>
+                    <div class="galaxy-arm"></div>
+                </div>
+            </div>
+        </div>
+        <div class="loading-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="loading-text" id="loadingText">در حال راه‌اندازی سیستم‌های کیهانی...</div>
+        </div>
+    </div>
+    
+    <!-- مدال‌ها -->
+    <div id="achievementsModal" class="cinematic-modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">🏆</div>
+                <h2 class="modal-title">گالری افتخارات کیهانی</h2>
+            </div>
+            <div class="achievement-grid" id="achievementGrid">
+                <!-- مدال‌ها اینجا ساخته می‌شوند -->
+            </div>
+            <button class="modal-close-btn" onclick="closeAchievements()">
+                بازگشت به سفر
+            </button>
+        </div>
+    </div>
+    
+    <!-- راهنمای حرفه‌ای -->
+    <div id="instructionsModal" class="cinematic-modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content wide-modal">
+            <div class="modal-header">
+                <div class="modal-icon">📖</div>
+                <h2 class="modal-title">راهنمای جامع سفر کیهانی</h2>
+            </div>
+            <div class="instructions-content">
+                <!-- محتوای راهنما -->
+            </div>
+            <button class="modal-close-btn" onclick="closeInstructions()">
+                آغاز ماجراجویی
+            </button>
+        </div>
+    </div>
+    
+    <!-- مودال اطلاعیه مدیریت -->
+    <div id="managementModal" class="cinematic-modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">🔔</div>
+                <h2 class="modal-title">پیام مرکز کنترل کیهانی</h2>
+            </div>
+            <div class="management-message">
+                <!-- محتوای اطلاعیه -->
+            </div>
+            <button class="modal-close-btn" onclick="closeManagement()">
+                تأیید و ادامه
+            </button>
+        </div>
+    </div>
+    
+    <!-- صداها -->
+    <audio id="backgroundMusic" loop>
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8TwABAAACAHEBnRIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==" type="audio/mpeg">
+    </audio>
+    
+    <script src="effects.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
