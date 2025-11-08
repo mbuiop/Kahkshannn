@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازی کهکشانی سینمایی - Galactic Odyssey</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loadingScreen" class="loading-container">
+        <div class="loading-content">
+            <div class="galaxy-loader">
+                <div class="spiral"></div>
+                <div class="spiral"></div>
+                <div class="spiral"></div>
+            </div>
+            <h1 class="loading-title">Galactic Odyssey</h1>
+            <p class="loading-subtitle">در حال بارگذاری جهان بی‌کران...</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-tip" id="loadingTip">سیستم گرافیکی سه‌بعدی در حال راه‌اندازی...</p>
+        </div>
+    </div>
+
+    <div id="mainMenu" class="screen hidden">
+        <div class="cinematic-background">
+            <div class="nebula nebula-1"></div>
+            <div class="nebula nebula-2"></div>
+            <div class="nebula nebula-3"></div>
+            <div class="stars"></div>
+            <div class="distant-galaxies"></div>
+        </div>
+        
+        <div class="menu-content">
+            <div class="title-container">
+                <h1 class="game-title">Galactic Odyssey</h1>
+                <p class="game-subtitle">سفر اپیک کهکشانی</p>
+            </div>
+            
+            <div class="menu-buttons">
+                <button class="menu-btn primary" id="startGameBtn">
+                    <span class="btn-icon">🚀</span>
+                    <span class="btn-text">شروع ماجراجویی</span>
+                </button>
+                
+                <button class="menu-btn" id="continueBtn">
+                    <span class="btn-icon">⏯️</span>
+                    <span class="btn-text">ادامه بازی</span>
+                </button>
+                
+                <button class="menu-btn" id="achievementsBtn">
+                    <span class="btn-icon">🏆</span>
+                    <span class="btn-text">دستاوردها</span>
+                </button>
+                
+                <button class="menu-btn" id="settingsBtn">
+                    <span class="btn-icon">⚙️</span>
+                    <span class="btn-text">تنظیمات</span>
+                </button>
+                
+                <button class="menu-btn" id="creditsBtn">
+                    <span class="btn-icon">👨‍🚀</span>
+                    <span class="btn-text">سازندگان</span>
+                </button>
+            </div>
+            
+            <div class="player-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <div class="stat-label">بالاترین امتیاز</div>
+                        <div class="stat-value" id="highScoreStat">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🌌</div>
+                    <div class="stat-info">
+                        <div class="stat-label">مرحله اکتشاف</div>
+                        <div class="stat-value" id="highLevelStat">1</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <div class="stat-label">زمان بازی</div>
+                        <div class="stat-value" id="playTimeStat">0h</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cinematic-controls">
+            <button class="control-btn" id="musicToggle">🔊</button>
+            <button class="control-btn" id="fullscreenToggle">⛶</button>
+        </div>
+    </div>
+
+    <div id="gameScreen" class="screen hidden">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="hud-container">
+            <div class="hud-top">
+                <div class="hud-section">
+                    <div class="hud-item">
+                        <span class="hud-icon">⭐</span>
+                        <span class="hud-value" id="scoreValue">0</span>
+                    </div>
+                    
+                    <div class="hud-item">
+                        <span class="hud-icon">🌌</span>
+                        <span class="hud-value" id="levelValue">1</span>
+                    </div>
+                    
+                    <div class="hud-item">
+                        <span class="hud-icon">⏱️</span>
+                        <span class="hud-value" id="timeValue">00:00</span>
+                    </div>
+                </div>
+                
+                <div class="hud-section">
+                    <div class="hud-item fuel-gauge">
+                        <span class="hud-icon">⛽</span>
+                        <div class="fuel-bar">
+                            <div class="fuel-fill" id="fuelFill"></div>
+                        </div>
+                        <span class="hud-value" id="fuelValue">100%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hud-center">
+                <div class="cinematic-indicator" id="cinematicIndicator">
+                    <span class="indicator-icon">🎥</span>
+                    <span class="indicator-text">نمایش سینمایی فعال</span>
+                </div>
+                
+                <div class="objective-display" id="objectiveDisplay">
+                    <span class="objective-icon">🎯</span>
+                    <span class="objective-text" id="objectiveText">سیارات را کشف کنید: 0/5</span>
+                </div>
+            </div>
+            
+            <div class="hud-bottom">
+                <div class="ability-bar">
+                    <button class="ability-btn" id="warpDriveBtn" data-cooldown="30">
+                        <span class="ability-icon">⚡</span>
+                        <span class="ability-text">حرکت warp</span>
+                        <div class="cooldown-overlay"></div>
+                    </button>
+                    
+                    <button class="ability-btn" id="shieldBtn" data-cooldown="20">
+                        <span class="ability-icon">🛡️</span>
+                        <span class="ability-text">محافظ</span>
+                        <div class="cooldown-overlay"></div>
+                    </button>
+                    
+                    <button class="ability-btn" id="scannerBtn" data-cooldown="15">
+                        <span class="ability-icon">📡</span>
+                        <span class="ability-text">اسکنر</span>
+                        <div class="cooldown-overlay"></div>
+                    </button>
+                    
+                    <button class="ability-btn" id="bombBtn" data-cooldown="45">
+                        <span class="ability-icon">💣</span>
+                        <span class="ability-text">بمب کیهانی</span>
+                        <div class="cooldown-overlay"></div>
+                    </button>
+                </div>
+                
+                <div class="navigation-hint">
+                    <span class="hint-icon">🎮</span>
+                    <span class="hint-text">برای حرکت از موس یا صفحه لمسی استفاده کنید</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cinematic-overlay">
+            <div class="camera-indicator">
+                <div class="camera-icon">📷</div>
+                <div class="camera-status">دوربین سینمایی فعال</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pauseMenu" class="screen hidden">
+        <div class="pause-overlay"></div>
+        <div class="pause-content">
+            <h2 class="pause-title">بازی متوقف شد</h2>
+            
+            <div class="pause-buttons">
+                <button class="pause-btn primary" id="resumeBtn">
+                    <span class="btn-icon">▶️</span>
+                    <span class="btn-text">ادامه بازی</span>
+                </button>
+                
+                <button class="pause-btn" id="restartBtn">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text">شروع مجدد</span>
+                </button>
+                
+                <button class="pause-btn" id="mainMenuBtn">
+                    <span class="btn-icon">🏠</span>
+                    <span class="btn-text">منوی اصلی</span>
+                </button>
+                
+                <button class="pause-btn" id="settingsBtn2">
+                    <span class="btn-icon">⚙️</span>
+                    <span class="btn-text">تنظیمات</span>
+                </button>
+            </div>
+            
+            <div class="pause-stats">
+                <div class="pause-stat">
+                    <span class="stat-label">امتیاز فعلی:</span>
+                    <span class="stat-value" id="currentScore">0</span>
+                </div>
+                
+                <div class="pause-stat">
+                    <span class="stat-label">مرحله:</span>
+                    <span class="stat-value" id="currentLevel">1</span>
+                </div>
+                
+                <div class="pause-stat">
+                    <span class="stat-label">زمان بازی:</span>
+                    <span class="stat-value" id="currentTime">00:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameOverScreen" class="screen hidden">
+        <div class="game-over-overlay"></div>
+        <div class="game-over-content">
+            <div class="game-over-icon">💫</div>
+            <h2 class="game-over-title">مأموریت پایان یافت</h2>
+            <p class="game-over-subtitle">سفینه شما در اعماق فضا گم شد</p>
+            
+            <div class="game-over-stats">
+                <div class="game-over-stat">
+                    <span class="stat-label">امتیاز نهایی:</span>
+                    <span class="stat-value" id="finalScore">0</span>
+                </div>
+                
+                <div class="game-over-stat">
+                    <span class="stat-label">مرحله رسیده:</span>
+                    <span class="stat-value" id="finalLevel">1</span>
+                </div>
+                
+                <div class="game-over-stat">
+                    <span class="stat-label">زمان بازی:</span>
+                    <span class="stat-value" id="finalTime">00:00</span>
+                </div>
+                
+                <div class="game-over-stat">
+                    <span class="stat-label">سیارات کشف شده:</span>
+                    <span class="stat-value" id="finalPlanets">0</span>
+                </div>
+            </div>
+            
+            <div class="game-over-buttons">
+                <button class="game-over-btn primary" id="playAgainBtn">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text">بازی مجدد</span>
+                </button>
+                
+                <button class="game-over-btn" id="gameOverMenuBtn">
+                    <span class="btn-icon">🏠</span>
+                    <span class="btn-text">منوی اصلی</span>
+                </button>
+            </div>
+            
+            <div class="achievement-unlocked" id="achievementUnlocked">
+                <div class="achievement-icon">🏆</div>
+                <div class="achievement-info">
+                    <div class="achievement-title">دستاورد جدید!</div>
+                    <div class="achievement-desc" id="achievementDesc">اولین سفر فضایی</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="levelCompleteScreen" class="screen hidden">
+        <div class="level-complete-overlay"></div>
+        <div class="level-complete-content">
+            <div class="level-complete-icon">🎉</div>
+            <h2 class="level-complete-title">مرحله تکمیل شد!</h2>
+            <p class="level-complete-subtitle">کهکشان جدید کشف شد</p>
+            
+            <div class="level-complete-stats">
+                <div class="level-stat">
+                    <span class="stat-label">مرحله:</span>
+                    <span class="stat-value" id="completedLevel">1</span>
+                </div>
+                
+                <div class="level-stat">
+                    <span class="stat-label">امتیاز این مرحله:</span>
+                    <span class="stat-value" id="levelScore">0</span>
+                </div>
+                
+                <div class="level-stat">
+                    <span class="stat-label">سیارات کشف شده:</span>
+                    <span class="stat-value" id="levelPlanets">0</span>
+                </div>
+                
+                <div class="level-stat">
+                    <span class="stat-label">زمان مرحله:</span>
+                    <span class="stat-value" id="levelTime">00:00</span>
+                </div>
+            </div>
+            
+            <div class="level-rewards">
+                <div class="reward-item">
+                    <span class="reward-icon">⭐</span>
+                    <span class="reward-text">+500 امتیاز</span>
+                </div>
+                
+                <div class="reward-item">
+                    <span class="reward-icon">🛡️</span>
+                    <span class="reward-text">محافظ جدید</span>
+                </div>
+                
+                <div class="reward-item">
+                    <span class="reward-icon">🚀</span>
+                    <span class="reward-text">موتور ارتقا یافته</span>
+                </div>
+            </div>
+            
+            <div class="level-complete-buttons">
+                <button class="level-complete-btn primary" id="nextLevelBtn">
+                    <span class="btn-icon">🌌</span>
+                    <span class="btn-text">سفر به کهکشان بعدی</span>
+                </button>
+                
+                <button class="level-complete-btn" id="levelCompleteMenuBtn">
+                    <span class="btn-icon">🏠</span>
+                    <span class="btn-text">منوی اصلی</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="achievementsScreen" class="screen hidden">
+        <div class="achievements-overlay"></div>
+        <div class="achievements-content">
+            <h2 class="achievements-title">🏆 دستاوردهای کهکشانی</h2>
+            
+            <div class="achievements-grid" id="achievementsGrid">
+                <!-- دستاوردها در اینجا نمایش داده می‌شوند -->
+            </div>
+            
+            <div class="achievements-stats">
+                <div class="achievements-stat">
+                    <span class="stat-label">دستاوردهای کسب شده:</span>
+                    <span class="stat-value" id="achievedCount">0/50</span>
+                </div>
+                
+                <div class="achievements-stat">
+                    <span class="stat-label">امتیاز دستاوردها:</span>
+                    <span class="stat-value" id="achievementPoints">0</span>
+                </div>
+            </div>
+            
+            <button class="achievements-close-btn" id="closeAchievementsBtn">
+                <span class="btn-icon">✕</span>
+                <span class="btn-text">بستن</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="settingsScreen" class="screen hidden">
+        <div class="settings-overlay"></div>
+        <div class="settings-content">
+            <h2 class="settings-title">⚙️ تنظیمات بازی</h2>
+            
+            <div class="settings-sections">
+                <div class="settings-section">
+                    <h3 class="section-title">صدا</h3>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">موسیقی پس‌زمینه</label>
+                        <div class="setting-control">
+                            <input type="range" id="musicVolume" min="0" max="100" value="70" class="volume-slider">
+                            <span class="volume-value" id="musicVolumeValue">70%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">صدای افکت‌ها</label>
+                        <div class="setting-control">
+                            <input type="range" id="sfxVolume" min="0" max="100" value="80" class="volume-slider">
+                            <span class="volume-value" id="sfxVolumeValue">80%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">صدای محیط</label>
+                        <div class="setting-control">
+                            <input type="range" id="ambientVolume" min="0" max="100" value="60" class="volume-slider">
+                            <span class="volume-value" id="ambientVolumeValue">60%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3 class="section-title">گرافیک</h3>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">کیفیت گرافیک</label>
+                        <select id="graphicsQuality" class="setting-select">
+                            <option value="low">کم</option>
+                            <option value="medium" selected>متوسط</option>
+                            <option value="high">بالا</option>
+                            <option value="ultra">فوق‌العاده</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">حالت سینمایی</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="cinematicMode" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">افکت‌های ذرات</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="particleEffects" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">سایه‌ها</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="shadowsEnabled" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3 class="section-title">کنترل‌ها</h3>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">حساسیت موس</label>
+                        <div class="setting-control">
+                            <input type="range" id="mouseSensitivity" min="1" max="10" value="5" class="sensitivity-slider">
+                            <span class="sensitivity-value" id="mouseSensitivityValue">5</span>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">کنترل لمسی</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="touchControls" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">واکنش به لرزش</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="vibrationEnabled">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3 class="section-title">بازی</h3>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">زبان</label>
+                        <select id="languageSelect" class="setting-select">
+                            <option value="fa" selected>فارسی</option>
+                            <option value="en">English</option>
+                            <option value="ar">العربية</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">مشاهده آموزش</label>
+                        <button class="setting-action-btn" id="showTutorialBtn">نمایش</button>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">بازنشانی پیشرفت</label>
+                        <button class="setting-action-btn danger" id="resetProgressBtn">بازنشانی</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-buttons">
+                <button class="settings-btn primary" id="saveSettingsBtn">
+                    <span class="btn-icon">💾</span>
+                    <span class="btn-text">ذخیره تنظیمات</span>
+                </button>
+                
+                <button class="settings-btn" id="closeSettingsBtn">
+                    <span class="btn-icon">✕</span>
+                    <span class="btn-text">بستن</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="creditsScreen" class="screen hidden">
+        <div class="credits-overlay"></div>
+        <div class="credits-content">
+            <h2 class="credits-title">👨‍🚀 سازندگان بازی</h2>
+            
+            <div class="credits-sections">
+                <div class="credits-section">
+                    <h3 class="section-title">توسعه و برنامه‌نویسی</h3>
+                    <div class="credits-list">
+                        <div class="credit-item">
+                            <div class="credit-name">تیم توسعه Galactic Odyssey</div>
+                            <div class="credit-role">برنامه‌نویسی پیشرفته WebGL</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="credits-section">
+                    <h3 class="section-title">طراحی و گرافیک</h3>
+                    <div class="credits-list">
+                        <div class="credit-item">
+                            <div class="credit-name">استودیو طراحی کیهانی</div>
+                            <div class="credit-role">طراحی سه‌بعدی و انیمیشن</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="credits-section">
+                    <h3 class="section-title">صدا و موسیقی</h3>
+                    <div class="credits-list">
+                        <div class="credit-item">
+                            <div class="credit-name">آکادمی صوتی فضایی</div>
+                            <div class="credit-role">موسیقی اصلی و افکت‌های صوتی</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="credits-section">
+                    <h3 class="section-title">با تشکر ویژه از</h3>
+                    <div class="credits-list">
+                        <div class="credit-item">
+                            <div class="credit-name">جامعه بازی‌سازان وب</div>
+                            <div class="credit-role">پشتیبانی و ایده‌های خلاقانه</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="credits-footer">
+                <p class="credits-message">با تشکر از شما برای بازی کردن Galactic Odyssey!</p>
+                <p class="game-version">نسخه 2.0.1 - سینمایی</p>
+            </div>
+            
+            <button class="credits-close-btn" id="closeCreditsBtn">
+                <span class="btn-icon">✕</span>
+                <span class="btn-text">بستن</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- سیستم صوتی -->
+    <audio id="backgroundMusic" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-space-game-668.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="clickSound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="collectSound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="explosionSound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-in-the-space-3117.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="gameEngine.js"></script>
+    <script src="gameLogic.js"></script>
+</body>
+  </html>
