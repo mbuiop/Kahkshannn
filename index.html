@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بازی کهکشانی سینمایی - نسخه پیشرفته</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌌</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            touch-action: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+        }
+        
+        #gameContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        #uiContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .ui-element {
+            pointer-events: auto;
+        }
+        
+        #mainScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #0a0a2a 0%, #000033 30%, #000 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+        }
+        
+        .cosmic-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.1;
+            mix-blend-mode: screen;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 90%;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff8a00, #e52e71, #00aaff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(229, 46, 113, 0.5);
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { filter: drop-shadow(0 0 5px rgba(255, 138, 0, 0.7)); }
+            to { filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.7)); }
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #aaddff;
+            margin-bottom: 10px;
+        }
+        
+        .main-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+            align-items: center;
+            width: 90%;
+            max-width: 350px;
+        }
+        
+        .main-btn {
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border: none;
+            padding: 18px 25px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 204, 255, 0.5);
+            transition: all 0.3s;
+            width: 100%;
+            text-align: center;
+            pointer-events: auto;
+        }
+        
+        .main-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 204, 255, 0.7);
+        }
+        
+        .main-btn.start {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.5);
+            font-size: 1.4rem;
+            padding: 20px 25px;
+        }
+
+        .management-btn {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.5);
+            transition: all 0.3s;
+            width: 100%;
+            text-align: center;
+            animation: redPulse 2s infinite;
+            pointer-events: auto;
+        }
+        
+        .management-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.7);
+        }
+        
+        @keyframes redPulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(255, 68, 68, 0.5); }
+            50% { box-shadow: 0 4px 25px rgba(255, 68, 68, 0.8), 0 0 30px rgba(255, 68, 68, 0.4); }
+        }
+        
+        .stats-panel {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 20px;
+            margin: 15px 0;
+            text-align: center;
+            width: 90%;
+            max-width: 350px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 12px 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ccff;
+            margin-top: 5px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        #hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .hud-element {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            pointer-events: none;
+        }
+        
+        #scoreDisplay {
+            top: 15px;
+            left: 15px;
+        }
+        
+        #levelDisplay {
+            top: 15px;
+            right: 15px;
+        }
+        
+        #fuelDisplay {
+            top: 60px;
+            left: 15px;
+            color: #00ff88;
+        }
+        
+        #bombDisplay {
+            bottom: 90px;
+            left: 15px;
+        }
+        
+        #safeTimeDisplay {
+            bottom: 60px;
+            left: 15px;
+            color: #00ccff;
+        }
+        
+        .bomb-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, #ff4444, #cc0000);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 35px;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.5);
+            transition: all 0.3s;
+            pointer-events: auto;
+        }
+        
+        .bomb-button:active {
+            transform: scale(0.9);
+        }
+        
+        .bomb-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #playerIndicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            border-radius: 15px;
+            z-index: 10;
+            text-align: center;
+            animation: fadeOut 3s forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        #levelComplete {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 15;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        #levelComplete.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .touch-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 120px;
+            height: 120px;
+            z-index: 10;
+            display: none;
+            pointer-events: none;
+        }
+        
+        .joystick {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+        }
+        
+        .joystick-handle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+            pointer-events: none;
+        }
+        
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            color: white;
+        }
+        
+        .cosmic-loader {
+            font-size: 100px;
+            animation: cosmicSpin 3s infinite linear;
+            filter: drop-shadow(0 0 30px #00ff88);
+            margin-bottom: 20px;
+        }
+        
+        @keyframes cosmicSpin {
+            0% { transform: rotateY(0deg) scale(1); }
+            50% { transform: rotateY(180deg) scale(1.3); }
+            100% { transform: rotateY(360deg) scale(1); }
+        }
+        
+        .loading-text {
+            font-size: 1.5rem;
+            color: #00ccff;
+            margin-top: 20px;
+        }
+
+        .achievement-modal, .instructions-modal, .management-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 25;
+            color: white;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: right;
+        }
+        
+        .modal-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #00ccff;
+            text-align: center;
+        }
+        
+        .modal-close {
+            margin-top: 20px;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .main-btn {
+                padding: 16px 20px;
+                font-size: 1.1rem;
+            }
+            
+            .main-btn.start {
+                font-size: 1.2rem;
+                padding: 18px 20px;
+            }
+            
+            .management-btn {
+                padding: 14px 20px;
+                font-size: 1rem;
+            }
+            
+            .stat-item {
+                padding: 10px 12px;
+            }
+            
+            .stat-value {
+                font-size: 1.3rem;
+            }
+            
+            .bomb-button {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+                bottom: 15px;
+                left: 15px;
+            }
+            
+            .touch-controls {
+                display: flex;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-buttons {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- پس‌زمینه کیهانی -->
+    <div class="cosmic-background" id="cosmicBackground"></div>
+    
+    <!-- کانتینر بازی -->
+    <div id="gameContainer"></div>
+    
+    <!-- رابط کاربری -->
+    <div id="uiContainer">
+        <!-- صفحه اصلی -->
+        <div id="mainScreen">
+            <div class="header">
+                <h1>🌌 بازی کهکشانی سینمایی</h1>
+                <p class="subtitle">تجربه ای بی نظیر از فضا و کهکشان‌های دور</p>
+            </div>
+            
+            <div class="main-buttons">
+                <button class="main-btn start" onclick="startGame()">🚀 شروع ماجراجویی</button>
+                <button class="main-btn" onclick="showAchievements()">🏆 گالری کهکشانی</button>
+                <button class="main-btn" onclick="showInstructions()">📚 راهنمای سفر</button>
+                <button class="management-btn" onclick="showManagement()">🔔 اطلاعیه های کیهانی</button>
+            </div>
+            
+            <div class="stats-panel">
+                <div class="stats">
+                    <div class="stat-item">
+                        <div>بالاترین امتیاز</div>
+                        <div class="stat-value" id="highScore">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>دوردست‌ترین سفر</div>
+                        <div class="stat-value" id="highLevel">1</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>کهکشان‌های کشف شده</div>
+                        <div class="stat-value" id="achievementsCount">0/100</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>انرژی جمع‌آوری شده</div>
+                        <div class="stat-value" id="totalCoinsCollected">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- رابط بازی -->
+        <div id="hud" class="hidden">
+            <div class="hud-element" id="scoreDisplay">امتیاز: 0</div>
+            <div class="hud-element" id="levelDisplay">مرحله: 1</div>
+            <div class="hud-element" id="fuelDisplay">⛽ انرژی: 100%</div>
+            <div class="hud-element" id="bombDisplay">💣 بمب کیهانی: آماده!</div>
+            <div class="hud-element" id="safeTimeDisplay">🛡️ میدان محافظ: غیرفعال</div>
+            
+            <button id="bombButton" class="bomb-button hidden" onclick="useBomb()">💣</button>
+            
+            <div class="touch-controls hidden">
+                <div class="joystick">
+                    <div class="joystick-handle"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- نشانگر بازیکن -->
+        <div id="playerIndicator" class="hidden">🛸 خوش آمدید کاوشگر فضایی!</div>
+        
+        <!-- صفحه پایان مرحله -->
+        <div id="levelComplete">
+            <h2 style="font-size: 2.5rem; margin-bottom: 20px; color: #00ff88;">تبریک! 🎉</h2>
+            <p style="font-size: 1.5rem; margin-bottom: 30px; color: #aaffaa;">کهکشان <span id="completedLevel">1</span> کشف شد!</p>
+            <p style="font-size: 1.2rem; margin-bottom: 40px; color: #aaddff;">آماده سفر به کهکشان بعدی هستی؟</p>
+            <button id="nextLevelButton" class="main-btn">سفر به کهکشان بعدی</button>
+        </div>
+    </div>
+
+    <!-- لودینگ -->
+    <div id="loadingScreen" class="loading-container hidden">
+        <div class="cosmic-loader">🌌</div>
+        <div class="loading-text" id="loadingText">در حال آماده‌سازی سفر کیهانی...</div>
+    </div>
+
+    <!-- مودال‌ها -->
+    <div id="achievementsModal" class="achievement-modal hidden">
+        <div class="modal-content">
+            <h2>🏆 گالری کهکشانی</h2>
+            <p>کهکشان‌هایی که تاکنون کشف کرده‌اید:</p>
+            <div id="achievementGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0;">
+                <!-- کهکشان‌ها اینجا نمایش داده می‌شوند -->
+            </div>
+            <button class="modal-close" onclick="closeModal('achievementsModal')">بستن</button>
+        </div>
+    </div>
+
+    <div id="instructionsModal" class="instructions-modal hidden">
+        <div class="modal-content">
+            <h2>📚 راهنمای سفر کیهانی</h2>
+            <p>به بازی کهکشانی سینمایی خوش آمدید! در این بازی شما یک کاوشگر فضایی هستید که مأموریت دارد کهکشان‌های ناشناخته را کشف کند.</p>
+            
+            <h3>🎯 هدف بازی:</h3>
+            <p>جمع‌آوری انرژی کیهانی (سکه‌ها) و کشف کهکشان‌های جدید.</p>
+            
+            <h3>🛸 کنترل فضاپیما:</h3>
+            <p>• با موس یا لمس صفحه حرکت کنید<br>
+               • حرکت کاملاً روان و حرفه‌ای<br>
+               • در دستگاه‌های موبایل از جویستیک استفاده کنید</p>
+            
+            <h3>🌌 ویژگی‌های کهکشانی:</h3>
+            <p>• منظره سه‌بعدی از فضا با سحابی‌های زیبا<br>
+               • صدها ستاره درخشان و سیارات دور<br>
+               • افکت‌های نوری و کیهانی پیشرفته<br>
+               • دید سینمایی از بالا</p>
+            
+            <h3>💣 بمب کیهانی:</h3>
+            <p>• هر ۱۰ ثانیه یک بمب در اختیار دارید<br>
+               • با فشردن دکمه بمب، تمام خطرات نابود می‌شوند<br>
+               • پس از استفاده، ۵ ثانیه میدان محافظ فعال می‌شود</p>
+            
+            <h3>⛽ سیستم انرژی:</h3>
+            <p>• انرژی به تدریج کاهش می‌یابد<br>
+               • با جمع‌آوری انرژی کیهانی، انرژی افزایش می‌یابد<br>
+               • اگر انرژی به صفر برسد، سفر پایان می‌یابد</p>
+            
+            <button class="modal-close" onclick="closeModal('instructionsModal')">بستن</button>
+        </div>
+    </div>
+
+    <div id="managementModal" class="management-modal hidden">
+        <div class="modal-content">
+            <h2>🔔 اطلاعیه های کیهانی</h2>
+            
+            <div style="background: rgba(255, 68, 68, 0.1); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 68, 68, 0.3); margin: 20px 0; text-align: right;">
+                <p>🌌 <strong>به بازی کهکشانی سینمایی خوش آمدید!</strong></p>
+                <p>✨ این بازی با پیشرفته‌ترین تکنولوژی‌های روز دنیا ساخته شده است.</p>
+                <p>🚀 <strong>ویژگی‌های منحصر به فرد:</strong></p>
+                <p>• گرافیک سه‌بعدی و سینمایی از فضا<br>
+                   • صدها ستاره و سحابی واقعی<br>
+                   • سیستم صوتی فضایی با کیفیت بالا<br>
+                   • کنترل کاملاً روان و پاسخگو<br>
+                   • سیستم ذخیره‌سازی خودکار</p>
+                <p>⭐ از سفر کیهانی خود لذت ببرید و کهکشان‌های ناشناخته را کشف کنید!</p>
+            </div>
+
+            <button class="modal-close" onclick="closeModal('managementModal')">بستن</button>
+        </div>
+    </div>
+
+    <!-- اسکریپت‌ها -->
+    <script src="game-engine.js"></script>
+    <script src="cosmic-renderer.js"></script>
+    <script src="audio-manager.js"></script>
+    
+    <script>
+        // مدیریت رابط کاربری
+        function startGame() {
+            showLoadingScreen(() => {
+                document.getElementById('mainScreen').classList.add('hidden');
+                document.getElementById('hud').classList.remove('hidden');
+                document.getElementById('bombButton').classList.remove('hidden');
+                
+                if (window.innerWidth <= 480) {
+                    document.querySelector('.touch-controls').classList.remove('hidden');
+                }
+                
+                CosmicGameEngine.start();
+            });
+        }
+        
+        function showLoadingScreen(callback) {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingText = document.getElementById('loadingText');
+            
+            loadingScreen.classList.remove('hidden');
+            loadingText.textContent = "در حال آماده‌سازی سفر کیهانی...";
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                loadingText.textContent = `در حال آماده‌سازی سفر کیهانی... ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                        callback();
+                    }, 500);
+                }
+            }, 100);
+        }
+        
+        function showAchievements() {
+            document.getElementById('achievementsModal').classList.remove('hidden');
+        }
+        
+        function showInstructions() {
+            document.getElementById('instructionsModal').classList.remove('hidden');
+        }
+        
+        function showManagement() {
+            document.getElementById('managementModal').classList.remove('hidden');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+        
+        function useBomb() {
+            CosmicGameEngine.useBomb();
+        }
+        
+        // بارگذاری داده‌های بازی
+        window.addEventListener('load', () => {
+            CosmicGameEngine.init();
+            CosmicRenderer.init();
+            AudioManager.init();
+            
+            // ایجاد ستاره‌ها در پس‌زمینه
+            createStars();
+            createNebulas();
+            
+            // تنظیم دکمه مرحله بعد
+            document.getElementById('nextLevelButton').addEventListener('click', () => {
+                document.getElementById('levelComplete').classList.remove('show');
+                CosmicGameEngine.nextLevel();
+            });
+            
+            // نمایش نشانگر بازیکن
+            setTimeout(() => {
+                const playerIndicator = document.getElementById('playerIndicator');
+                playerIndicator.classList.remove('hidden');
+                setTimeout(() => {
+                    playerIndicator.classList.add('hidden');
+                }, 3000);
+            }, 1000);
+        });
+        
+        // ایجاد ستاره‌ها در پس‌زمینه
+        function createStars() {
+            const background = document.getElementById('cosmicBackground');
+            const starCount = 200;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                const size = Math.random() * 3;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                
+                star.style.animationDelay = Math.random() * 5 + 's';
+                
+                background.appendChild(star);
+            }
+        }
+        
+        // ایجاد سحابی‌ها
+        function createNebulas() {
+            const background = document.getElementById('cosmicBackground');
+            const nebulaCount = 5;
+            const colors = [
+                'rgba(100, 50, 255, 0.1)',  // بنفش
+                'rgba(255, 50, 100, 0.1)',  // قرمز
+                'rgba(50, 150, 255, 0.1)',  // آبی
+                'rgba(50, 255, 150, 0.1)',  // سبز
+                'rgba(255, 200, 50, 0.1)'   // زرد
+            ];
+            
+            for (let i = 0; i < nebulaCount; i++) {
+                const nebula = document.createElement('div');
+                nebula.className = 'nebula';
+                nebula.style.background = colors[i];
+                
+                const size = 200 + Math.random() * 300;
+                nebula.style.width = size + 'px';
+                nebula.style.height = size + 'px';
+                
+                nebula.style.left = Math.random() * 100 + '%';
+                nebula.style.top = Math.random() * 100 + '%';
+                
+                background.appendChild(nebula);
+            }
+        }
+    </script>
+</body>
+  </html>
