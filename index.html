@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ربات فراری</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; }
+        #renderCanvas { width: 100%; height: 100vh; display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+
+    <script>
+        // ایجاد موتور
+        const canvas = document.getElementById('renderCanvas');
+        const engine = new BABYLON.Engine(canvas, true);
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0.1, 0.1, 0.2, 1);
+
+        // دوربین دنبال کننده
+        const camera = new BABYLON.FollowCamera("camera", new BABYLON.Vector3(0, 5, -10), scene);
+        camera.radius = 10;
+        camera.heightOffset = 4;
+        camera.rotationOffset = 180;
+        camera.cameraAcceleration = 0.1;
+        camera.maxCameraSpeed = 5;
+
+        // نور
+        const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+        light.intensity = 0.8;
+
+        // زمین اتوبان
+        const ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 100, height: 20}, scene);
+        const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
+        groundMat.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+        ground.material = groundMat;
+
+        // خطوط اتوبان
+        for (let i = -50; i < 50; i += 4) {
+            const line = BABYLON.MeshBuilder.CreateBox("line", {width: 2, height: 0.1, depth: 0.5}, scene);
+            line.position = new BABYLON.Vector3(0, 0.1, i);
+            const lineMat = new BABYLON.StandardMaterial("lineMat", scene);
+            lineMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
+            line.material = lineMat;
+        }
+
+        // ربات اصلی
+        const robot = new BABYLON.TransformNode("robot");
+        
+        // بدنه ربات
+        const body = BABYLON.MeshBuilder.CreateCylinder("body", {
+            diameterTop: 0.8,
+            diameterBottom: 1,
+            height: 2,
+            tessellation: 16
+        }, scene);
+        body.parent = robot;
+        body.position.y = 1;
+        
+        const bodyMat = new BABYLON.PBRMetallicRoughnessMaterial("bodyMat", scene);
+        bodyMat.baseColor = new BABYLON.Color3(0.8, 0.2, 0.2);
+        bodyMat.metallic = 0.9;
+        bodyMat.roughness = 0.1;
+        body.material = bodyMat;
+
+        // سر ربات
+        const head = BABYLON.MeshBuilder.CreateSphere("head", {diameter: 1, segments: 16}, scene);
+        head.parent = robot;
+        head.position.y = 2.2;
+        
+        const headMat = new BABYLON.PBRMetallicRoughnessMaterial("headMat", scene);
+        headMat.baseColor = new BABYLON.Color3(0.7, 0.1, 0.1);
+        headMat.metallic = 0.8;
+        head.material = headMat;
+
+        // چشم ربات
+        const eye = BABYLON.MeshBuilder.CreateSphere("eye", {diameter: 0.2}, scene);
+        eye.parent = head;
+        eye.position.set(0.3, 0.2, 0.4);
+        const eyeMat = new BABYLON.StandardMaterial("eyeMat", scene);
+        eyeMat.emissiveColor = new BABYLON.Color3(0, 1, 1);
+        eye.material = eyeMat;
+
+        // پاهای ربات
+        const leg1 = BABYLON.MeshBuilder.CreateCylinder("leg1", {diameter: 0.3, height: 1.5}, scene);
+        leg1.parent = robot;
+        leg1.position.set(-0.3, -0.8, 0);
+        
+        const leg2 = leg1.clone("leg2");
+        leg2.position.set(0.3, -0.8, 0);
+
+        // دوربین رو به ربات وصل کن
+        camera.lockedTarget = robot;
+
+        // حرکت ربات
+        let robotSpeed = 0.2;
+        scene.onBeforeRenderObservable.add(() => {
+            robot.position.z += robotSpeed;
+            
+            // انیمیشن دویدن
+            leg1.rotation.x = Math.sin(engine.getDeltaTime() * 0.01) * 0.5;
+            leg2.rotation.x = Math.sin(engine.getDeltaTime() * 0.01 + Math.PI) * 0.5;
+            
+            // اگر ربات از صحنه خارج شد، برگرد
+            if (robot.position.z > 50) {
+                robot.position.z = -50;
+            }
+        });
+
+        // رندر حلقه
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+
+        window.addEventListener('resize', () => {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>
