@@ -951,7 +951,33 @@
                     trail: []
                 };
             }
-            
+            createLevelUpEffect() {
+    for (let i = 0; i < 50; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 3 + Math.random() * 5;
+        this.particles.push({
+            x: this.player.x,
+            y: this.player.y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            size: 3 + Math.random() * 4,
+            life: 1.5 + Math.random() * 0.5,
+            color: `hsl(${Math.random() * 360}, 100%, 50%)`
+        });
+    }
+    
+    this.particles.push({
+        x: this.player.x,
+        y: this.player.y,
+        vx: 0,
+        vy: -3,
+        size: 20,
+        life: 3,
+        color: '#ffffff',
+        text: `مرحله ${this.level}!`,
+        isText: true
+    });
+            }
             /**
              * راه‌اندازی رویدادهای بازی
              */
