@@ -1792,28 +1792,57 @@
                 
                 this.ctx.rotate(this.player.rotation);
                 
-                // بدنه اصلی سفینه (بزرگ‌تر)
-                this.ctx.fillStyle = '#1E90FF';
+                                // بدنه اصلی سفینه (بزرگ‌تر) — جایگزین شده برای گرادینت، سایه و شعله
+                // گرادینت فلزی روی بدنه
+                const bodyGradient = this.ctx.createLinearGradient(-20, -15, 30, 15);
+                bodyGradient.addColorStop(0, '#00e6ff');
+                bodyGradient.addColorStop(0.45, '#0077ff');
+                bodyGradient.addColorStop(1, '#00f0ff');
+
+                // کمی سایه و درخشش برای حس سه‌بعدی
+                this.ctx.shadowBlur = 18;
+                this.ctx.shadowColor = 'rgba(0, 230, 255, 0.35)';
+
+                this.ctx.fillStyle = bodyGradient;
                 this.ctx.beginPath();
                 this.ctx.moveTo(30, 0);
                 this.ctx.lineTo(-20, -15);
                 this.ctx.lineTo(-20, 15);
                 this.ctx.closePath();
                 this.ctx.fill();
-                
-                // کابین خلبان
-                this.ctx.fillStyle = '#87CEEB';
+
+                // بازگرداندن shadow قبل از قطعات داخلی (تا فقط بدنه نور بگیرد)
+                this.ctx.shadowBlur = 0;
+
+                // کابین خلبان - شیشه با بازتاب جزئی
+                const canopyGradient = this.ctx.createLinearGradient(0, -12, 12, 12);
+                canopyGradient.addColorStop(0, 'rgba(255,255,255,0.9)');
+                canopyGradient.addColorStop(0.6, 'rgba(135,206,235,0.9)');
+                canopyGradient.addColorStop(1, 'rgba(20,120,200,0.8)');
+                this.ctx.fillStyle = canopyGradient;
                 this.ctx.beginPath();
                 this.ctx.arc(8, 0, 12, 0, Math.PI * 2);
                 this.ctx.fill();
-                
-                // موتورها
-                this.ctx.fillStyle = '#FF4500';
+
+                // موتور / شعله — رنگ و انیمیشن ساده (پالس)
+                const flamePhase = (Math.sin(this.gameTime * 30) + 1) / 2; // 0..1 سریع
+                const flameColor = flamePhase > 0.5 ? '#ff6600' : '#ffaa00';
+                this.ctx.fillStyle = flameColor;
+                this.ctx.beginPath();
+                this.ctx.moveTo(-25, -6);
+                this.ctx.quadraticCurveTo(-40, 0, -25, 6);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                // اجزای کوچک موتور (فلز)
+                this.ctx.fillStyle = '#d45a00';
                 this.ctx.beginPath();
                 this.ctx.rect(-25, -8, 6, 16);
                 this.ctx.fill();
-                
-                // باله‌ها
+
+                // باله‌ها (جزئیات با سایهٔ ملایم)
+                this.ctx.save();
+                this.ctx.globalAlpha = 0.95;
                 this.ctx.fillStyle = '#1C86EE';
                 this.ctx.beginPath();
                 this.ctx.moveTo(-15, -12);
@@ -1821,13 +1850,15 @@
                 this.ctx.lineTo(-15, -18);
                 this.ctx.closePath();
                 this.ctx.fill();
-                
+
                 this.ctx.beginPath();
                 this.ctx.moveTo(-15, 12);
                 this.ctx.lineTo(-22, 25);
                 this.ctx.lineTo(-15, 18);
                 this.ctx.closePath();
                 this.ctx.fill();
+                this.ctx.restore();
+
                 
                 // درخشش
                 this.ctx.strokeStyle = 'rgba(0, 204, 255, 0.6)';
