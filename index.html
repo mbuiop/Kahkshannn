@@ -26,9 +26,9 @@
         /* آتشفشان‌های گوشه‌ها */
         .corner-volcano {
             position: fixed;
-            font-size: 25px;
-            z-index: 1;
-            filter: drop-shadow(0 0 10px #ff3300) drop-shadow(0 0 20px #ff5500);
+            font-size: 29px;
+            z-index: 3;
+            filter: drop-shadow(0 1 10px #ff3300) drop-shadow(0 2 20px #ff5500);
             animation: volcanoGlow 2s infinite alternate;
         }
         
@@ -38,16 +38,16 @@
         .corner-volcano.bottom-right { bottom: 15px; right: 15px; }
         
         @keyframes volcanoGlow {
-            from { filter: drop-shadow(0 0 5px #ff3300) drop-shadow(0 0 10px #ff5500); }
-            to { filter: drop-shadow(0 0 15px #ff3300) drop-shadow(0 0 25px #ff5500); }
+            from { filter: drop-shadow(0 0 6px #ff3700) drop-shadow(0 0 10px #ff5800); }
+            to { filter: drop-shadow(0 0 18px #ff3900) drop-shadow(0 0 25px #ff5600); }
         }
         
         #mainScreen {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 10%;
+            height: 10%;
             background: url('m.jpg') no-repeat center center;
             background-size: cover;
             display: flex;
@@ -55,7 +55,7 @@
             justify-content: center;
             align-items: center;
             color: white;
-            z-index: 2;
+            z-index: 4;
         }
         
         .header {
@@ -120,7 +120,7 @@
         .management-btn {
             background: linear-gradient(45deg, #ff4444, #cc0000);
             border: none;
-            padding: 15px 25px;
+            padding: 12px 23px;
             font-size: 1.1rem;
             border-radius: 50px;
             cursor: pointer;
@@ -819,7 +819,7 @@
     
     <!-- صفحه پایان مرحله -->
     <div id="levelComplete">
-        <h2 style="font-size: 2.5rem; margin-bottom: 20px; color: #00ff88;">تبریک! 🎉</h2>
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px; color: #00ff88;">تبریک! 🏞</h2>
         <p style="font-size: 1.5rem; margin-bottom: 30px; color: #aaffaa;">مرحله <span id="completedLevel">1</span> تکمیل شد!</p>
         <p style="font-size: 1.2rem; margin-bottom: 40px; color: #aaddff;">آماده مرحله بعدی هستی؟</p>
         <button id="nextLevelButton" style="background: linear-gradient(45deg, #00ccff, #0066ff); border: none; padding: 15px 30px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; color: white; font-weight: bold;">برو مرحله بعد</button>
@@ -827,7 +827,7 @@
 
     <!-- لودینگ سه بعدی -->
     <div id="loadingScreen" class="loading-container hidden">
-        <div class="coin-3d">🌏</div>
+        <div class="coin-3d">🏞</div>
         <div class="loading-text" id="loadingText">در حال بارگذاری...</div>
     </div>
 
@@ -1121,7 +1121,9 @@
         let enemySpawnTimer = 0;
         let currentEnemyGroup = 0;
         let currentStageData = null;
-        
+        let player = { x: 100, y: 100, width: 50, height: 30 };  // موقعیت و اندازه وسیله
+        let camera = { x: 0, y: 0, width: canvas.width, height: canvas.height };  // موقعیت دوربین و اندازه صفحه
+
         // متغیرهای کنترل لمسی
         let isTouching = false;
         let touchStartX = 0;
@@ -1138,7 +1140,12 @@
                 fuelIndicator.classList.remove('hidden');
                 bombButton.classList.remove('hidden');
                 bombTimer.classList.remove('hidden');
-                
+                function updateCamera() {
+                // مرکز کردن دوربین روی وسیله
+                camera.x = player.x + player.width / 2 - camera.width / 2;
+                camera.y = player.y + player.height / 2 - camera.height / 2;
+               }
+
                 // نمایش کنترل لمسی در موبایل
                 if (window.innerWidth <= 480) {
                     touchControls.classList.remove('hidden');
@@ -1306,7 +1313,7 @@
         function createSingleCoin() {
             const coinElement = document.createElement('div');
             coinElement.className = 'coin';
-            coinElement.innerHTML = '🌏';
+            coinElement.innerHTML = '🪐';
             coinElement.style.position = 'absolute';
             
             const numberElement = document.createElement('div');
@@ -1693,7 +1700,7 @@
             for (let i = 0; i < trailLength; i++) {
                 const trailElement = document.createElement('div');
                 trailElement.className = 'coin-trail';
-                trailElement.innerHTML = '🌏';
+                trailElement.innerHTML = '🪐';
                 trailElement.style.position = 'absolute';
                 
                 let targetIndex = Math.max(0, playerPath.length - (i + 1) * 3);
@@ -1796,7 +1803,7 @@
             effect.style.opacity = '1';
             effect.style.transition = 'all 0.5s';
             effect.style.zIndex = '5';
-            effect.innerHTML = '✨';
+            effect.innerHTML = '🏖';
             effect.style.transform = 'scale(1)';
             
             gameScreen.appendChild(effect);
@@ -1814,7 +1821,7 @@
         function createCollectEffect(x, y) {
             const effect = document.createElement('div');
             effect.className = 'coin-collect-effect';
-            effect.innerHTML = '⭐';
+            effect.innerHTML = '🏞';
             effect.style.left = x + 'px';
             effect.style.top = y + 'px';
             
@@ -1843,7 +1850,7 @@
                 setTimeout(() => {
                     const effect = document.createElement('div');
                     effect.className = 'level-complete-effect';
-                    effect.innerHTML = '✨';
+                    effect.innerHTML = '🏖';
                     effect.style.left = (player.x + Math.random() * 100 - 50) + 'px';
                     effect.style.top = (player.y + Math.random() * 100 - 50) + 'px';
                     gameScreen.appendChild(effect);
