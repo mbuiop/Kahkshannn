@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کهکشان فراری - گرافیک سینمایی</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            overflow: hidden; 
+            background: #000;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+        #renderCanvas { 
+            width: 100%; 
+            height: 100%; 
+            display: block;
+        }
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <div id="loading">🚀 در حال بارگذاری جهان بی‌کران...</div>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    
+    <script>
+        // 🎬 موتور بازی سینمایی
+        class CinematicSpaceGame {
+            constructor() {
+                this.canvas = document.getElementById('renderCanvas');
+                this.engine = new BABYLON.Engine(this.canvas, true, {
+                    preserveDrawingBuffer: true,
+                    stencil: true
+                });
+                this.scene = new BABYLON.Scene(this.engine);
+                
+                this.setupCinematicScene();
+                this.createGalaxyEnvironment();
+                this.createPlayerShip();
+                this.createEnemies();
+                this.setupPostProcessing();
+                
+                this.startGameLoop();
+            }
+            
+            setupCinematicScene() {
+                // پس‌زمینه سینمایی عمیق
+                this.scene.clearColor = new BABYLON.Color4(0.02, 0.03, 0.08, 1.0);
+                this.scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
+                this.scene.fogDensity = 0.01;
+                this.scene.fogColor = new BABYLON.Color3(0.05, 0.05, 0.1);
+                
+                // دوربین سینمایی
+                this.camera = new BABYLON.ArcRotateCamera(
+                    "cinematicCamera", 
+                    -Math.PI / 2, Math.PI / 3, 
+                    25, 
+                    BABYLON.Vector3.Zero(), 
+                    this.scene
+                );
+                this.camera.attachControl(this.canvas, true);
+                this.camera.fov = 0.8;
+                this.camera.minZ = 0.1;
+                this.camera.maxZ = 1000;
+                
+                // نورپردازی سینمایی
+                this.setupCinematicLighting();
+            }
+            
+            setupCinematicLighting() {
+                // نور اصلی سینمایی
+                this.mainLight = new BABYLON.DirectionalLight(
+                    "mainLight", 
+                    new BABYLON.Vector3(-1, -2, -1), 
+                    this.scene
+                );
+                this.mainLight.intensity = 1.2;
+                this.mainLight.shadowEnabled = true;
+                this.mainLight.shadowMinZ = 1;
+                this.mainLight.shadowMaxZ = 50;
+                
+                // نور محیطی رنگی
+                const ambientLight = new BABYLON.HemisphericLight(
+                    "ambientLight", 
+                    new BABYLON.Vector3(0, 1, 0), 
+                    this.scene
+                );
+                ambientLight.intensity = 0.3;
+                ambientLight.groundColor = new BABYLON.Color3(0.1, 0.1, 0.3);
+                ambientLight.diffuse = new BABYLON.Color3(0.3, 0.3, 0.8);
+                
+                // نور نقطه‌ای برای جلوه‌های ویژه
+                this.engineLight = new BABYLON.PointLight(
+                    "engineLight", 
+                    new BABYLON.Vector3(0, 0, 0), 
+                    this.scene
+                );
+                this.engineLight.intensity = 3;
+                this.engineLight.diffuse = new BABYLON.Color3(0, 0.8, 1);
+                this.engineLight.specular = new BABYLON.Color3(0.5, 0.8, 1);
+            }
+            
+            createGalaxyEnvironment() {
+                // کهکشان پس‌زمینه
+                this.createStarfield();
+                this.createNebulas();
+                this.createAsteroidField();
+                this.createBlackHoles();
+            }
+            
+            createStarfield() {
+                // سیستم ذرات ستارگان
+                this.starParticleSystem = new BABYLON.ParticleSystem("stars", 10000, this.scene);
+                this.starParticleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs.com/assets/Flare.png", this.scene);
+                
+                this.starParticleSystem.minEmitBox = new BABYLON.Vector3(-500, -500, -500);
+                this.starParticleSystem.maxEmitBox = new BABYLON.Vector3(500, 500, 500);
+                
+                // ستارگان رنگارنگ
+                this.starParticleSystem.color1 = new BABYLON.Color4(1, 1, 1, 1);
+                this.starParticleSystem.color2 = new BABYLON.Color4(0.8, 0.8, 1, 1);
+                this.starParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0);
+                
+                this.starParticleSystem.minSize = 0.1;
+                this.starParticleSystem.maxSize = 0.4;
+                this.starParticleSystem.emitRate = 500;
+                this.starParticleSystem.minLifeTime = Number.MAX_SAFE_INTEGER;
+                this.starParticleSystem.maxLifeTime = Number.MAX_SAFE_INTEGER;
+                this.starParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+                
+                this.starParticleSystem.start();
+            }
+            
+            createNebulas() {
+                // سحابی‌های رنگارنگ
+                const nebulaColors = [
+                    new BABYLON.Color3(0.4, 0.1, 0.8), // بنفش
+                    new BABYLON.Color3(0.1, 0.3, 0.9), // آبی
+                    new BABYLON.Color3(0.8, 0.1, 0.4), // صورتی
+                    new BABYLON.Color3(0.1, 0.8, 0.6)  // فیروزه‌ای
+                ];
+                
+                nebulaColors.forEach((color, index) => {
+                    const nebula = BABYLON.MeshBuilder.CreateSphere(`nebula${index}`, {
+                        diameter: 80 + Math.random() * 40,
+                        segments: 32
+                    }, this.scene);
+                    
+                    nebula.position = new BABYLON.Vector3(
+                        (Math.random() - 0.5) * 300,
+                        (Math.random() - 0.5) * 200,
+                        -200 - Math.random() * 200
+                    );
+                    
+                    const nebulaMat = new BABYLON.StandardMaterial(`nebulaMat${index}`, this.scene);
+                    nebulaMat.emissiveColor = color;
+                    nebulaMat.diffuseColor = color;
+                    nebulaMat.alpha = 0.03 + Math.random() * 0.02;
+                    nebulaMat.specularColor = new BABYLON.Color3(0, 0, 0);
+                    nebula.material = nebulaMat;
+                });
+            }
+            
+            createAsteroidField() {
+                this.asteroids = [];
+                
+                // ایجاد میدان سیارک‌های واقعی
+                for (let i = 0; i < 100; i++) {
+                    const size = 0.5 + Math.random() * 3;
+                    const asteroid = BABYLON.MeshBuilder.CreateSphere(`asteroid${i}`, {
+                        diameter: size,
+                        segments: 6 + Math.floor(Math.random() * 6)
+                    }, this.scene);
+                    
+                    // موقعیت‌های تصادفی در فضا
+                    asteroid.position = new BABYLON.Vector3(
+                        (Math.random() - 0.5) * 400,
+                        (Math.random() - 0.5) * 300,
+                        -50 - Math.random() * 300
+                    );
+                    
+                    // چرخش تصادفی
+                    asteroid.rotation = new BABYLON.Vector3(
+                        Math.random() * Math.PI,
+                        Math.random() * Math.PI,
+                        Math.random() * Math.PI
+                    );
+                    
+                    // متریال سیارک واقعی
+                    const asteroidMat = new BABYLON.PBRMetallicRoughnessMaterial(`asteroidMat${i}`, this.scene);
+                    asteroidMat.baseColor = new BABYLON.Color3(0.3 + Math.random() * 0.3, 0.2 + Math.random() * 0.2, 0.1 + Math.random() * 0.1);
+                    asteroidMat.metallic = 0.1 + Math.random() * 0.3;
+                    asteroidMat.roughness = 0.7 + Math.random() * 0.3;
+                    asteroid.material = asteroidMat;
+                    
+                    this.asteroids.push({
+                        mesh: asteroid,
+                        rotationSpeed: new BABYLON.Vector3(
+                            (Math.random() - 0.5) * 0.01,
+                            (Math.random() - 0.5) * 0.01,
+                            (Math.random() - 0.5) * 0.01
+                        )
+                    });
+                }
+            }
+            
+            createBlackHoles() {
+                // ایجاد سیاهچاله‌های مرموز
+                for (let i = 0; i < 3; i++) {
+                    const blackHole = BABYLON.MeshBuilder.CreateSphere(`blackHole${i}`, {
+                        diameter: 15 + Math.random() * 10,
+                        segments: 32
+                    }, this.scene);
+                    
+                    blackHole.position = new BABYLON.Vector3(
+                        (Math.random() - 0.5) * 200,
+                        (Math.random() - 0.5) * 150,
+                        -150 - Math.random() * 100
+                    );
+                    
+                    const blackHoleMat = new BABYLON.PBRMetallicRoughnessMaterial(`blackHoleMat${i}`, this.scene);
+                    blackHoleMat.baseColor = new BABYLON.Color3(0.02, 0.02, 0.02);
+                    blackHoleMat.metallic = 0.9;
+                    blackHoleMat.roughness = 0.1;
+                    blackHoleMat.emissiveColor = new BABYLON.Color3(0.1, 0.1, 0.3);
+                    blackHole.material = blackHoleMat;
+                    
+                    // نور برای سیاهچاله
+                    const blackHoleLight = new BABYLON.PointLight(`blackHoleLight${i}`, blackHole.position, this.scene);
+                    blackHoleLight.diffuse = new BABYLON.Color3(0.1, 0.1, 0.5);
+                    blackHoleLight.intensity = 2;
+                    blackHoleLight.radius = 30;
+                }
+            }
+            
+            createPlayerShip() {
+                // 🚀 جنگنده سینمایی
+                this.playerShip = new BABYLON.TransformNode("playerShip");
+                
+                // بدنه اصلی فلزی
+                const fuselage = BABYLON.MeshBuilder.CreateCylinder("fuselage", {
+                    diameterTop: 0.8,
+                    diameterBottom: 1.5,
+                    height: 4,
+                    tessellation: 16
+                }, this.scene);
+                fuselage.parent = this.playerShip;
+                fuselage.rotation.x = Math.PI / 2;
+                
+                const fuselageMat = new BABYLON.PBRMetallicRoughnessMaterial("fuselageMat", this.scene);
+                fuselageMat.baseColor = new BABYLON.Color3(0.1, 0.2, 0.4);
+                fuselageMat.metallic = 0.9;
+                fuselageMat.roughness = 0.1;
+                fuselageMat.emissiveColor = new BABYLON.Color3(0, 0.1, 0.3);
+                fuselage.material = fuselageMat;
+                
+                // کابین شیشه‌ای
+                const cockpit = BABYLON.MeshBuilder.CreateSphere("cockpit", {
+                    diameter: 1.2,
+                    segments: 16
+                }, this.scene);
+                cockpit.parent = this.playerShip;
+                cockpit.position.z = 0.8;
+                
+                const cockpitMat = new BABYLON.PBRMetallicRoughnessMaterial("cockpitMat", this.scene);
+                cockpitMat.baseColor = new BABYLON.Color3(0.3, 0.5, 0.8);
+                cockpitMat.metallic = 0.3;
+                cockpitMat.roughness = 0.05;
+                cockpitMat.alpha = 0.7;
+                cockpit.material = cockpitMat;
+                
+                // باله‌های جانبی
+                const leftWing = BABYLON.MeshBuilder.CreateBox("leftWing", {
+                    width: 3, height: 0.3, depth: 1.2
+                }, this.scene);
+                leftWing.parent = this.playerShip;
+                leftWing.position.set(-1.5, 0, -0.8);
+                
+                const rightWing = leftWing.clone("rightWing");
+                rightWing.position.set(1.5, 0, -0.8);
+                
+                // موتورها با نور
+                this.createEngines();
+                
+                // تنظیمات حرکت
+                this.playerVelocity = new BABYLON.Vector3(0, 0, 0);
+                this.moveSpeed = 0.15;
+            }
+            
+            createEngines() {
+                // بدنه موتورها
+                const leftEngine = BABYLON.MeshBuilder.CreateCylinder("leftEngine", {
+                    diameter: 0.6,
+                    height: 1.5,
+                    tessellation: 12
+                }, this.scene);
+                leftEngine.parent = this.playerShip;
+                leftEngine.position.set(-0.8, 0, -1.8);
+                leftEngine.rotation.x = Math.PI / 2;
+                
+                const rightEngine = leftEngine.clone("rightEngine");
+                rightEngine.position.set(0.8, 0, -1.8);
+                
+                // نور موتورها
+                this.leftEngineLight = new BABYLON.PointLight("leftEngineLight", 
+                    new BABYLON.Vector3(-0.8, 0, -2.2), this.scene);
+                this.leftEngineLight.diffuse = new BABYLON.Color3(1, 0.4, 0.1);
+                this.leftEngineLight.intensity = 2;
+                
+                this.rightEngineLight = new BABYLON.PointLight("rightEngineLight", 
+                    new BABYLON.Vector3(0.8, 0, -2.2), this.scene);
+                this.rightEngineLight.diffuse = new BABYLON.Color3(1, 0.4, 0.1);
+                this.rightEngineLight.intensity = 2;
+                
+                // سیستم ذرات شعله موتور
+                this.createEngineParticles();
+            }
+            
+            createEngineParticles() {
+                this.engineParticleSystem = new BABYLON.ParticleSystem("engineParticles", 200, this.scene);
+                this.engineParticleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs.com/assets/Flare.png", this.scene);
+                
+                this.engineParticleSystem.emitter = new BABYLON.Vector3(0, 0, -2);
+                this.engineParticleSystem.minEmitBox = new BABYLON.Vector3(-0.8, -0.1, -0.1);
+                this.engineParticleSystem.maxEmitBox = new BABYLON.Vector3(0.8, 0.1, 0.1);
+                
+                this.engineParticleSystem.color1 = new BABYLON.Color4(1, 1, 0, 1);
+                this.engineParticleSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1);
+                this.engineParticleSystem.colorDead = new BABYLON.Color4(0.5, 0, 0, 0);
+                
+                this.engineParticleSystem.minSize = 0.1;
+                this.engineParticleSystem.maxSize = 0.3;
+                this.engineParticleSystem.minLifeTime = 0.3;
+                this.engineParticleSystem.maxLifeTime = 0.8;
+                this.engineParticleSystem.emitRate = 300;
+                this.engineParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+                
+                this.engineParticleSystem.start();
+                this.engineParticleSystem.emitter = this.playerShip;
+            }
+            
+            createEnemies() {
+                this.enemies = [];
+                
+                // ایجاد دشمنان مختلف
+                for (let i = 0; i < 8; i++) {
+                    this.spawnEnemy(i);
+                }
+            }
+            
+            spawnEnemy(index) {
+                const type = Math.random() > 0.5 ? "fighter" : "scout";
+                const size = type === "fighter" ? 1.5 : 1;
+                const color = type === "fighter" ? new BABYLON.Color3(1, 0.3, 0.3) : new BABYLON.Color3(1, 0.6, 0.2);
+                
+                const enemy = BABYLON.MeshBuilder.CreateSphere(`enemy${index}`, {
+                    diameter: size,
+                    segments: 12
+                }, this.scene);
+                
+                enemy.position = new BABYLON.Vector3(
+                    (Math.random() - 0.5) * 40,
+                    (Math.random() - 0.5) * 30,
+                    -30 - Math.random() * 50
+                );
+                
+                const enemyMat = new BABYLON.PBRMetallicRoughnessMaterial(`enemyMat${index}`, this.scene);
+                enemyMat.baseColor = color;
+                enemyMat.metallic = 0.7;
+                enemyMat.roughness = 0.3;
+                enemyMat.emissiveColor = color;
+                enemy.material = enemyMat;
+                
+                // نور دشمن
+                const enemyLight = new BABYLON.PointLight(`enemyLight${index}`, enemy.position, this.scene);
+                enemyLight.diffuse = color;
+                enemyLight.intensity = 1;
+                enemyLight.parent = enemy;
+                
+                this.enemies.push({
+                    mesh: enemy,
+                    light: enemyLight,
+                    type: type,
+                    speed: 0.02 + Math.random() * 0.03,
+                    health: type === "fighter" ? 60 : 30
+                });
+            }
+            
+            setupPostProcessing() {
+                // افکت‌های پست-پردازش سینمایی
+                if (BABYLON.DefaultRenderingPipeline) {
+                    const pipeline = new BABYLON.DefaultRenderingPipeline(
+                        "defaultPipeline", 
+                        true, 
+                        this.scene, 
+                        [this.camera]
+                    );
+                    
+                    pipeline.bloomEnabled = true;
+                    pipeline.bloomThreshold = 0.8;
+                    pipeline.bloomWeight = 0.3;
+                    pipeline.bloomKernel = 64;
+                    pipeline.bloomScale = 0.5;
+                    
+                    pipeline.chromaticAberrationEnabled = true;
+                    pipeline.chromaticAberration.aberrationAmount = 0.5;
+                    
+                    pipeline.grainEnabled = true;
+                    pipeline.grain.animated = true;
+                    pipeline.grain.intensity = 0.1;
+                    
+                    pipeline.depthOfFieldEnabled = true;
+                    pipeline.depthOfField.focalLength = 100;
+                    pipeline.depthOfField.fStop = 1.4;
+                    pipeline.depthOfField.focusDistance = 50;
+                }
+            }
+            
+            setupControls() {
+                this.keys = {};
+                
+                this.scene.onKeyboardObservable.add((kbInfo) => {
+                    this.keys[kbInfo.event.key.toLowerCase()] = 
+                        kbInfo.type === BABYLON.KeyboardEventTypes.KEYDOWN;
+                });
+            }
+            
+            updateGame(deltaTime) {
+                this.updatePlayer(deltaTime);
+                this.updateEnemies(deltaTime);
+                this.updateAsteroids(deltaTime);
+                this.updateCamera(deltaTime);
+                this.updateEngineEffects(deltaTime);
+            }
+            
+            updatePlayer(deltaTime) {
+                // حرکت با WASD
+                let moveX = 0, moveY = 0;
+                if (this.keys['w'] || this.keys['arrowup']) moveY += 1;
+                if (this.keys['s'] || this.keys['arrowdown']) moveY -= 1;
+                if (this.keys['a'] || this.keys['arrowleft']) moveX -= 1;
+                if (this.keys['d'] || this.keys['arrowright']) moveX += 1;
+                
+                // اعاص حرکت نرم
+                this.playerVelocity.x = BABYLON.Scalar.Lerp(this.playerVelocity.x, moveX * this.moveSpeed, 0.2);
+                this.playerVelocity.y = BABYLON.Scalar.Lerp(this.playerVelocity.y, moveY * this.moveSpeed, 0.2);
+                
+                this.playerShip.position.x += this.playerVelocity.x * 60 * deltaTime;
+                this.playerShip.position.y += this.playerVelocity.y * 60 * deltaTime;
+                
+                // محدودیت حرکت
+                const bounds = 12;
+                this.playerShip.position.x = Math.max(-bounds, Math.min(bounds, this.playerShip.position.x));
+                this.playerShip.position.y = Math.max(-bounds, Math.min(bounds, this.playerShip.position.y));
+                
+                // چرخش بر اساس حرکت
+                this.playerShip.rotation.z = -this.playerVelocity.x * 3;
+                this.playerShip.rotation.x = this.playerVelocity.y * 2;
+            }
+            
+            updateEnemies(deltaTime) {
+                this.enemies.forEach(enemy => {
+                    // حرکت به سمت بازیکن
+                    const direction = this.playerShip.position.subtract(enemy.mesh.position);
+                    direction.normalize();
+                    direction.scaleInPlace(enemy.speed * 60 * deltaTime);
+                    
+                    enemy.mesh.position.addInPlace(direction);
+                    enemy.mesh.lookAt(this.playerShip.position);
+                    
+                    // چرخش برای اثر دراماتیک
+                    enemy.mesh.rotation.y += 0.02;
+                });
+            }
+            
+            updateAsteroids(deltaTime) {
+                this.asteroids.forEach(asteroid => {
+                    asteroid.mesh.rotation.x += asteroid.rotationSpeed.x;
+                    asteroid.mesh.rotation.y += asteroid.rotationSpeed.y;
+                    asteroid.mesh.rotation.z += asteroid.rotationSpeed.z;
+                });
+            }
+            
+            updateCamera(deltaTime) {
+                // دوربین دنبال‌کننده با تاخیر سینمایی
+                const targetPosition = this.playerShip.position.clone();
+                targetPosition.z += 20;
+                targetPosition.y += 5;
+                
+                this.camera.position = BABYLON.Vector3.Lerp(
+                    this.camera.position,
+                    targetPosition,
+                    0.05
+                );
+                
+                const targetLookAt = this.playerShip.position.clone();
+                targetLookAt.z += 5;
+                
+                this.camera.setTarget(targetLookAt);
+            }
+            
+            updateEngineEffects(deltaTime) {
+                // آپدیت نور موتورها
+                if (this.leftEngineLight && this.rightEngineLight) {
+                    this.leftEngineLight.position = this.playerShip.position.clone();
+                    this.leftEngineLight.position.x -= 0.8;
+                    this.leftEngineLight.position.z -= 2.2;
+                    
+                    this.rightEngineLight.position = this.playerShip.position.clone();
+                    this.rightEngineLight.position.x += 0.8;
+                    this.rightEngineLight.position.z -= 2.2;
+                }
+                
+                // آپدیت نور اصلی موتور
+                if (this.engineLight) {
+                    this.engineLight.position = this.playerShip.position.clone();
+                    this.engineLight.position.z -= 2;
+                }
+            }
+            
+            startGameLoop() {
+                this.setupControls();
+                
+                // مخفی کردن صفحه لودینگ
+                document.getElementById('loading').style.display = 'none';
+                
+                this.engine.runRenderLoop(() => {
+                    const deltaTime = this.engine.getDeltaTime() / 1000;
+                    this.updateGame(deltaTime);
+                    this.scene.render();
+                });
+                
+                window.addEventListener("resize", () => {
+                    this.engine.resize();
+                });
+            }
+        }
+        
+        // راه‌اندازی بازی
+        window.addEventListener('load', () => {
+            new CinematicSpaceGame();
+            console.log('🎬 بازی سینمایی کهکشانی راه‌اندازی شد!');
+        });
+    </script>
+</body>
+  </html>
