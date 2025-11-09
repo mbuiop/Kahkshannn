@@ -4,10 +4,637 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بازی کهکشانی سینمایی - Galactic Odyssey</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary-color: #00ccff;
+            --secondary-color: #0066ff;
+            --accent-color: #00ff88;
+            --danger-color: #ff4444;
+            --warning-color: #ffaa00;
+            --success-color: #00ff88;
+            
+            --bg-dark: #0a0a1a;
+            --bg-darker: #050510;
+            --bg-light: #1a1a2e;
+            --bg-lighter: #2a2a4a;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+            --text-muted: #606080;
+            
+            --nebula-purple: #6a0dad;
+            --nebula-blue: #1e90ff;
+            --nebula-pink: #ff1493;
+            --star-gold: #ffd700;
+            
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+            --border-radius-xl: 30px;
+            
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 20px rgba(0, 204, 255, 0.5);
+            
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-darker);
+            color: var(--text-primary);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            direction: rtl;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* صفحه لودینگ */
+        .loading-container {
+            background: linear-gradient(135deg, var(--bg-darker), var(--bg-dark));
+            z-index: 100;
+        }
+
+        .loading-content {
+            text-align: center;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .galaxy-loader {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+        }
+
+        .spiral {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        .spiral:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-top-color: var(--secondary-color);
+            animation-duration: 1.5s;
+            animation-direction: reverse;
+        }
+
+        .spiral:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-top-color: var(--accent-color);
+            animation-duration: 1s;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color), var(--nebula-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(0, 204, 255, 0.5)); }
+            100% { filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.7)); }
+        }
+
+        .loading-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-light);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 4px;
+            width: 0%;
+            animation: loadingProgress 3s ease-in-out infinite;
+        }
+
+        @keyframes loadingProgress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .loading-tip {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* پس‌زمینه سینمایی */
+        .cinematic-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.4;
+            animation: nebulaFloat 20s ease-in-out infinite;
+        }
+
+        .nebula-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--nebula-purple), transparent);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .nebula-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--nebula-blue), transparent);
+            bottom: 20%;
+            right: 15%;
+            animation-delay: -5s;
+        }
+
+        .nebula-3 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--nebula-pink), transparent);
+            top: 50%;
+            left: 70%;
+            animation-delay: -10s;
+        }
+
+        @keyframes nebulaFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20px, -20px) scale(1.1); }
+            50% { transform: translate(-10px, 15px) scale(0.9); }
+            75% { transform: translate(15px, 10px) scale(1.05); }
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+                radial-gradient(1px 1px at 90px 40px, #ddd, transparent),
+                radial-gradient(1px 1px at 130px 80px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 30px, #eee, transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: starsTwinkle 4s ease-in-out infinite;
+        }
+
+        @keyframes starsTwinkle {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* منوی اصلی */
+        .menu-content {
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            z-index: 2;
+        }
+
+        .title-container {
+            margin-bottom: 3rem;
+        }
+
+        .game-title {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color), var(--nebula-pink), var(--nebula-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 204, 255, 0.3);
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .game-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius-lg);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left var(--transition-slow);
+        }
+
+        .menu-btn:hover::before {
+            left: 100%;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md), var(--shadow-glow);
+        }
+
+        .menu-btn.primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .menu-btn.primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 204, 255, 0.5);
+        }
+
+        .btn-icon {
+            font-size: 1.5rem;
+        }
+
+        .btn-text {
+            flex: 1;
+            text-align: right;
+        }
+
+        /* صفحه بازی */
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: block;
+        }
+
+        .hud-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.5rem;
+        }
+
+        .hud-section {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.2rem;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .hud-icon {
+            font-size: 1.2rem;
+        }
+
+        .hud-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .fuel-gauge {
+            min-width: 150px;
+        }
+
+        .fuel-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .fuel-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+            border-radius: 4px;
+            width: 100%;
+            transition: width var(--transition-fast);
+        }
+
+        /* مینی‌مپ */
+        .mini-map {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 180px;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .mini-map-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* جویستیک */
+        .joystick-container {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+            z-index: 5;
+            pointer-events: auto;
+        }
+
+        .joystick-base {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 204, 255, 0.3);
+        }
+
+        .joystick-handle {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
+            transition: all 0.1s ease;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* صفحه پایان بازی */
+        .game-over-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: -1;
+        }
+
+        .game-over-content {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            background: rgba(26, 26, 46, 0.95);
+            border-radius: var(--border-radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .game-over-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: gameOverIcon 2s ease-in-out infinite;
+        }
+
+        @keyframes gameOverIcon {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-5deg); }
+        }
+
+        .game-over-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--danger-color);
+        }
+
+        .game-over-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-over-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius-lg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            flex: 1;
+        }
+
+        .game-over-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .game-over-btn.primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+
+        /* رسپانسیو */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 3rem;
+            }
+            
+            .hud-top {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .hud-section {
+                justify-content: center;
+            }
+            
+            .game-over-buttons {
+                flex-direction: column;
+            }
+            
+            .joystick-container {
+                bottom: 20px;
+                left: 20px;
+                width: 100px;
+                height: 100px;
+            }
+            
+            .mini-map {
+                bottom: 20px;
+                right: 20px;
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-title {
+                font-size: 2.5rem;
+            }
+            
+            .menu-btn {
+                padding: 1rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .hud-item {
+                padding: 0.6rem 1rem;
+            }
+            
+            .joystick-container {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .joystick-handle {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .mini-map {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="loadingScreen" class="loading-container">
+    <!-- صفحه لودینگ -->
+    <div id="loadingScreen" class="screen">
         <div class="loading-content">
             <div class="galaxy-loader">
                 <div class="spiral"></div>
@@ -23,13 +650,13 @@
         </div>
     </div>
 
+    <!-- منوی اصلی -->
     <div id="mainMenu" class="screen hidden">
         <div class="cinematic-background">
             <div class="nebula nebula-1"></div>
             <div class="nebula nebula-2"></div>
             <div class="nebula nebula-3"></div>
             <div class="stars"></div>
-            <div class="distant-galaxies"></div>
         </div>
         
         <div class="menu-content">
@@ -43,61 +670,11 @@
                     <span class="btn-icon">🚀</span>
                     <span class="btn-text">شروع ماجراجویی</span>
                 </button>
-                
-                <button class="menu-btn" id="continueBtn">
-                    <span class="btn-icon">⏯️</span>
-                    <span class="btn-text">ادامه بازی</span>
-                </button>
-                
-                <button class="menu-btn" id="achievementsBtn">
-                    <span class="btn-icon">🏆</span>
-                    <span class="btn-text">دستاوردها</span>
-                </button>
-                
-                <button class="menu-btn" id="settingsBtn">
-                    <span class="btn-icon">⚙️</span>
-                    <span class="btn-text">تنظیمات</span>
-                </button>
-                
-                <button class="menu-btn" id="creditsBtn">
-                    <span class="btn-icon">👨‍🚀</span>
-                    <span class="btn-text">سازندگان</span>
-                </button>
             </div>
-            
-            <div class="player-stats">
-                <div class="stat-card">
-                    <div class="stat-icon">⭐</div>
-                    <div class="stat-info">
-                        <div class="stat-label">بالاترین امتیاز</div>
-                        <div class="stat-value" id="highScoreStat">0</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">🌌</div>
-                    <div class="stat-info">
-                        <div class="stat-label">مرحله اکتشاف</div>
-                        <div class="stat-value" id="highLevelStat">1</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">⏱️</div>
-                    <div class="stat-info">
-                        <div class="stat-label">زمان بازی</div>
-                        <div class="stat-value" id="playTimeStat">0h</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="cinematic-controls">
-            <button class="control-btn" id="musicToggle">🔊</button>
-            <button class="control-btn" id="fullscreenToggle">⛶</button>
         </div>
     </div>
 
+    <!-- صفحه بازی -->
     <div id="gameScreen" class="screen hidden">
         <canvas id="gameCanvas"></canvas>
         
@@ -113,11 +690,6 @@
                         <span class="hud-icon">🌌</span>
                         <span class="hud-value" id="levelValue">1</span>
                     </div>
-                    
-                    <div class="hud-item">
-                        <span class="hud-icon">⏱️</span>
-                        <span class="hud-value" id="timeValue">00:00</span>
-                    </div>
                 </div>
                 
                 <div class="hud-section">
@@ -131,106 +703,21 @@
                 </div>
             </div>
             
-            <div class="hud-center">
-                <div class="cinematic-indicator" id="cinematicIndicator">
-                    <span class="indicator-icon">🎥</span>
-                    <span class="indicator-text">نمایش سینمایی فعال</span>
-                </div>
-                
-                <div class="objective-display" id="objectiveDisplay">
-                    <span class="objective-icon">🎯</span>
-                    <span class="objective-text" id="objectiveText">سیارات را کشف کنید: 0/5</span>
-                </div>
+            <!-- مینی‌مپ -->
+            <div class="mini-map">
+                <canvas class="mini-map-canvas" id="miniMapCanvas"></canvas>
             </div>
             
-            <div class="hud-bottom">
-                <div class="ability-bar">
-                    <button class="ability-btn" id="warpDriveBtn" data-cooldown="30">
-                        <span class="ability-icon">⚡</span>
-                        <span class="ability-text">حرکت warp</span>
-                        <div class="cooldown-overlay"></div>
-                    </button>
-                    
-                    <button class="ability-btn" id="shieldBtn" data-cooldown="20">
-                        <span class="ability-icon">🛡️</span>
-                        <span class="ability-text">محافظ</span>
-                        <div class="cooldown-overlay"></div>
-                    </button>
-                    
-                    <button class="ability-btn" id="scannerBtn" data-cooldown="15">
-                        <span class="ability-icon">📡</span>
-                        <span class="ability-text">اسکنر</span>
-                        <div class="cooldown-overlay"></div>
-                    </button>
-                    
-                    <button class="ability-btn" id="bombBtn" data-cooldown="45">
-                        <span class="ability-icon">💣</span>
-                        <span class="ability-text">بمب کیهانی</span>
-                        <div class="cooldown-overlay"></div>
-                    </button>
-                </div>
-                
-                <div class="navigation-hint">
-                    <span class="hint-icon">🎮</span>
-                    <span class="hint-text">برای حرکت از موس یا صفحه لمسی استفاده کنید</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="cinematic-overlay">
-            <div class="camera-indicator">
-                <div class="camera-icon">📷</div>
-                <div class="camera-status">دوربین سینمایی فعال</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="pauseMenu" class="screen hidden">
-        <div class="pause-overlay"></div>
-        <div class="pause-content">
-            <h2 class="pause-title">بازی متوقف شد</h2>
-            
-            <div class="pause-buttons">
-                <button class="pause-btn primary" id="resumeBtn">
-                    <span class="btn-icon">▶️</span>
-                    <span class="btn-text">ادامه بازی</span>
-                </button>
-                
-                <button class="pause-btn" id="restartBtn">
-                    <span class="btn-icon">🔄</span>
-                    <span class="btn-text">شروع مجدد</span>
-                </button>
-                
-                <button class="pause-btn" id="mainMenuBtn">
-                    <span class="btn-icon">🏠</span>
-                    <span class="btn-text">منوی اصلی</span>
-                </button>
-                
-                <button class="pause-btn" id="settingsBtn2">
-                    <span class="btn-icon">⚙️</span>
-                    <span class="btn-text">تنظیمات</span>
-                </button>
-            </div>
-            
-            <div class="pause-stats">
-                <div class="pause-stat">
-                    <span class="stat-label">امتیاز فعلی:</span>
-                    <span class="stat-value" id="currentScore">0</span>
-                </div>
-                
-                <div class="pause-stat">
-                    <span class="stat-label">مرحله:</span>
-                    <span class="stat-value" id="currentLevel">1</span>
-                </div>
-                
-                <div class="pause-stat">
-                    <span class="stat-label">زمان بازی:</span>
-                    <span class="stat-value" id="currentTime">00:00</span>
+            <!-- جویستیک -->
+            <div class="joystick-container" id="joystickContainer">
+                <div class="joystick-base">
+                    <div class="joystick-handle" id="joystickHandle"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- صفحه پایان بازی -->
     <div id="gameOverScreen" class="screen hidden">
         <div class="game-over-overlay"></div>
         <div class="game-over-content">
@@ -248,16 +735,6 @@
                     <span class="stat-label">مرحله رسیده:</span>
                     <span class="stat-value" id="finalLevel">1</span>
                 </div>
-                
-                <div class="game-over-stat">
-                    <span class="stat-label">زمان بازی:</span>
-                    <span class="stat-value" id="finalTime">00:00</span>
-                </div>
-                
-                <div class="game-over-stat">
-                    <span class="stat-label">سیارات کشف شده:</span>
-                    <span class="stat-value" id="finalPlanets">0</span>
-                </div>
             </div>
             
             <div class="game-over-buttons">
@@ -271,320 +748,1226 @@
                     <span class="btn-text">منوی اصلی</span>
                 </button>
             </div>
-            
-            <div class="achievement-unlocked" id="achievementUnlocked">
-                <div class="achievement-icon">🏆</div>
-                <div class="achievement-info">
-                    <div class="achievement-title">دستاورد جدید!</div>
-                    <div class="achievement-desc" id="achievementDesc">اولین سفر فضایی</div>
-                </div>
-            </div>
         </div>
     </div>
 
-    <div id="levelCompleteScreen" class="screen hidden">
-        <div class="level-complete-overlay"></div>
-        <div class="level-complete-content">
-            <div class="level-complete-icon">🎉</div>
-            <h2 class="level-complete-title">مرحله تکمیل شد!</h2>
-            <p class="level-complete-subtitle">کهکشان جدید کشف شد</p>
+    <script>
+        // موتور بازی کهکشانی سینمایی
+        class GalacticGame {
+            constructor() {
+                // عناصر DOM
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.miniMapCanvas = document.getElementById('miniMapCanvas');
+                this.miniMapCtx = this.miniMapCanvas.getContext('2d');
+                
+                // وضعیت بازی
+                this.gameState = 'loading';
+                this.currentScreen = 'loading';
+                
+                // عناصر بازی
+                this.player = null;
+                this.camera = null;
+                this.particles = [];
+                this.fruits = [];
+                this.enemies = [];
+                this.stars = [];
+                
+                // زمان و انیمیشن
+                this.lastTime = 0;
+                this.deltaTime = 0;
+                this.gameTime = 0;
+                this.animationId = null;
+                
+                // وضعیت بازی
+                this.score = 0;
+                this.level = 1;
+                this.levelScoreThreshold = 1000;
+                this.fuel = 100;
+                this.isGameOver = false;
+                this.playerExpanding = false;
+                this.expansionProgress = 0;
+                this.expansionMax = 100;
+                
+                // کنترل جویستیک
+                this.joystickActive = false;
+                this.joystickX = 0;
+                this.joystickY = 0;
+                this.joystickBaseX = 0;
+                this.joystickBaseY = 0;
+                this.joystickRadius = 35;
+                
+                // میوه‌های مختلف
+                this.fruitEmojis = ['🥭', '🍍', '🍊', '🍇', '🍑', '🍎', '🍆', '🥥', '🍅', '🫘', '🥬', '🥦', '🧄', '🥨', '🌰', '🥯', '🧇', '🫛', '🥜', '🌽'];
+                
+                // راه‌اندازی بازی
+                this.initialize();
+            }
             
-            <div class="level-complete-stats">
-                <div class="level-stat">
-                    <span class="stat-label">مرحله:</span>
-                    <span class="stat-value" id="completedLevel">1</span>
-                </div>
+            /**
+             * راه‌اندازی اولیه بازی
+             */
+            initialize() {
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
                 
-                <div class="level-stat">
-                    <span class="stat-label">امتیاز این مرحله:</span>
-                    <span class="stat-value" id="levelScore">0</span>
-                </div>
+                // شبیه‌سازی لودینگ
+                this.simulateLoading();
                 
-                <div class="level-stat">
-                    <span class="stat-label">سیارات کشف شده:</span>
-                    <span class="stat-value" id="levelPlanets">0</span>
-                </div>
+                // راه‌اندازی صحنه
+                this.setupScene();
                 
-                <div class="level-stat">
-                    <span class="stat-label">زمان مرحله:</span>
-                    <span class="stat-value" id="levelTime">00:00</span>
-                </div>
-            </div>
+                // راه‌اندازی رویدادها
+                this.setupEventListeners();
+            }
             
-            <div class="level-rewards">
-                <div class="reward-item">
-                    <span class="reward-icon">⭐</span>
-                    <span class="reward-text">+500 امتیاز</span>
-                </div>
-                
-                <div class="reward-item">
-                    <span class="reward-icon">🛡️</span>
-                    <span class="reward-text">محافظ جدید</span>
-                </div>
-                
-                <div class="reward-item">
-                    <span class="reward-icon">🚀</span>
-                    <span class="reward-text">موتور ارتقا یافته</span>
-                </div>
-            </div>
+            /**
+             * تنظیم اندازه کانواس
+             */
+            resizeCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.miniMapCanvas.width = this.miniMapCanvas.parentElement.clientWidth;
+                this.miniMapCanvas.height = this.miniMapCanvas.parentElement.clientHeight;
+            }
             
-            <div class="level-complete-buttons">
-                <button class="level-complete-btn primary" id="nextLevelBtn">
-                    <span class="btn-icon">🌌</span>
-                    <span class="btn-text">سفر به کهکشان بعدی</span>
-                </button>
+            /**
+             * شبیه‌سازی فرآیند لودینگ
+             */
+            simulateLoading() {
+                const loadingSteps = [
+                    'بارگذاری مدل‌های سه‌بعدی...',
+                    'راه‌اندازی سیستم ذرات...',
+                    'آماده‌سازی محیط بازی...',
+                    'راه‌اندازی سیستم صوتی...'
+                ];
                 
-                <button class="level-complete-btn" id="levelCompleteMenuBtn">
-                    <span class="btn-icon">🏠</span>
-                    <span class="btn-text">منوی اصلی</span>
-                </button>
-            </div>
-        </div>
-    </div>
+                let currentStep = 0;
+                const interval = setInterval(() => {
+                    if (currentStep < loadingSteps.length) {
+                        document.getElementById('loadingTip').textContent = loadingSteps[currentStep];
+                        currentStep++;
+                    } else {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            this.showMainMenu();
+                        }, 1000);
+                    }
+                }, 800);
+            }
+            
+            /**
+             * راه‌اندازی صحنه بازی
+             */
+            setupScene() {
+                // ایجاد ستارگان
+                this.createStars();
+                
+                // ایجاد دوربین سینمایی
+                this.setupCamera();
+                
+                // ایجاد بازیکن
+                this.setupPlayer();
+            }
+            
+            /**
+             * ایجاد ستارگان در پس‌زمینه
+             */
+            createStars() {
+                for (let i = 0; i < 200; i++) {
+                    this.stars.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        size: Math.random() * 2,
+                        brightness: 0.3 + Math.random() * 0.7,
+                        twinkleSpeed: 0.5 + Math.random() * 2.0
+                    });
+                }
+            }
+            
+            /**
+             * راه‌اندازی دوربین سینمایی
+             */
+            setupCamera() {
+                this.camera = {
+                    x: 0,
+                    y: 0,
+                    zoom: 1,
+                    shake: 0,
+                    targetX: 0,
+                    targetY: 0
+                };
+            }
+            
+            /**
+             * راه‌اندازی بازیکن
+             */
+            setupPlayer() {
+                this.player = {
+                    x: this.canvas.width / 2,
+                    y: this.canvas.height / 2,
+                    vx: 0,
+                    vy: 0,
+                    rotation: 0,
+                    size: 50,
+                    speed: 5,
+                    trail: []
+                };
+            }
+            
+            /**
+             * راه‌اندازی رویدادهای بازی
+             */
+            setupEventListeners() {
+                // دکمه شروع بازی
+                document.getElementById('startGameBtn').addEventListener('click', () => this.startGame());
+                
+                // دکمه‌های پایان بازی
+                document.getElementById('playAgainBtn').addEventListener('click', () => this.playAgain());
+                document.getElementById('gameOverMenuBtn').addEventListener('click', () => this.showMainMenu());
+                
+                // کنترل‌های جویستیک
+                this.setupJoystick();
+                
+                // کنترل‌های کیبورد برای دسکتاپ
+                document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+            }
+            
+            /**
+             * راه‌اندازی کنترل جویستیک
+             */
+            setupJoystick() {
+                const joystickContainer = document.getElementById('joystickContainer');
+                const joystickHandle = document.getElementById('joystickHandle');
+                
+                // موقعیت پایه جویستیک
+                const rect = joystickContainer.getBoundingClientRect();
+                this.joystickBaseX = rect.left + rect.width / 2;
+                this.joystickBaseY = rect.top + rect.height / 2;
+                
+                // رویدادهای لمسی
+                joystickContainer.addEventListener('touchstart', (e) => {
+                    this.joystickActive = true;
+                    this.handleJoystickMove(e.touches[0]);
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('touchmove', (e) => {
+                    if (this.joystickActive) {
+                        this.handleJoystickMove(e.touches[0]);
+                        e.preventDefault();
+                    }
+                });
+                
+                document.addEventListener('touchend', (e) => {
+                    this.joystickActive = false;
+                    this.joystickX = 0;
+                    this.joystickY = 0;
+                    this.updateJoystickVisual();
+                });
+                
+                // رویدادهای موس برای دسکتاپ
+                joystickContainer.addEventListener('mousedown', (e) => {
+                    this.joystickActive = true;
+                    this.handleJoystickMove(e);
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (this.joystickActive) {
+                        this.handleJoystickMove(e);
+                    }
+                });
+                
+                document.addEventListener('mouseup', (e) => {
+                    this.joystickActive = false;
+                    this.joystickX = 0;
+                    this.joystickY = 0;
+                    this.updateJoystickVisual();
+                });
+            }
+            
+            /**
+             * مدیریت حرکت جویستیک
+             * @param {Touch|MouseEvent} touch - رویداد لمسی یا موس
+             */
+            handleJoystickMove(touch) {
+                const touchX = touch.clientX;
+                const touchY = touch.clientY;
+                
+                const dx = touchX - this.joystickBaseX;
+                const dy = touchY - this.joystickBaseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // محاسبه جهت حرکت
+                if (distance > 5) {
+                    const angle = Math.atan2(dy, dx);
+                    const power = Math.min(1, distance / this.joystickRadius);
+                    
+                    this.joystickX = Math.cos(angle) * power;
+                    this.joystickY = Math.sin(angle) * power;
+                } else {
+                    this.joystickX = 0;
+                    this.joystickY = 0;
+                }
+                
+                this.updateJoystickVisual();
+            }
+            
+            /**
+             * به‌روزرسانی ظاهر جویستیک
+             */
+            updateJoystickVisual() {
+                const joystickHandle = document.getElementById('joystickHandle');
+                if (joystickHandle) {
+                    joystickHandle.style.transform = `translate(${this.joystickX * this.joystickRadius}px, ${this.joystickY * this.joystickRadius}px)`;
+                    
+                    if (this.joystickActive) {
+                        joystickHandle.style.background = 'linear-gradient(135deg, #00ff88, #00ccff)';
+                        joystickHandle.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.7)';
+                    } else {
+                        joystickHandle.style.background = 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))';
+                        joystickHandle.style.boxShadow = '0 0 15px rgba(0, 204, 255, 0.5)';
+                    }
+                }
+            }
+            
+            /**
+             * شروع بازی
+             */
+            startGame() {
+                this.hideScreen('mainMenu');
+                this.showScreen('gameScreen');
+                
+                // بازنشانی وضعیت بازی
+                this.resetGameState();
+                
+                // ایجاد میوه‌ها و دشمنان
+                this.createFruits();
+                this.createEnemies();
+                
+                // شروع حلقه بازی
+                this.lastTime = performance.now();
+                this.gameLoop();
+            }
+            
+            /**
+             * بازنشانی وضعیت بازی
+             */
+            resetGameState() {
+                this.score = 0;
+                this.level = 1;
+                this.levelScoreThreshold = 1000;
+                this.fuel = 100;
+                this.isGameOver = false;
+                this.playerExpanding = false;
+                this.expansionProgress = 0;
+                
+                // بازنشانی موقعیت بازیکن
+                this.player.x = this.canvas.width / 2;
+                this.player.y = this.canvas.height / 2;
+                this.player.vx = 0;
+                this.player.vy = 0;
+                this.player.trail = [];
+            }
+            
+            /**
+             * ایجاد میوه‌ها در صحنه
+             */
+            createFruits() {
+                this.fruits = [];
+                // ایجاد میوه‌ها در اطراف بازیکن
+                for (let i = 0; i < 50; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 200 + Math.random() * 600;
+                    const x = this.player.x + Math.cos(angle) * distance;
+                    const y = this.player.y + Math.sin(angle) * distance;
+                    
+                    this.fruits.push({
+                        x: x,
+                        y: y,
+                        size: 20,
+                        emoji: this.fruitEmojis[Math.floor(Math.random() * this.fruitEmojis.length)],
+                        collected: false
+                    });
+                }
+            }
+            
+            /**
+             * ایجاد دشمنان در صحنه
+             */
+            createEnemies() {
+                this.enemies = [];
+                for (let i = 0; i < 8; i++) {
+                    this.createEnemy();
+                }
+            }
+            
+            /**
+             * ایجاد یک دشمن جدید
+             */
+            createEnemy() {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 300 + Math.random() * 500;
+                const x = this.player.x + Math.cos(angle) * distance;
+                const y = this.player.y + Math.sin(angle) * distance;
+                
+                this.enemies.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 0.8,
+                    vy: (Math.random() - 0.5) * 0.8,
+                    size: 20 + Math.random() * 25,
+                    color: '#ff4444',
+                    speed: 0.5 + Math.random() * 0.8
+                });
+            }
+            
+            /**
+             * حلقه اصلی بازی
+             * @param {number} currentTime - زمان فعلی
+             */
+            gameLoop(currentTime = 0) {
+                this.deltaTime = (currentTime - this.lastTime) / 1000;
+                this.lastTime = currentTime;
+                this.gameTime += this.deltaTime;
+                
+                if (!this.isGameOver) {
+                    this.update();
+                    this.render();
+                    this.renderMiniMap();
+                    this.animationId = requestAnimationFrame((time) => this.gameLoop(time));
+                }
+            }
+            
+            /**
+             * به‌روزرسانی منطق بازی
+             */
+            update() {
+                this.updatePlayer();
+                this.updateCamera();
+                this.updateFruits();
+                this.updateEnemies();
+                this.updateParticles();
+                this.updateCollisions();
+                this.updateUI();
+                this.checkLevelUp();
+            }
+            
+            /**
+             * به‌روزرسانی وضعیت بازیکن
+             */
+            updatePlayer() {
+                // کنترل با جویستیک - حرکت آزاد در کل صفحه
+                if (this.joystickActive) {
+                    const power = Math.sqrt(this.joystickX * this.joystickX + this.joystickY * this.joystickY);
+                    
+                    if (power > 0.1) {
+                        this.player.vx = this.joystickX * this.player.speed;
+                        this.player.vy = this.joystickY * this.player.speed;
+                    }
+                } else {
+                    // اعمال اصطکاک وقتی جویستیک فعال نیست
+                    this.player.vx *= 0.85;
+                    this.player.vy *= 0.85;
+                }
+                
+                // به‌روزرسانی موقعیت - بدون محدودیت مرزی
+                this.player.x += this.player.vx;
+                this.player.y += this.player.vy;
+                
+                // چرخش بر اساس حرکت
+                const speed = Math.sqrt(this.player.vx * this.player.vx + this.player.vy * this.player.vy);
+                if (speed > 0.1) {
+                    this.player.rotation = Math.atan2(this.player.vy, this.player.vx);
+                }
+                
+                // اضافه کردن به مسیر
+                this.player.trail.push({
+                    x: this.player.x,
+                    y: this.player.y,
+                    life: 1
+                });
+                
+                // محدود کردن طول مسیر
+                if (this.player.trail.length > 25) {
+                    this.player.trail.shift();
+                }
+                
+                // کاهش عمر نقاط مسیر
+                this.player.trail.forEach(point => point.life -= 0.03);
+                
+                // به‌روزرسانی انبساط سفینه
+                if (this.playerExpanding) {
+                    this.expansionProgress += 2;
+                    if (this.expansionProgress >= this.expansionMax) {
+                        this.explodeAndDistributeFruits();
+                        this.playerExpanding = false;
+                        this.expansionProgress = 0;
+                    }
+                }
+            }
+            
+            /**
+             * به‌روزرسانی دوربین
+             */
+            updateCamera() {
+                // دنبال کردن بازیکن با تاخیر
+                this.camera.targetX = this.player.x;
+                this.camera.targetY = this.player.y;
+                
+                this.camera.x += (this.camera.targetX - this.camera.x) * 0.08;
+                this.camera.y += (this.camera.targetY - this.camera.y) * 0.08;
+                
+                // لرزش دوربین
+                if (this.camera.shake > 0) {
+                    this.camera.x += (Math.random() - 0.5) * this.camera.shake;
+                    this.camera.y += (Math.random() - 0.5) * this.camera.shake;
+                    this.camera.shake *= 0.9;
+                }
+            }
+            
+            /**
+             * به‌روزرسانی میوه‌ها
+             */
+            updateFruits() {
+                // اگر میوه‌ها تمام شدند، میوه‌های جدید ایجاد کن
+                const collectedFruits = this.fruits.filter(fruit => fruit.collected);
+                if (collectedFruits.length > 30) {
+                    this.createMoreFruits();
+                }
+            }
+            
+            /**
+             * ایجاد میوه‌های بیشتر در اطراف بازیکن
+             */
+            createMoreFruits() {
+                for (let i = 0; i < 20; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 200 + Math.random() * 600;
+                    const x = this.player.x + Math.cos(angle) * distance;
+                    const y = this.player.y + Math.sin(angle) * distance;
+                    
+                    this.fruits.push({
+                        x: x,
+                        y: y,
+                        size: 20,
+                        emoji: this.fruitEmojis[Math.floor(Math.random() * this.fruitEmojis.length)],
+                        collected: false
+                    });
+                }
+            }
+            
+            /**
+             * به‌روزرسانی دشمنان
+             */
+            updateEnemies() {
+                this.enemies.forEach(enemy => {
+                    // دشمنان به صورت تصادفی حرکت می‌کنند
+                    enemy.vx += (Math.random() - 0.5) * 0.3;
+                    enemy.vy += (Math.random() - 0.5) * 0.3;
+                    
+                    // محدود کردن سرعت
+                    const speed = Math.sqrt(enemy.vx * enemy.vx + enemy.vy * enemy.vy);
+                    if (speed > enemy.speed) {
+                        enemy.vx = (enemy.vx / speed) * enemy.speed;
+                        enemy.vy = (enemy.vy / speed) * enemy.speed;
+                    }
+                    
+                    enemy.x += enemy.vx;
+                    enemy.y += enemy.vy;
+                    
+                    // اگر دشمن از صفحه خارج شد، حذف و جدید ایجاد شود
+                    if (enemy.x < -100 || enemy.x > this.canvas.width + 100 || 
+                        enemy.y < -100 || enemy.y > this.canvas.height + 100) {
+                        const index = this.enemies.indexOf(enemy);
+                        if (index > -1) {
+                            this.enemies.splice(index, 1);
+                            this.createEnemy();
+                        }
+                    }
+                });
+                
+                // تولید دشمنان جدید
+                if (this.enemies.length < 8 && Math.random() < 0.01) {
+                    this.createEnemy();
+                }
+            }
+            
+            /**
+             * به‌روزرسانی ذرات
+             */
+            updateParticles() {
+                // به‌روزرسانی ذرات موتور
+                if (Math.random() < 0.4) {
+                    this.createEngineParticle();
+                }
+                
+                // به‌روزرسانی ذرات موجود
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const particle = this.particles[i];
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.life -= 0.02;
+                    
+                    if (particle.life <= 0) {
+                        this.particles.splice(i, 1);
+                    }
+                }
+            }
+            
+            /**
+             * ایجاد ذره موتور
+             */
+            createEngineParticle() {
+                const angle = this.player.rotation + Math.PI + (Math.random() - 0.5) * 0.5;
+                const speed = 2 + Math.random() * 3;
+                
+                this.particles.push({
+                    x: this.player.x - Math.cos(this.player.rotation) * 25,
+                    y: this.player.y - Math.sin(this.player.rotation) * 25,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 2 + Math.random() * 4,
+                    life: 0.5 + Math.random() * 0.3,
+                    color: `hsl(${30 + Math.random() * 30}, 100%, 50%)`
+                });
+            }
+            
+            /**
+             * به‌روزرسانی برخوردها
+             */
+            updateCollisions() {
+                // برخورد با میوه‌ها
+                for (let i = this.fruits.length - 1; i >= 0; i--) {
+                    const fruit = this.fruits[i];
+                    if (!fruit.collected) {
+                        const dx = this.player.x - fruit.x;
+                        const dy = this.player.y - fruit.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < this.player.size / 2 + fruit.size / 2) {
+                            fruit.collected = true;
+                            
+                            // امتیاز
+                            this.score += 10;
+                            
+                            // ایجاد افکت جمع‌آوری
+                            this.createCollectionEffect(fruit.x, fruit.y, 10);
+                        }
+                    }
+                }
+                
+                // برخورد با دشمنان - فقط اگر بازیکن به دشمن برخورد کند
+                this.enemies.forEach(enemy => {
+                    const dx = this.player.x - enemy.x;
+                    const dy = this.player.y - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < this.player.size / 2 + enemy.size / 2) {
+                        this.createExplosion(enemy.x, enemy.y);
+                        this.camera.shake = 25;
+                        this.fuel -= 25;
+                        
+                        // حذف دشمن
+                        const index = this.enemies.indexOf(enemy);
+                        if (index > -1) {
+                            this.enemies.splice(index, 1);
+                        }
+                        
+                        if (this.fuel <= 0) {
+                            this.gameOver();
+                        }
+                    }
+                });
+            }
+            
+            /**
+             * ایجاد افکت جمع‌آوری
+             * @param {number} x - موقعیت X
+             * @param {number} y - موقعیت Y
+             * @param {number} value - مقدار امتیاز
+             */
+            createCollectionEffect(x, y, value) {
+                // ایجاد ذرات جمع‌آوری
+                for (let i = 0; i < 12; i++) {
+                    const angle = (i / 12) * Math.PI * 2;
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * 4,
+                        vy: Math.sin(angle) * 4,
+                        size: 3,
+                        life: 1,
+                        color: '#00ff88'
+                    });
+                }
+                
+                // نمایش امتیاز
+                this.particles.push({
+                    x: x,
+                    y: y,
+                    vx: 0,
+                    vy: -2,
+                    size: 16,
+                    life: 2,
+                    color: '#ffffff',
+                    text: `+${value}`,
+                    isText: true
+                });
+            }
+            
+            /**
+             * ایجاد افکت انفجار
+             * @param {number} x - موقعیت X
+             * @param {number} y - موقعیت Y
+             */
+            createExplosion(x, y) {
+                for (let i = 0; i < 20; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 2 + Math.random() * 5;
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        size: 2 + Math.random() * 5,
+                        life: 0.8 + Math.random() * 0.4,
+                        color: `hsl(${Math.random() * 30}, 100%, 50%)`
+                    });
+                }
+            }
+            
+            /**
+             * بررسی ارتقای مرحله
+             */
+            checkLevelUp() {
+                // بررسی ارتقای مرحله
+                if (this.score >= this.levelScoreThreshold) {
+                    this.levelUp();
+                }
+            }
+            
+            /**
+             * ارتقای مرحله
+             */
+            levelUp() {
+                this.level++;
+                this.levelScoreThreshold = this.level * 1000;
+                this.playerExpanding = true;
+                this.expansionProgress = 0;
+                
+                // ایجاد افکت ارتقای سطح
+                this.createLevelUpEffect();
+            }
+            
+            /**
+             * ایجاد افکت ارتقای سطح
+             */
+            createLevelUpEffect() {
+                // ایجاد ذرات ارتقای سطح
+                for (let i = 0; i < 50; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 3 + Math.random() * 5;
+                    this.particles.push({
+                        x: this.player.x,
+                        y: this.player.y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        size: 3 + Math.random() * 4,
+                        life: 1.5 + Math.random() * 0.5,
+                        color: `hsl(${Math.random() * 360}, 100%, 50%)`
+                    });
+                }
+                
+                // نمایش پیام ارتقای سطح
+                this.particles.push({
+                    x: this.player.x,
+                    y: this.player.y,
+                    vx: 0,
+                    vy: -3,
+                    size: 20,
+                    life: 3,
+                    color: '#ffffff',
+                    text: `مرحله ${this.level}!`,
+                    isText: true
+                });
+            }
+            
+            /**
+             * انفجار و پخش میوه‌ها در فضا
+             */
+            explodeAndDistributeFruits() {
+                // پخش کردن میوه‌ها در فضا
+                for (let i = 0; i < 15; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 100 + Math.random() * 300;
+                    const x = this.player.x + Math.cos(angle) * distance;
+                    const y = this.player.y + Math.sin(angle) * distance;
+                    
+                    this.fruits.push({
+                        x: x,
+                        y: y,
+                        size: 20,
+                        emoji: this.fruitEmojis[Math.floor(Math.random() * this.fruitEmojis.length)],
+                        collected: false
+                    });
+                }
+                
+                // ایجاد افکت انفجار
+                for (let i = 0; i < 30; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 5 + Math.random() * 8;
+                    this.particles.push({
+                        x: this.player.x,
+                        y: this.player.y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        size: 4 + Math.random() * 6,
+                        life: 2 + Math.random() * 1,
+                        color: `hsl(${Math.random() * 60}, 100%, 50%)`
+                    });
+                }
+            }
+            
+            /**
+             * به‌روزرسانی رابط کاربری
+             */
+            updateUI() {
+                document.getElementById('scoreValue').textContent = this.score;
+                document.getElementById('levelValue').textContent = this.level;
+                document.getElementById('fuelValue').textContent = Math.max(0, Math.round(this.fuel)) + '%';
+                document.getElementById('fuelFill').style.width = Math.max(0, this.fuel) + '%';
+            }
+            
+            /**
+             * رندر صحنه بازی
+             */
+            render() {
+                // پاک کردن صفحه
+                this.ctx.fillStyle = '#050510';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // ذخیره وضعیت کانواس
+                this.ctx.save();
+                
+                // اعمال تبدیلات دوربین
+                this.ctx.translate(this.canvas.width / 2 - this.camera.x, this.canvas.height / 2 - this.camera.y);
+                
+                // رندر ستارگان
+                this.renderStars();
+                
+                // رندر میوه‌ها
+                this.renderFruits();
+                
+                // رندر دشمنان
+                this.renderEnemies();
+                
+                // رندر مسیر
+                this.renderTrail();
+                
+                // رندر ذرات
+                this.renderParticles();
+                
+                // رندر بازیکن
+                this.renderPlayer();
+                
+                // بازیابی وضعیت کانواس
+                this.ctx.restore();
+            }
+            
+            /**
+             * رندر مینی‌مپ
+             */
+            renderMiniMap() {
+                // پاک کردن مینی‌مپ
+                this.miniMapCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                this.miniMapCtx.fillRect(0, 0, this.miniMapCanvas.width, this.miniMapCanvas.height);
+                
+                // مرز مینی‌مپ
+                this.miniMapCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                this.miniMapCtx.lineWidth = 2;
+                this.miniMapCtx.strokeRect(0, 0, this.miniMapCanvas.width, this.miniMapCanvas.height);
+                
+                // مقیاس برای نمایش در مینی‌مپ
+                const scaleX = this.miniMapCanvas.width / this.canvas.width;
+                const scaleY = this.miniMapCanvas.height / this.canvas.height;
+                const scale = Math.min(scaleX, scaleY) * 2;
+                
+                // رندر بازیکن در مینی‌مپ
+                this.miniMapCtx.fillStyle = '#00ccff';
+                this.miniMapCtx.beginPath();
+                this.miniMapCtx.arc(
+                    this.miniMapCanvas.width / 2,
+                    this.miniMapCanvas.height / 2,
+                    4,
+                    0,
+                    Math.PI * 2
+                );
+                this.miniMapCtx.fill();
+                
+                // رندر میوه‌ها در مینی‌مپ (سبز)
+                this.fruits.forEach(fruit => {
+                    if (!fruit.collected) {
+                        const dx = fruit.x - this.player.x;
+                        const dy = fruit.y - this.player.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // فقط میوه‌های نزدیک را نمایش بده
+                        if (distance < 400) {
+                            this.miniMapCtx.fillStyle = '#00ff88';
+                            this.miniMapCtx.beginPath();
+                            this.miniMapCtx.arc(
+                                this.miniMapCanvas.width / 2 + dx * scale,
+                                this.miniMapCanvas.height / 2 + dy * scale,
+                                2,
+                                0,
+                                Math.PI * 2
+                            );
+                            this.miniMapCtx.fill();
+                        }
+                    }
+                });
+                
+                // رندر دشمنان در مینی‌مپ (قرمز)
+                this.enemies.forEach(enemy => {
+                    const dx = enemy.x - this.player.x;
+                    const dy = enemy.y - this.player.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // فقط دشمنان نزدیک را نمایش بده
+                    if (distance < 400) {
+                        this.miniMapCtx.fillStyle = '#ff4444';
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.arc(
+                            this.miniMapCanvas.width / 2 + dx * scale,
+                            this.miniMapCanvas.height / 2 + dy * scale,
+                            3,
+                            0,
+                            Math.PI * 2
+                        );
+                        this.miniMapCtx.fill();
+                    }
+                });
+            }
+            
+            /**
+             * رندر ستارگان
+             */
+            renderStars() {
+                this.stars.forEach(star => {
+                    const brightness = star.brightness * (0.7 + 0.3 * Math.sin(this.gameTime * star.twinkleSpeed));
+                    this.ctx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                });
+            }
+            
+            /**
+             * رندر میوه‌ها
+             */
+            renderFruits() {
+                this.fruits.forEach(fruit => {
+                    if (!fruit.collected) {
+                        // رندر میوه به صورت emoji
+                        this.ctx.font = `${fruit.size}px Arial`;
+                        this.ctx.textAlign = 'center';
+                        this.ctx.textBaseline = 'middle';
+                        this.ctx.fillText(fruit.emoji, fruit.x, fruit.y);
+                        
+                        // درخشش برای میوه‌ها
+                        this.ctx.strokeStyle = 'rgba(0, 255, 136, 0.6)';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.beginPath();
+                        this.ctx.arc(fruit.x, fruit.y, fruit.size / 2 + 3, 0, Math.PI * 2);
+                        this.ctx.stroke();
+                    }
+                });
+            }
+            
+            /**
+             * رندر دشمنان
+             */
+            renderEnemies() {
+                this.enemies.forEach(enemy => {
+                    this.ctx.fillStyle = enemy.color;
+                    this.ctx.beginPath();
+                    
+                    // شکل نامنظم برای سیارک
+                    for (let i = 0; i < 10; i++) {
+                        const angle = (i / 10) * Math.PI * 2;
+                        const radius = enemy.size * (0.7 + Math.random() * 0.3);
+                        const x = enemy.x + Math.cos(angle) * radius;
+                        const y = enemy.y + Math.sin(angle) * radius;
+                        
+                        if (i === 0) {
+                            this.ctx.moveTo(x, y);
+                        } else {
+                            this.ctx.lineTo(x, y);
+                        }
+                    }
+                    
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                    
+                    // جزئیات سطح
+                    this.ctx.strokeStyle = '#8B0000';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.stroke();
+                    
+                    // چشم برای دشمنان
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.beginPath();
+                    this.ctx.arc(enemy.x + enemy.size * 0.3, enemy.y - enemy.size * 0.2, enemy.size * 0.15, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    this.ctx.fillStyle = '#000000';
+                    this.ctx.beginPath();
+                    this.ctx.arc(enemy.x + enemy.size * 0.35, enemy.y - enemy.size * 0.2, enemy.size * 0.07, 0, Math.PI * 2);
+                    this.ctx.fill();
+                });
+            }
+            
+            /**
+             * رندر مسیر سفینه
+             */
+            renderTrail() {
+                this.ctx.strokeStyle = '#00ccff';
+                this.ctx.lineWidth = 3;
+                this.ctx.globalCompositeOperation = 'lighter';
+                
+                this.ctx.beginPath();
+                this.player.trail.forEach((point, index) => {
+                    const alpha = point.life;
+                    this.ctx.strokeStyle = `rgba(0, 204, 255, ${alpha})`;
+                    this.ctx.lineWidth = 3 * alpha;
+                    
+                    if (index === 0) {
+                        this.ctx.moveTo(point.x, point.y);
+                    } else {
+                        this.ctx.lineTo(point.x, point.y);
+                    }
+                });
+                this.ctx.stroke();
+                
+                this.ctx.globalCompositeOperation = 'source-over';
+            }
+            
+            /**
+             * رندر ذرات
+             */
+            renderParticles() {
+                this.particles.forEach(particle => {
+                    this.ctx.globalAlpha = particle.life;
+                    
+                    if (particle.isText) {
+                        // رندر متن امتیاز
+                        this.ctx.fillStyle = particle.color;
+                        this.ctx.font = 'bold 16px Arial';
+                        this.ctx.textAlign = 'center';
+                        this.ctx.textBaseline = 'middle';
+                        this.ctx.fillText(particle.text, particle.x, particle.y);
+                    } else {
+                        // رندر ذره معمولی
+                        this.ctx.fillStyle = particle.color;
+                        this.ctx.beginPath();
+                        this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                });
+                this.ctx.globalAlpha = 1;
+            }
+            
+            /**
+             * رندر بازیکن
+             */
+            renderPlayer() {
+                this.ctx.save();
+                this.ctx.translate(this.player.x, this.player.y);
+                
+                // اعمال انبساط اگر فعال باشد
+                const expansionScale = this.playerExpanding ? 
+                    1 + (this.expansionProgress / this.expansionMax) * 0.5 : 1;
+                this.ctx.scale(expansionScale, expansionScale);
+                
+                this.ctx.rotate(this.player.rotation);
+                
+                // بدنه اصلی سفینه (بزرگ‌تر)
+                this.ctx.fillStyle = '#1E90FF';
+                this.ctx.beginPath();
+                this.ctx.moveTo(30, 0);
+                this.ctx.lineTo(-20, -15);
+                this.ctx.lineTo(-20, 15);
+                this.ctx.closePath();
+                this.ctx.fill();
+                
+                // کابین خلبان
+                this.ctx.fillStyle = '#87CEEB';
+                this.ctx.beginPath();
+                this.ctx.arc(8, 0, 12, 0, Math.PI * 2);
+                this.ctx.fill();
+                
+                // موتورها
+                this.ctx.fillStyle = '#FF4500';
+                this.ctx.beginPath();
+                this.ctx.rect(-25, -8, 6, 16);
+                this.ctx.fill();
+                
+                // باله‌ها
+                this.ctx.fillStyle = '#1C86EE';
+                this.ctx.beginPath();
+                this.ctx.moveTo(-15, -12);
+                this.ctx.lineTo(-22, -25);
+                this.ctx.lineTo(-15, -18);
+                this.ctx.closePath();
+                this.ctx.fill();
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(-15, 12);
+                this.ctx.lineTo(-22, 25);
+                this.ctx.lineTo(-15, 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+                
+                // درخشش
+                this.ctx.strokeStyle = 'rgba(0, 204, 255, 0.6)';
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.arc(0, 0, this.player.size / 2 + 5, 0, Math.PI * 2);
+                this.ctx.stroke();
+                
+                this.ctx.restore();
+            }
+            
+            /**
+             * مدیریت رویدادهای کیبورد
+             * @param {KeyboardEvent} e - رویداد کیبورد
+             */
+            handleKeyDown(e) {
+                if (this.currentScreen === 'gameScreen' && !this.isGameOver) {
+                    switch(e.code) {
+                        case 'ArrowUp':
+                        case 'KeyW':
+                            this.player.vy -= 1;
+                            break;
+                        case 'ArrowDown':
+                        case 'KeyS':
+                            this.player.vy += 1;
+                            break;
+                        case 'ArrowLeft':
+                        case 'KeyA':
+                            this.player.vx -= 1;
+                            break;
+                        case 'ArrowRight':
+                        case 'KeyD':
+                            this.player.vx += 1;
+                            break;
+                        case 'Space':
+                            this.activateWarp();
+                            break;
+                        case 'Escape':
+                            this.showMainMenu();
+                            break;
+                    }
+                }
+            }
+            
+            /**
+             * فعال کردن حالت warp
+             */
+            activateWarp() {
+                if (this.fuel >= 15) {
+                    this.player.vx *= 2.5;
+                    this.player.vy *= 2.5;
+                    this.fuel -= 15;
+                    this.camera.shake = 20;
+                    
+                    // ایجاد افکت warp
+                    for (let i = 0; i < 25; i++) {
+                        this.createEngineParticle();
+                    }
+                }
+            }
+            
+            /**
+             * پایان بازی
+             */
+            gameOver() {
+                this.isGameOver = true;
+                cancelAnimationFrame(this.animationId);
+                
+                // به‌روزرسانی آمار
+                document.getElementById('finalScore').textContent = this.score;
+                document.getElementById('finalLevel').textContent = this.level;
+                
+                // نمایش صفحه پایان بازی
+                this.showGameOverScreen();
+            }
+            
+            /**
+             * بازی مجدد
+             */
+            playAgain() {
+                this.hideScreen('gameOverScreen');
+                this.startGame();
+            }
+            
+            /**
+             * نمایش منوی اصلی
+             */
+            showMainMenu() {
+                this.hideAllScreens();
+                this.showScreen('mainMenu');
+            }
+            
+            /**
+             * نمایش صفحه پایان بازی
+             */
+            showGameOverScreen() {
+                this.hideScreen('gameScreen');
+                this.showScreen('gameOverScreen');
+            }
+            
+            /**
+             * نمایش صفحه مشخص شده
+             * @param {string} screenId - شناسه صفحه
+             */
+            showScreen(screenId) {
+                this.hideAllScreens();
+                const screen = document.getElementById(screenId);
+                if (screen) {
+                    screen.classList.remove('hidden');
+                    this.currentScreen = screenId;
+                }
+            }
+            
+            /**
+             * مخفی کردن صفحه مشخص شده
+             * @param {string} screenId - شناسه صفحه
+             */
+            hideScreen(screenId) {
+                const screen = document.getElementById(screenId);
+                if (screen) {
+                    screen.classList.add('hidden');
+                }
+            }
+            
+            /**
+             * مخفی کردن تمام صفحات
+             */
+            hideAllScreens() {
+                const screens = document.querySelectorAll('.screen');
+                screens.forEach(screen => {
+                    screen.classList.add('hidden');
+                });
+            }
+        }
 
-    <div id="achievementsScreen" class="screen hidden">
-        <div class="achievements-overlay"></div>
-        <div class="achievements-content">
-            <h2 class="achievements-title">🏆 دستاوردهای کهکشانی</h2>
-            
-            <div class="achievements-grid" id="achievementsGrid">
-                <!-- دستاوردها در اینجا نمایش داده می‌شوند -->
-            </div>
-            
-            <div class="achievements-stats">
-                <div class="achievements-stat">
-                    <span class="stat-label">دستاوردهای کسب شده:</span>
-                    <span class="stat-value" id="achievedCount">0/50</span>
-                </div>
-                
-                <div class="achievements-stat">
-                    <span class="stat-label">امتیاز دستاوردها:</span>
-                    <span class="stat-value" id="achievementPoints">0</span>
-                </div>
-            </div>
-            
-            <button class="achievements-close-btn" id="closeAchievementsBtn">
-                <span class="btn-icon">✕</span>
-                <span class="btn-text">بستن</span>
-            </button>
-        </div>
-    </div>
-
-    <div id="settingsScreen" class="screen hidden">
-        <div class="settings-overlay"></div>
-        <div class="settings-content">
-            <h2 class="settings-title">⚙️ تنظیمات بازی</h2>
-            
-            <div class="settings-sections">
-                <div class="settings-section">
-                    <h3 class="section-title">صدا</h3>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">موسیقی پس‌زمینه</label>
-                        <div class="setting-control">
-                            <input type="range" id="musicVolume" min="0" max="100" value="70" class="volume-slider">
-                            <span class="volume-value" id="musicVolumeValue">70%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">صدای افکت‌ها</label>
-                        <div class="setting-control">
-                            <input type="range" id="sfxVolume" min="0" max="100" value="80" class="volume-slider">
-                            <span class="volume-value" id="sfxVolumeValue">80%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">صدای محیط</label>
-                        <div class="setting-control">
-                            <input type="range" id="ambientVolume" min="0" max="100" value="60" class="volume-slider">
-                            <span class="volume-value" id="ambientVolumeValue">60%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3 class="section-title">گرافیک</h3>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">کیفیت گرافیک</label>
-                        <select id="graphicsQuality" class="setting-select">
-                            <option value="low">کم</option>
-                            <option value="medium" selected>متوسط</option>
-                            <option value="high">بالا</option>
-                            <option value="ultra">فوق‌العاده</option>
-                        </select>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">حالت سینمایی</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="cinematicMode" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">افکت‌های ذرات</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="particleEffects" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">سایه‌ها</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="shadowsEnabled" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3 class="section-title">کنترل‌ها</h3>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">حساسیت موس</label>
-                        <div class="setting-control">
-                            <input type="range" id="mouseSensitivity" min="1" max="10" value="5" class="sensitivity-slider">
-                            <span class="sensitivity-value" id="mouseSensitivityValue">5</span>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">کنترل لمسی</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="touchControls" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">واکنش به لرزش</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="vibrationEnabled">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3 class="section-title">بازی</h3>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">زبان</label>
-                        <select id="languageSelect" class="setting-select">
-                            <option value="fa" selected>فارسی</option>
-                            <option value="en">English</option>
-                            <option value="ar">العربية</option>
-                        </select>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">مشاهده آموزش</label>
-                        <button class="setting-action-btn" id="showTutorialBtn">نمایش</button>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label class="setting-label">بازنشانی پیشرفت</label>
-                        <button class="setting-action-btn danger" id="resetProgressBtn">بازنشانی</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="settings-buttons">
-                <button class="settings-btn primary" id="saveSettingsBtn">
-                    <span class="btn-icon">💾</span>
-                    <span class="btn-text">ذخیره تنظیمات</span>
-                </button>
-                
-                <button class="settings-btn" id="closeSettingsBtn">
-                    <span class="btn-icon">✕</span>
-                    <span class="btn-text">بستن</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="creditsScreen" class="screen hidden">
-        <div class="credits-overlay"></div>
-        <div class="credits-content">
-            <h2 class="credits-title">👨‍🚀 سازندگان بازی</h2>
-            
-            <div class="credits-sections">
-                <div class="credits-section">
-                    <h3 class="section-title">توسعه و برنامه‌نویسی</h3>
-                    <div class="credits-list">
-                        <div class="credit-item">
-                            <div class="credit-name">تیم توسعه Galactic Odyssey</div>
-                            <div class="credit-role">برنامه‌نویسی پیشرفته WebGL</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="credits-section">
-                    <h3 class="section-title">طراحی و گرافیک</h3>
-                    <div class="credits-list">
-                        <div class="credit-item">
-                            <div class="credit-name">استودیو طراحی کیهانی</div>
-                            <div class="credit-role">طراحی سه‌بعدی و انیمیشن</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="credits-section">
-                    <h3 class="section-title">صدا و موسیقی</h3>
-                    <div class="credits-list">
-                        <div class="credit-item">
-                            <div class="credit-name">آکادمی صوتی فضایی</div>
-                            <div class="credit-role">موسیقی اصلی و افکت‌های صوتی</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="credits-section">
-                    <h3 class="section-title">با تشکر ویژه از</h3>
-                    <div class="credits-list">
-                        <div class="credit-item">
-                            <div class="credit-name">جامعه بازی‌سازان وب</div>
-                            <div class="credit-role">پشتیبانی و ایده‌های خلاقانه</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="credits-footer">
-                <p class="credits-message">با تشکر از شما برای بازی کردن Galactic Odyssey!</p>
-                <p class="game-version">نسخه 2.0.1 - سینمایی</p>
-            </div>
-            
-            <button class="credits-close-btn" id="closeCreditsBtn">
-                <span class="btn-icon">✕</span>
-                <span class="btn-text">بستن</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- سیستم صوتی -->
-    <audio id="backgroundMusic" loop>
-        <source src="https://assets.mixkit.co/music/preview/mixkit-space-game-668.mp3" type="audio/mpeg">
-    </audio>
-    
-    <audio id="clickSound">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
-    </audio>
-    
-    <audio id="collectSound">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" type="audio/mpeg">
-    </audio>
-    
-    <audio id="explosionSound">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-in-the-space-3117.mp3" type="audio/mpeg">
-    </audio>
-
-    <script src="gameEngine.js"></script>
-    <script src="gameLogic.js"></script>
+        // راه‌اندازی بازی هنگام بارگذاری صفحه
+        window.addEventListener('load', () => {
+            const game = new GalacticGame();
+            console.log('بازی کهکشانی سینمایی بارگذاری شد! 🚀');
+        });
+    </script>
 </body>
-  </html>
+</html>
