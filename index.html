@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 کهکشان فراری - سینمایی</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            overflow: hidden; 
+            background: #000;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        #renderCanvas { 
+            width: 100vw; 
+            height: 100vh; 
+            display: block;
+            outline: none;
+        }
+        #gamepadStatus {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #00ff88;
+            font-size: 14px;
+            background: rgba(0, 20, 40, 0.8);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid #00ff88;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas" tabindex="0"></canvas>
+    <div id="gamepadStatus">🎮 جوی‌استیک: در انتظار...</div>
+
+    <!-- کتابخانه BabylonJS -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    
+    <!-- ماژول‌های بازی -->
+    <script src="m1.graphics.js"></script>
+    <script src="m1.universe.js"></script>
+    <script src="m1.ship.js"></script>
+    <script src="m1.game.js"></script>
+
+    <script>
+        // راه‌اندازی اصلی بازی
+        class GalacticShowdown {
+            constructor() {
+                this.canvas = document.getElementById('renderCanvas');
+                this.canvas.focus();
+                
+                // ایجاد موتور گرافیک
+                this.graphics = new GraphicsSystem(this.canvas);
+                this.scene = this.graphics.scene;
+                
+                // ایجاد جهان بازی
+                this.universe = new UniverseSystem(this.scene);
+                
+                // ایجاد جنگنده بازیکن
+                this.ship = new ShipSystem(this.scene);
+                
+                // ایجاد سیستم بازی
+                this.game = new GameSystem(this.scene, this.ship);
+                
+                this.startGameLoop();
+            }
+            
+            startGameLoop() {
+                this.graphics.engine.runRenderLoop(() => {
+                    const deltaTime = this.graphics.engine.getDeltaTime() / 1000;
+                    
+                    // آپدیت سیستم‌ها
+                    this.ship.update(deltaTime);
+                    this.game.update(deltaTime);
+                    this.universe.update(deltaTime);
+                    
+                    // رندر صحنه
+                    this.scene.render();
+                });
+            }
+        }
+
+        // شروع بازی
+        window.addEventListener('load', () => {
+            new GalacticShowdown();
+        });
+    </script>
+</body>
+</html>
