@@ -827,7 +827,7 @@
 
     <!-- لودینگ سه بعدی -->
     <div id="loadingScreen" class="loading-container hidden">
-        <div class="coin-3d">🌏</div>
+        <div class="coin-3d">🏟</div>
         <div class="loading-text" id="loadingText">در حال بارگذاری...</div>
     </div>
 
@@ -1306,7 +1306,7 @@
         function createSingleCoin() {
             const coinElement = document.createElement('div');
             coinElement.className = 'coin';
-            coinElement.innerHTML = '🌏';
+            coinElement.innerHTML = '🪐';
             coinElement.style.position = 'absolute';
             
             const numberElement = document.createElement('div');
@@ -1693,7 +1693,7 @@
             for (let i = 0; i < trailLength; i++) {
                 const trailElement = document.createElement('div');
                 trailElement.className = 'coin-trail';
-                trailElement.innerHTML = '🌏';
+                trailElement.innerHTML = '🪐';
                 trailElement.style.position = 'absolute';
                 
                 let targetIndex = Math.max(0, playerPath.length - (i + 1) * 3);
@@ -1796,7 +1796,7 @@
             effect.style.opacity = '1';
             effect.style.transition = 'all 0.5s';
             effect.style.zIndex = '5';
-            effect.innerHTML = '✨';
+            effect.innerHTML = '🏖';
             effect.style.transform = 'scale(1)';
             
             gameScreen.appendChild(effect);
@@ -1814,7 +1814,7 @@
         function createCollectEffect(x, y) {
             const effect = document.createElement('div');
             effect.className = 'coin-collect-effect';
-            effect.innerHTML = '⭐';
+            effect.innerHTML = '🏞';
             effect.style.left = x + 'px';
             effect.style.top = y + 'px';
             
@@ -1843,7 +1843,7 @@
                 setTimeout(() => {
                     const effect = document.createElement('div');
                     effect.className = 'level-complete-effect';
-                    effect.innerHTML = '✨';
+                    effect.innerHTML = '🪐';
                     effect.style.left = (player.x + Math.random() * 100 - 50) + 'px';
                     effect.style.top = (player.y + Math.random() * 100 - 50) + 'px';
                     gameScreen.appendChild(effect);
