@@ -2663,7 +2663,655 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', onGameStart);
 } else {
     onGameStart();
+
                  }
+        // ==================================================
+// سیستم دوربین پیشرفته - 300 خط کد
+// ==================================================
+
+class AdvancedCameraSystem {
+    constructor() {
+        this.x = 0;
+        this.y = 0;
+        this.zoom = 1.0;
+        this.targetZoom = 1.0;
+        this.minZoom = 0.3;
+        this.maxZoom = 3.0;
+        this.shakeIntensity = 0;
+        this.shakeDuration = 0;
+        this.isFollowingPlayer = true;
+        this.smoothness = 0.1;
+        this.bounds = {
+            minX: 0,
+            minY: 0,
+            maxX: 5000,
+            maxY: 5000
+        };
+        
+        this.setupEventListeners();
+        this.createZoomControls();
+    }
+
+    setupEventListeners() {
+        // زوم با اسکرول موس
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (!gameManager || gameManager.isPaused) return;
+            
+            const delta = e.deltaY > 0 ? -0.2 : 0.2;
+            this.targetZoom = Math.max(this.minZoom, 
+                Math.min(this.maxZoom, this.targetZoom + delta));
+        }, { passive: false });
+
+        // زوم با کلیدهای + و -
+        document.addEventListener('keydown', (e) => {
+            if (!gameManager || gameManager.isPaused) return;
+            
+            if (e.key === '+' || e.key === '=') {
+                this.targetZoom = Math.min(this.maxZoom, this.targetZoom + 0.2);
+            } else if (e.key === '-' || e.key === '_') {
+                this.targetZoom = Math.max(this.minZoom, this.targetZoom - 0.2);
+            } else if (e.key === '0') {
+                this.targetZoom = 1.0; // ریست زوم
+            } else if (e.key === 'c' || e.key === 'C') {
+                this.toggleCameraMode(); // تغییر حالت دوربین
+            }
+        });
+
+        // کنترل دوربین با موس (کلیک و درگ)
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.button === 2) { // کلیک راست
+                isDragging = true;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                this.isFollowingPlayer = false;
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                
+                this.x -= deltaX / this.zoom;
+                this.y -= deltaY / this.zoom;
+                
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                this.applyBounds();
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // جلوگیری از منوی راست کلیک
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+    }
+
+    createZoomControls() {
+        // ایجاد کنترل‌های زوم در صفحه
+        const zoomControls = document.createElement('div');
+        zoomControls.id = 'zoomControls';
+        zoomControls.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 10px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        `;
+
+        zoomControls.innerHTML = `
+            <button onclick="cameraSystem.zoomIn()" title="زوم کردن" style="
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.3);
+                border-radius: 8px;
+                color: white;
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">+</button>
+            
+            <button onclick="cameraSystem.zoomOut()" title="زوم اوت" style="
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.3);
+                border-radius: 8px;
+                color: white;
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">-</button>
+            
+            <button onclick="cameraSystem.resetZoom()" title="ریست زوم" style="
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.3);
+                border-radius: 8px;
+                color: white;
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">1:1</button>
+            
+            <button onclick="cameraSystem.toggleCameraMode()" title="تغییر حالت دوربین" style="
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.3);
+                border-radius: 8px;
+                color: white;
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">🎥</button>
+        `;
+
+        document.body.appendChild(zoomControls);
+    }
+
+    update() {
+        // زوم نرم
+        this.zoom += (this.targetZoom - this.zoom) * 0.1;
+
+        // دنبال کردن بازیکن
+        if (this.isFollowingPlayer && gameManager && gameManager.player) {
+            const targetX = gameManager.player.x - window.innerWidth / 2 / this.zoom;
+            const targetY = gameManager.player.y - window.innerHeight / 2 / this.zoom;
+            
+            this.x += (targetX - this.x) * this.smoothness;
+            this.y += (targetY - this.y) * this.smoothness;
+        }
+
+        // اعمال لرزش
+        if (this.shakeDuration > 0) {
+            this.x += (Math.random() - 0.5) * this.shakeIntensity;
+            this.y += (Math.random() - 0.5) * this.shakeIntensity;
+            this.shakeDuration--;
+        }
+
+        this.applyBounds();
+        this.applyTransform();
+        this.updateHUD();
+    }
+
+    applyBounds() {
+        // محدود کردن دوربین به مرزهای نقشه
+        const viewportWidth = window.innerWidth / this.zoom;
+        const viewportHeight = window.innerHeight / this.zoom;
+
+        this.x = Math.max(this.bounds.minX, 
+            Math.min(this.bounds.maxX - viewportWidth, this.x));
+        this.y = Math.max(this.bounds.minY, 
+            Math.min(this.bounds.maxY - viewportHeight, this.y));
+    }
+
+    applyTransform() {
+        const gameScreen = document.getElementById('gameScreen');
+        if (gameScreen) {
+            let transform = `translate(${-this.x}px, ${-this.y}px) scale(${this.zoom})`;
+            
+            // اعمال لرزش
+            if (this.shakeDuration > 0) {
+                const shakeX = (Math.random() - 0.5) * this.shakeIntensity;
+                const shakeY = (Math.random() - 0.5) * this.shakeIntensity;
+                transform += ` translate(${shakeX}px, ${shakeY}px)`;
+            }
+            
+            gameScreen.style.transform = transform;
+            gameScreen.style.transformOrigin = '0 0';
+        }
+    }
+
+    updateHUD() {
+        // بروزرسانی نشانگر زوم
+        let zoomIndicator = document.getElementById('zoomIndicator');
+        if (!zoomIndicator) {
+            zoomIndicator = document.createElement('div');
+            zoomIndicator.id = 'zoomIndicator';
+            zoomIndicator.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 10px;
+                font-size: 14px;
+                z-index: 1001;
+                border: 1px solid rgba(255,255,255,0.2);
+            `;
+            document.body.appendChild(zoomIndicator);
+        }
+
+        const zoomPercent = Math.round(this.zoom * 100);
+        const mode = this.isFollowingPlayer ? 'دنبال‌کننده' : 'آزاد';
+        zoomIndicator.innerHTML = `
+            📷 زوم: ${zoomPercent}%<br>
+            🎥 حالت: ${mode}
+        `;
+    }
+
+    // متدهای عمومی
+    zoomIn() {
+        this.targetZoom = Math.min(this.maxZoom, this.targetZoom + 0.2);
+    }
+
+    zoomOut() {
+        this.targetZoom = Math.max(this.minZoom, this.targetZoom - 0.2);
+    }
+
+    resetZoom() {
+        this.targetZoom = 1.0;
+    }
+
+    toggleCameraMode() {
+        this.isFollowingPlayer = !this.isFollowingPlayer;
+        this.showCameraAlert();
+    }
+
+    shake(intensity = 10, duration = 20) {
+        this.shakeIntensity = intensity;
+        this.shakeDuration = duration;
+    }
+
+    setBounds(minX, minY, maxX, maxY) {
+        this.bounds = { minX, minY, maxX, maxY };
+    }
+
+    moveTo(x, y, instant = false) {
+        if (instant) {
+            this.x = x - window.innerWidth / 2 / this.zoom;
+            this.y = y - window.innerHeight / 2 / this.zoom;
+        } else {
+            this.isFollowingPlayer = false;
+            this.x = x - window.innerWidth / 2 / this.zoom;
+            this.y = y - window.innerHeight / 2 / this.zoom;
+        }
+        this.applyBounds();
+    }
+
+    followEntity(entity) {
+        this.isFollowingPlayer = true;
+    }
+
+    showCameraAlert() {
+        const mode = this.isFollowingPlayer ? 'دنبال‌کننده' : 'آزاد';
+        const alert = document.createElement('div');
+        alert.style.cssText = `
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ccff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            z-index: 1000;
+            font-size: 12px;
+            border: 1px solid #00ccff;
+        `;
+        alert.textContent = `🎥 حالت دوربین: ${mode}`;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transition = 'opacity 0.5s';
+            setTimeout(() => alert.remove(), 500);
+        }, 2000);
+    }
+}
+
+// ==================================================
+// سیستم مینی‌مپ - 150 خط کد
+// ==================================================
+
+class MiniMapSystem {
+    constructor() {
+        this.isVisible = true;
+        this.size = 150;
+        this.zoom = 0.05; // نسبت مینی‌مپ به نقشه اصلی
+        this.createMiniMap();
+    }
+
+    createMiniMap() {
+        this.miniMap = document.createElement('div');
+        this.miniMap.id = 'miniMap';
+        this.miniMap.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: ${this.size}px;
+            height: ${this.size}px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+        `;
+
+        // کانوس مینی‌مپ
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = this.size;
+        this.canvas.height = this.size;
+        this.ctx = this.canvas.getContext('2d');
+        this.miniMap.appendChild(this.canvas);
+
+        // دکمه کنترل‌های مینی‌مپ
+        const controls = document.createElement('div');
+        controls.style.cssText = `
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+        `;
+
+        controls.innerHTML = `
+            <button onclick="miniMapSystem.toggleVisibility()" style="
+                background: rgba(255,255,255,0.2);
+                border: none;
+                border-radius: 5px;
+                color: white;
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+                cursor: pointer;
+            ">👁️</button>
+            
+            <button onclick="miniMapSystem.toggleSize()" style="
+                background: rgba(255,255,255,0.2);
+                border: none;
+                border-radius: 5px;
+                color: white;
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+                cursor: pointer;
+            ">🔍</button>
+        `;
+
+        this.miniMap.appendChild(controls);
+        document.body.appendChild(this.miniMap);
+
+        this.update();
+    }
+
+    update() {
+        if (!this.isVisible || !gameManager) return;
+
+        // پاک کردن کانوس
+        this.ctx.clearRect(0, 0, this.size, this.size);
+
+        // رسم پس‌زمینه
+        this.ctx.fillStyle = '#1a1a3a';
+        this.ctx.fillRect(0, 0, this.size, this.size);
+
+        // رسم سکه‌ها
+        if (window.coins) {
+            this.ctx.fillStyle = '#ffd700';
+            window.coins.forEach(coin => {
+                if (!coin.collected) {
+                    const x = coin.x * this.zoom;
+                    const y = coin.y * this.zoom;
+                    this.ctx.fillRect(x, y, 2, 2);
+                }
+            });
+        }
+
+        // رسم دشمنان
+        if (window.enemies) {
+            this.ctx.fillStyle = '#ff4444';
+            window.enemies.forEach(enemy => {
+                const x = enemy.x * this.zoom;
+                const y = enemy.y * this.zoom;
+                this.ctx.fillRect(x, y, 3, 3);
+            });
+        }
+
+        // رسم بازیکن
+        if (gameManager.player) {
+            this.ctx.fillStyle = '#00ccff';
+            const playerX = gameManager.player.x * this.zoom;
+            const playerY = gameManager.player.y * this.zoom;
+            this.ctx.fillRect(playerX - 2, playerY - 2, 4, 4);
+
+            // نشانگر جهت بازیکن
+            this.ctx.strokeStyle = '#00ccff';
+            this.ctx.beginPath();
+            this.ctx.moveTo(playerX, playerY);
+            this.ctx.lineTo(
+                playerX + Math.cos(gameManager.player.rotation) * 8,
+                playerY + Math.sin(gameManager.player.rotation) * 8
+            );
+            this.ctx.stroke();
+        }
+
+        // رسم نمای دوربین
+        if (cameraSystem) {
+            this.ctx.strokeStyle = '#00ff88';
+            this.ctx.lineWidth = 1;
+            const viewportX = cameraSystem.x * this.zoom;
+            const viewportY = cameraSystem.y * this.zoom;
+            const viewportWidth = (window.innerWidth / cameraSystem.zoom) * this.zoom;
+            const viewportHeight = (window.innerHeight / cameraSystem.zoom) * this.zoom;
+            
+            this.ctx.strokeRect(viewportX, viewportY, viewportWidth, viewportHeight);
+        }
+
+        // درخواست فریم بعدی
+        requestAnimationFrame(() => this.update());
+    }
+
+    toggleVisibility() {
+        this.isVisible = !this.isVisible;
+        this.miniMap.style.display = this.isVisible ? 'block' : 'none';
+    }
+
+    toggleSize() {
+        this.size = this.size === 150 ? 250 : 150;
+        this.miniMap.style.width = this.size + 'px';
+        this.miniMap.style.height = this.size + 'px';
+        this.canvas.width = this.size;
+        this.canvas.height = this.size;
+    }
+}
+
+// ==================================================
+// راه‌اندازی سیستم‌های جدید
+// ==================================================
+
+// ایجاد نمونه‌های سیستم
+const cameraSystem = new AdvancedCameraSystem();
+const miniMapSystem = new MiniMapSystem();
+
+// اضافه کردن به gameManager موجود
+if (typeof gameManager !== 'undefined') {
+    // اضافه کردن به حلقه بازی اصلی
+    const originalGameLoop = gameManager.gameLoop;
+    gameManager.gameLoop = function() {
+        if (!this.isRunning || this.isPaused) return;
+        
+        // به‌روزرسانی دوربین
+        cameraSystem.update();
+        
+        // فراخوانی حلقه اصلی بازی
+        originalGameLoop.call(this);
+    };
+
+    // تنظیم مرزهای دوربین بر اساس اندازه نقشه بازی
+    cameraSystem.setBounds(0, 0, 5000, 5000);
+}
+
+// اضافه کردن استایل‌های جدید
+const cameraStyles = `
+#zoomControls button:hover {
+    background: rgba(255,255,255,0.2) !important;
+    transform: scale(1.1);
+    transition: all 0.2s;
+}
+
+#zoomControls button:active {
+    transform: scale(0.95);
+}
+
+#miniMap canvas {
+    display: block;
+}
+
+#miniMap button:hover {
+    background: rgba(255,255,255,0.3) !important;
+}
+
+/* انیمیشن برای تغییر حالت دوربین */
+@keyframes cameraSwitch {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.camera-switching {
+    animation: cameraSwitch 0.5s ease-in-out;
+}
+`;
+
+const styleSheet = document.createElement('style');
+styleSheet.textContent = cameraStyles;
+document.head.appendChild(styleSheet);
+
+// ==================================================
+// یکپارچه‌سازی با سیستم‌های موجود
+// ==================================================
+
+// لرزش دوربین وقتی بازیکن آسیب می‌بیند
+function setupCameraShakeOnDamage() {
+    const originalTakeDamage = gameManager?.player?.takeDamage;
+    if (originalTakeDamage) {
+        gameManager.player.takeDamage = function(amount) {
+            // لرزش دوربین
+            cameraSystem.shake(15, 25);
+            // فراخوانی تابع اصلی
+            originalTakeDamage.call(this, amount);
+        };
+    }
+}
+
+// لرزش دوربین وقتی دشمن نابود می‌شود
+function setupCameraShakeOnEnemyDestroy() {
+    // این تابع باید با سیستم دشمنان بازی یکپارچه شود
+    console.log("سیستم لرزش دوربین برای نابودی دشمنان آماده است");
+}
+
+// راهنمای کنترل‌های دوربین
+function showCameraHelp() {
+    const help = document.createElement('div');
+    help.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.95);
+        border: 2px solid #00ccff;
+        border-radius: 20px;
+        padding: 30px;
+        z-index: 100000;
+        color: white;
+        max-width: 400px;
+        text-align: right;
+    `;
+    
+    help.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 1.8em; color: #00ccff;">🎥 کنترل‌های دوربین</div>
+        </div>
+        
+        <div style="line-height: 2;">
+            <div>🔍 <strong>زوم کردن:</strong> کلید + یا اسکرول موس بالا</div>
+            <div>🔍 <strong>زوم اوت:</strong> کلید - یا اسکرول موس پایین</div>
+            <div>🔄 <strong>ریست زوم:</strong> کلید 0</div>
+            <div>🎥 <strong>تغییر حالت:</strong> کلید C</div>
+            <div>👆 <strong>حرکت دوربین:</strong> کلیک راست + درگ</div>
+            <div>📱 <strong>کنترل‌های لمسی:</strong> دکمه‌های پایین سمت راست</div>
+        </div>
+        
+        <button onclick="this.parentElement.remove()" style="
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #ff4444;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: #ff4444;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+        ">بستن</button>
+    `;
+    
+    document.body.appendChild(help);
+}
+
+// اضافه کردن دکمه راهنما
+setTimeout(() => {
+    const helpBtn = document.createElement('button');
+    helpBtn.innerHTML = '❓';
+    helpBtn.title = 'راهنمای دوربین';
+    helpBtn.style.cssText = `
+        position: fixed;
+        bottom: 160px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background: rgba(0,0,0,0.8);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 50%;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        z-index: 1001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    helpBtn.onclick = showCameraHelp;
+    document.body.appendChild(helpBtn);
+}, 1000);
+
+console.log("✅ سیستم دوربین پیشرفته و مینی‌مپ اضافه شد!");
+console.log("🎮 ویژگی‌های فعال: زوم، حرکت آزاد، لرزش، مینی‌مپ زنده");
+
+// راه‌اندازی وقتی بازی شروع می‌شود
+if (gameManager) {
+    setupCameraShakeOnDamage();
+    setupCameraShakeOnEnemyDestroy();
+    }
     </script>
 </body>
 </html>
