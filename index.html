@@ -1121,7 +1121,17 @@
         let enemySpawnTimer = 0;
         let currentEnemyGroup = 0;
         let currentStageData = null;
-        
+        // سیستم دوربین
+        // کنترل‌های دوربین
+        let keysPressed = {};
+        let camera = {
+        x: 0,
+        y: 0,
+        zoom: 1,
+        targetZoom: 1,
+        minZoom: 0.5,
+        maxZoom: 3
+        };
         // متغیرهای کنترل لمسی
         let isTouching = false;
         let touchStartX = 0;
@@ -1218,7 +1228,22 @@
             
             // محدود کردن به شعاع جویستیک
             const limitedDistance = Math.min(distance, joystickRadius);
-            
+            // گوش دادن به کلیدهای صفحه‌کلید برای زوم
+            document.addEventListener('keydown', function(e) {
+            keysPressed[e.key] = true;
+    
+            // زوم با کلیدهای + و -
+            if (e.key === '+' || e.key === '=') {
+            camera.targetZoom = Math.min(camera.maxZoom, camera.zoom + 0.1);
+           }
+            if (e.key === '-' || e.key === '_') {
+            camera.targetZoom = Math.max(camera.minZoom, camera.zoom - 0.1);
+          }
+        });
+
+           document.addEventListener('keyup', function(e) {
+           keysPressed[e.key] = false;
+        });
             // موقعیت جدید هندل
             const newX = limitedDistance * Math.cos(angle);
             const newY = limitedDistance * Math.sin(angle);
