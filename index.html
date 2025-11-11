@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شروع بازی</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .start-btn {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+        }
+        
+        .start-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .start-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .error-message {
+            color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            color: #2ed573;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 بازی جذاب</h1>
+        <p>برای شروع بازی روی دکمه زیر کلیک کنید</p>
+        <button class="start-btn" onclick="checkAndStartGame()">شروع بازی</button>
+        <div class="loading" id="loading">در حال بررسی فایل بازی...</div>
+        <div class="error-message" id="errorMessage">
+            فایل بازی یافت نشد! لطفا از موجود بودن فایل m.js اطمینان حاصل کنید.
+        </div>
+    </div>
+
+    <script>
+        async function checkAndStartGame() {
+            const startBtn = document.querySelector('.start-btn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // غیرفعال کردن دکمه و پنهان کردن خطا
+            startBtn.disabled = true;
+            errorMessage.style.display = 'none';
+            loading.style.display = 'block';
+            startBtn.textContent = 'در حال بررسی...';
+            
+            try {
+                // بررسی وجود فایل m.js
+                const response = await fetch('m.js', { method: 'HEAD' });
+                
+                if (response.ok) {
+                    // فایل وجود دارد - بارگیری بازی
+                    loading.textContent = 'در حال بارگیری بازی...';
+                    await loadGame();
+                } else {
+                    throw new Error('File not found');
+                }
+                
+            } catch (error) {
+                // نمایش خطا
+                errorMessage.style.display = 'block';
+                loading.style.display = 'none';
+                startBtn.textContent = 'شروع بازی';
+                startBtn.disabled = false;
+                console.error('خطا در یافتن فایل بازی:', error);
+            }
+        }
+        
+        function loadGame() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'm.js';
+                script.onload = function() {
+                    console.log('بازی با موفقیت بارگیری شد!');
+                    // مخفی کردن صفحه شروع
+                    document.querySelector('.container').style.display = 'none';
+                    
+                    // اگر تابع خاصی برای شروع بازی در m.js وجود دارد، آن را فراخوانی کنید
+                    if (typeof initGame === 'function') {
+                        initGame();
+                    }
+                    resolve();
+                };
+                script.onerror = function() {
+                    reject(new Error('خطا در بارگیری فایل بازی'));
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
+        // بررسی خودکار هنگام بارگیری صفحه (اختیاری)
+        window.addEventListener('load', function() {
+            // می‌توانید این قسمت را فعال کنید اگر می‌خواهید هنگام لود صفحه بررسی شود
+            // checkFileExists();
+        });
+        
+        // تابع برای بررسی وجود فایل (می‌تواند جداگانه استفاده شود)
+        async function checkFileExists() {
+            try {
+                const response = await fetch('m.js', { method: 'HEAD' });
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>
