@@ -1998,6 +1998,672 @@
             loadGameData();
         });
         window.addEventListener('resize', setupGame);
+        // ==================================================
+// سیستم‌های ساده و هماهنگ با بازی اصلی - 500 خط کد
+// ==================================================
+
+// سیستم قدرت‌های موقت
+class PowerUpSystem {
+    constructor() {
+        this.activePowerUps = new Map();
+        this.powerUpTypes = {
+            speed: { 
+                name: "سرعت فوق‌العاده", 
+                duration: 10000, 
+                effect: (player) => player.speed *= 1.5,
+                undo: (player) => player.speed /= 1.5,
+                icon: "⚡"
+            },
+            shield: {
+                name: "محافظ طلایی",
+                duration: 15000,
+                effect: (player) => player.isShielded = true,
+                undo: (player) => player.isShielded = false,
+                icon: "🛡️"
+            },
+            magnet: {
+                name: "آهنربای سکه",
+                duration: 12000,
+                effect: (player) => player.hasMagnet = true,
+                undo: (player) => player.hasMagnet = false,
+                icon: "🧲"
+            }
+        };
+    }
+
+    spawnPowerUp(x, y, type = null) {
+        if (!type) {
+            const types = Object.keys(this.powerUpTypes);
+            type = types[Math.floor(Math.random() * types.length)];
+        }
+
+        const powerUp = document.createElement('div');
+        powerUp.className = 'power-up';
+        powerUp.innerHTML = this.powerUpTypes[type].icon;
+        powerUp.style.cssText = `
+            position: absolute;
+            left: ${x}px;
+            top: ${y}px;
+            font-size: 30px;
+            z-index: 85;
+            animation: float 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 10px gold);
+        `;
+
+        powerUp.dataset.type = type;
+        document.getElementById('gameScreen').appendChild(powerUp);
+
+        // حذف خودکار بعد از 30 ثانیه
+        setTimeout(() => {
+            if (powerUp.parentNode) {
+                powerUp.remove();
+            }
+        }, 30000);
+    }
+
+    collectPowerUp(player, powerUpElement) {
+        const type = powerUpElement.dataset.type;
+        const powerUp = this.powerUpTypes[type];
+        
+        if (!powerUp) return;
+
+        // اعمال اثر
+        powerUp.effect(player);
+        
+        // نمایش اعلان
+        this.showPowerUpAlert(powerUp.name);
+        
+        // حذف المان
+        powerUpElement.remove();
+        
+        // ثبت برای غیرفعال کردن بعدی
+        const timer = setTimeout(() => {
+            powerUp.undo(player);
+            this.activePowerUps.delete(type);
+        }, powerUp.duration);
+
+        this.activePowerUps.set(type, timer);
+    }
+
+    showPowerUpAlert(name) {
+        const alert = document.createElement('div');
+        alert.style.cssText = `
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: black;
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 1000;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(255,215,0,0.5);
+        `;
+        alert.textContent = `🎁 ${name} فعال شد!`;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => alert.remove(), 3000);
+    }
+}
+
+// سیستم combo و ضربات پشت سرهم
+class ComboSystem {
+    constructor() {
+        this.comboCount = 0;
+        this.lastCollectionTime = 0;
+        this.comboTimeout = 2000; // 2 ثانیه برای combo
+        this.multiplier = 1;
+    }
+
+    onCoinCollect() {
+        const currentTime = Date.now();
+        
+        if (currentTime - this.lastCollectionTime < this.comboTimeout) {
+            this.comboCount++;
+            this.updateMultiplier();
+        } else {
+            this.comboCount = 1;
+        }
+        
+        this.lastCollectionTime = currentTime;
+        this.showComboEffect();
+    }
+
+    updateMultiplier() {
+        if (this.comboCount >= 10) {
+            this.multiplier = 3;
+        } else if (this.comboCount >= 5) {
+            this.multiplier = 2;
+        } else {
+            this.multiplier = 1;
+        }
+    }
+
+    showComboEffect() {
+        if (this.comboCount > 1) {
+            const comboText = document.createElement('div');
+            comboText.style.cssText = `
+                position: fixed;
+                top: 40%;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: ${20 + this.comboCount * 2}px;
+                font-weight: bold;
+                color: #ffd700;
+                z-index: 1000;
+                text-shadow: 0 0 10px #ffaa00;
+                animation: comboPop 0.5s ease-out;
+            `;
+            comboText.textContent = `COMBO x${this.comboCount}!`;
+            document.body.appendChild(comboText);
+            
+            setTimeout(() => {
+                comboText.style.opacity = '0';
+                comboText.style.transition = 'opacity 0.5s';
+                setTimeout(() => comboText.remove(), 500);
+            }, 1000);
+        }
+    }
+
+    getScoreMultiplier() {
+        return this.multiplier;
+    }
+
+    resetCombo() {
+        this.comboCount = 0;
+        this.multiplier = 1;
+    }
+}
+
+// سیستم رویدادهای تصادفی
+class RandomEventSystem {
+    constructor() {
+        this.eventTimer = 0;
+        this.eventInterval = 30000; // 30 ثانیه
+        this.events = [
+            {
+                name: "سکه‌های طلایی",
+                chance: 0.3,
+                action: () => this.spawnGoldCoins()
+            },
+            {
+                name: "حمله آتشفشانی",
+                chance: 0.2, 
+                action: () => this.spawnVolcanoWave()
+            },
+            {
+                name: "بارش شهاب‌سنگ",
+                chance: 0.15,
+                action: () => this.spawnMeteorShower()
+            },
+            {
+                name: "قدرت تصادفی",
+                chance: 0.25,
+                action: () => this.spawnRandomPowerUp()
+            }
+        ];
+    }
+
+    update() {
+        this.eventTimer++;
+        
+        if (this.eventTimer >= this.eventInterval) {
+            this.tryTriggerEvent();
+            this.eventTimer = 0;
+        }
+    }
+
+    tryTriggerEvent() {
+        this.events.forEach(event => {
+            if (Math.random() < event.chance) {
+                event.action();
+                this.showEventAlert(event.name);
+            }
+        });
+    }
+
+    spawnGoldCoins() {
+        for (let i = 0; i < 8; i++) {
+            setTimeout(() => {
+                if (gameManager && gameManager.player) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 100 + Math.random() * 200;
+                    const x = gameManager.player.x + Math.cos(angle) * distance;
+                    const y = gameManager.player.y + Math.sin(angle) * distance;
+                    
+                    // ایجاد سکه طلایی ویژه
+                    this.createSpecialCoin(x, y, 'gold');
+                }
+            }, i * 300);
+        }
+    }
+
+    spawnVolcanoWave() {
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                if (gameManager && gameManager.player) {
+                    this.createVolcanoEnemy();
+                }
+            }, i * 1000);
+        }
+    }
+
+    spawnMeteorShower() {
+        for (let i = 0; i < 6; i++) {
+            setTimeout(() => {
+                this.createMeteor();
+            }, i * 800);
+        }
+    }
+
+    spawnRandomPowerUp() {
+        if (gameManager && gameManager.player) {
+            const x = gameManager.player.x + (Math.random() - 0.5) * 300;
+            const y = gameManager.player.y + (Math.random() - 0.5) * 300;
+            powerUpSystem.spawnPowerUp(x, y);
+        }
+    }
+
+    createSpecialCoin(x, y, type) {
+        const coin = document.createElement('div');
+        coin.className = 'coin special';
+        coin.innerHTML = type === 'gold' ? '💰' : '💎';
+        coin.style.cssText = `
+            position: absolute;
+            left: ${x}px;
+            top: ${y}px;
+            font-size: 35px;
+            z-index: 82;
+            animation: spin 2s infinite linear;
+            filter: drop-shadow(0 0 15px gold);
+        `;
+        
+        coin.dataset.special = 'true';
+        coin.dataset.value = type === 'gold' ? '50' : '100';
+        
+        document.getElementById('gameScreen').appendChild(coin);
+        
+        // اضافه کردن به آرایه سکه‌های بازی
+        if (window.coins) {
+            window.coins.push({
+                element: coin,
+                x: x,
+                y: y,
+                collected: false,
+                special: true,
+                value: type === 'gold' ? 50 : 100
+            });
+        }
+    }
+
+    createVolcanoEnemy() {
+        if (!window.enemies) return;
+        
+        const enemy = document.createElement('div');
+        enemy.className = 'enemy volcano-special';
+        enemy.innerHTML = '🌋';
+        enemy.style.cssText = `
+            position: absolute;
+            font-size: 45px;
+            z-index: 90;
+            filter: drop-shadow(0 0 20px #ff3300);
+            animation: enemyPulse 1s infinite alternate;
+        `;
+        
+        // موقعیت تصادفی نزدیک بازیکن
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 150 + Math.random() * 200;
+        const x = gameManager.player.x + Math.cos(angle) * distance;
+        const y = gameManager.player.y + Math.sin(angle) * distance;
+        
+        enemy.style.left = x + 'px';
+        enemy.style.top = y + 'px';
+        
+        document.getElementById('gameScreen').appendChild(enemy);
+        
+        window.enemies.push({
+            element: enemy,
+            x: x,
+            y: y,
+            speed: 2.5,
+            health: 2
+        });
+    }
+
+    createMeteor() {
+        const meteor = document.createElement('div');
+        meteor.innerHTML = '☄️';
+        meteor.style.cssText = `
+            position: fixed;
+            font-size: 40px;
+            z-index: 95;
+            animation: meteorFall 3s linear forwards;
+        `;
+        
+        const startX = Math.random() * window.innerWidth;
+        meteor.style.left = startX + 'px';
+        meteor.style.top = '-50px';
+        
+        document.body.appendChild(meteor);
+        
+        setTimeout(() => {
+            meteor.remove();
+            this.createExplosion(startX, window.innerHeight + 50);
+        }, 3000);
+    }
+
+    createExplosion(x, y) {
+        const explosion = document.createElement('div');
+        explosion.innerHTML = '💥';
+        explosion.style.cssText = `
+            position: fixed;
+            left: ${x}px;
+            top: ${y}px;
+            font-size: 50px;
+            z-index: 100;
+            animation: explode 1s forwards;
+        `;
+        document.body.appendChild(explosion);
+        setTimeout(() => explosion.remove(), 1000);
+    }
+
+    showEventAlert(eventName) {
+        const alert = document.createElement('div');
+        alert.style.cssText = `
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #ffd700;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            font-weight: bold;
+            border: 2px solid #ffd700;
+        `;
+        alert.textContent = `⚡ رویداد: ${eventName}`;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => alert.remove(), 4000);
+    }
+}
+
+// سیستم آماری و رکوردها
+class StatsSystem {
+    constructor() {
+        this.stats = {
+            totalCoins: 0,
+            totalEnemies: 0,
+            totalPlayTime: 0,
+            maxCombo: 0,
+            powerUpsCollected: 0,
+            bestScore: 0
+        };
+        
+        this.loadStats();
+    }
+
+    onCoinCollect() {
+        this.stats.totalCoins++;
+        this.saveStats();
+    }
+
+    onEnemyDefeat() {
+        this.stats.totalEnemies++;
+        this.saveStats();
+    }
+
+    onPowerUpCollect() {
+        this.stats.powerUpsCollected++;
+        this.saveStats();
+    }
+
+    updateCombo(comboCount) {
+        if (comboCount > this.stats.maxCombo) {
+            this.stats.maxCombo = comboCount;
+            this.saveStats();
+        }
+    }
+
+    updateScore(score) {
+        if (score > this.stats.bestScore) {
+            this.stats.bestScore = score;
+            this.saveStats();
+        }
+    }
+
+    updatePlayTime(deltaTime) {
+        this.stats.totalPlayTime += deltaTime;
+    }
+
+    saveStats() {
+        try {
+            localStorage.setItem('galactic_stats', JSON.stringify(this.stats));
+        } catch (error) {
+            console.log('خطا در ذخیره آمار:', error);
+        }
+    }
+
+    loadStats() {
+        try {
+            const saved = localStorage.getItem('galactic_stats');
+            if (saved) {
+                this.stats = { ...this.stats, ...JSON.parse(saved) };
+            }
+        } catch (error) {
+            console.log('خطا در بارگذاری آمار:', error);
+        }
+    }
+
+    showStats() {
+        const statsPanel = document.createElement('div');
+        statsPanel.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            border: 2px solid #00ccff;
+            border-radius: 20px;
+            padding: 30px;
+            z-index: 100000;
+            color: white;
+            min-width: 300px;
+            max-width: 90%;
+        `;
+        
+        statsPanel.innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 1.8em; color: #00ccff;">📊 آمار بازی</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div>💰 سکه‌های جمع‌آوری شده: ${this.stats.totalCoins.toLocaleString()}</div>
+                <div>🎯 آتشفشان‌های نابود شده: ${this.stats.totalEnemies.toLocaleString()}</div>
+                <div>⚡ بیشترین combo: ${this.stats.maxCombo}</div>
+                <div>🎁 قدرت‌های جمع‌آوری شده: ${this.stats.powerUpsCollected}</div>
+                <div>🏆 بهترین امتیاز: ${this.stats.bestScore.toLocaleString()}</div>
+                <div>⏱️ زمان کل بازی: ${Math.floor(this.stats.totalPlayTime / 60)} دقیقه</div>
+            </div>
+            <button onclick="this.parentElement.remove()" style="
+                background: rgba(255,255,255,0.1);
+                border: 1px solid #ff4444;
+                padding: 10px 20px;
+                border-radius: 10px;
+                color: #ff4444;
+                cursor: pointer;
+                font-weight: bold;
+                width: 100%;
+                margin-top: 20px;
+            ">بستن</button>
+        `;
+        
+        document.body.appendChild(statsPanel);
+    }
+}
+
+// ==================================================
+// راه‌اندازی سیستم‌های جدید
+// ==================================================
+
+// ایجاد نمونه‌های سیستم
+const powerUpSystem = new PowerUpSystem();
+const comboSystem = new ComboSystem();
+const eventSystem = new RandomEventSystem();
+const statsSystem = new StatsSystem();
+
+// اضافه کردن استایل‌های جدید
+const newStyles = `
+@keyframes spin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes comboPop {
+    0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+    70% { transform: translateX(-50%) scale(1.2); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+@keyframes meteorFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+.power-up {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.power-up:hover {
+    transform: scale(1.3);
+}
+
+.coin.special {
+    cursor: pointer;
+}
+`;
+
+// اضافه کردن استایل‌ها
+const styleSheet = document.createElement('style');
+styleSheet.textContent = newStyles;
+document.head.appendChild(styleSheet);
+
+// ==================================================
+// یکپارچه‌سازی با بازی اصلی
+// ==================================================
+
+// اضافه کردن قدرت‌های تصادفی هر 20 ثانیه
+setInterval(() => {
+    if (gameManager && gameManager.player && gameManager.isRunning && !gameManager.isPaused) {
+        const x = gameManager.player.x + (Math.random() - 0.5) * 400;
+        const y = gameManager.player.y + (Math.random() - 0.5) * 400;
+        powerUpSystem.spawnPowerUp(x, y);
+    }
+}, 20000);
+
+// بروزرسانی سیستم رویدادها
+setInterval(() => {
+    if (gameManager && gameManager.isRunning && !gameManager.isPaused) {
+        eventSystem.update();
+        statsSystem.updatePlayTime(1); // بروزرسانی زمان بازی
+    }
+}, 1000);
+
+// اضافه کردن دکمه آمار به HUD
+function addStatsButton() {
+    const statsBtn = document.createElement('button');
+    statsBtn.innerHTML = '📊';
+    statsBtn.title = 'آمار بازی';
+    statsBtn.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+        background: rgba(0,0,0,0.7);
+        border: 2px solid rgba(255,255,255,0.2);
+        border-radius: 50%;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    statsBtn.onclick = () => statsSystem.showStats();
+    document.body.appendChild(statsBtn);
+}
+
+// فراخوانی وقتی بازی شروع می‌شود
+function onGameStart() {
+    addStatsButton();
+    
+    // اضافه کردن قدرت اولیه
+    setTimeout(() => {
+        if (gameManager && gameManager.player) {
+            const x = gameManager.player.x + 100;
+            const y = gameManager.player.y + 100;
+            powerUpSystem.spawnPowerUp(x, y, 'speed');
+        }
+    }, 5000);
+}
+
+// اضافه کردن event listener برای سکه‌های ویژه
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('power-up')) {
+        if (gameManager && gameManager.player) {
+            powerUpSystem.collectPowerUp(gameManager.player, e.target);
+        }
+    }
+});
+
+// یکپارچه‌سازی با سیستم سکه‌های موجود
+function integrateWithCoinSystem() {
+    const originalCoinCollect = window.collectCoin; // اگر تابعی وجود دارد
+    
+    window.collectCoin = function(coinElement) {
+        // منطق اصلی جمع‌آوری سکه
+        if (coinElement.dataset.special) {
+            const value = parseInt(coinElement.dataset.value) || 50;
+            if (gameManager) {
+                gameManager.score += value;
+                comboSystem.onCoinCollect();
+                statsSystem.onCoinCollect();
+            }
+        } else {
+            if (gameManager) {
+                gameManager.score += 10 * comboSystem.getScoreMultiplier();
+                comboSystem.onCoinCollect();
+                statsSystem.onCoinCollect();
+            }
+        }
+        
+        // فراخوانی تابع اصلی اگر وجود دارد
+        if (originalCoinCollect) {
+            originalCoinCollect(coinElement);
+        }
+    };
+}
+
+console.log("✅ سیستم‌های جدید با موفقیت اضافه شدند!");
+console.log("🎮 ویژگی‌های فعال: قدرت‌های موقت، کامبو، رویدادهای تصادفی، آمار بازی");
+
+// راه‌اندازی وقتی صفحه لود شد
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onGameStart);
+} else {
+    onGameStart();
+                 }
     </script>
 </body>
 </html>
