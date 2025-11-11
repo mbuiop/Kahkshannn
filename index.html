@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>کهکشان بی‌نهایت - بازی فضایی</title>
+    
+    <!-- استایل‌ها -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/game.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+</head>
+<body>
+    <!-- ساختار اصلی بازی -->
+    <div id="gameContainer">
+        <!-- کهکشان پهناور -->
+        <div id="universeBackground"></div>
+        
+        <!-- صفحه اصلی -->
+        <div id="mainScreen" class="screen active">
+            <div class="game-header">
+                <div class="game-title">🚀 کهکشان بی‌نهایت</div>
+                <div class="game-subtitle">ماجراجویی در دل فضا</div>
+            </div>
+            
+            <div class="game-buttons">
+                <button class="game-btn start" onclick="Game.start()">
+                    🌌 شروع بازی
+                </button>
+                <button class="game-btn achievements" onclick="UI.showAchievements()">
+                    🏆 مدال‌ها
+                </button>
+                <button class="game-btn instructions" onclick="UI.showInstructions()">
+                    📚 راهنما
+                </button>
+                <button class="game-btn management" onclick="UI.showManagement()">
+                    ⚡ اطلاعیه
+                </button>
+            </div>
+            
+            <div class="game-stats">
+                <div class="stat-card">
+                    <div class="stat-label">بالاترین امتیاز</div>
+                    <div class="stat-value" id="highScore">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">بالاترین مرحله</div>
+                    <div class="stat-value" id="highLevel">1</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">مدال‌های کسب شده</div>
+                    <div class="stat-value" id="achievementsCount">0/100</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">سکه‌های جمع‌آوری شده</div>
+                    <div class="stat-value" id="totalCoinsCollected">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- صفحه بازی -->
+        <div id="gameScreen" class="screen">
+            <!-- عناصر بازی -->
+            <div id="gameElements"></div>
+            
+            <!-- رابط کاربری بازی -->
+            <div class="fuel-indicator">⛽ سوخت: 100%</div>
+            <div id="safeTimeIndicator" class="safe-time-indicator">زمان امن: 5s</div>
+            
+            <div id="playerIndicator">
+                <div>🛸 این شما هستید!</div>
+            </div>
+            
+            <!-- دکمه بمب -->
+            <button id="bombButton" class="bomb-button" onclick="Game.useBomb()">💣</button>
+            <div id="bombTimer" class="bomb-timer">بمب: 10s</div>
+            
+            <!-- کنترل لمسی -->
+            <div class="touch-controls">
+                <div class="joystick-base"></div>
+                <div class="joystick-handle"></div>
+            </div>
+        </div>
+        
+        <!-- صفحه پایان مرحله -->
+        <div id="levelComplete" class="screen">
+            <div class="completion-message">
+                <h2>🎉 تبریک!</h2>
+                <p>مرحله <span id="completedLevel">1</span> تکمیل شد!</p>
+                <button id="nextLevelButton">مرحله بعد</button>
+            </div>
+        </div>
+        
+        <!-- لودینگ -->
+        <div id="loadingScreen" class="screen">
+            <div class="loading-icon">🌌</div>
+            <div class="loading-text">در حال بارگذاری...</div>
+        </div>
+        
+        <!-- مینی مپ -->
+        <div id="miniMap">
+            <div class="map-label">🗺️ نقشه</div>
+            <div class="map-content"></div>
+        </div>
+    </div>
+
+    <!-- اسکریپت‌ها -->
+    <script src="scripts/storage.js"></script>
+    <script src="scripts/universe.js"></script>
+    <script src="scripts/camera.js"></script>
+    <script src="scripts/controls.js"></script>
+    <script src="scripts/enemies.js"></script>
+    <script src="scripts/coins.js"></script>
+    <script src="scripts/ui.js"></script>
+    <script src="scripts/audio.js"></script>
+    <script src="scripts/game.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+      </html>
