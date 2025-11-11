@@ -1,0 +1,477 @@
+/* تبلت */
+@media (max-width: 1024px) {
+    .game-title {
+        font-size: 2.4rem;
+    }
+    
+    .game-btn {
+        padding: 16px 20px;
+        font-size: 1rem;
+    }
+    
+    .game-btn.start {
+        font-size: 1.2rem;
+        padding: 18px 22px;
+    }
+    
+    .stat-card {
+        padding: 18px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+}
+
+/* موبایل */
+@media (max-width: 768px) {
+    #mainScreen {
+        padding: 15px;
+    }
+    
+    .game-header {
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+    
+    .game-title {
+        font-size: 2rem;
+    }
+    
+    .game-subtitle {
+        font-size: 1rem;
+    }
+    
+    .game-buttons {
+        max-width: 350px;
+        gap: 12px;
+    }
+    
+    .game-btn {
+        padding: 14px 18px;
+        font-size: 0.95rem;
+    }
+    
+    .game-btn.start {
+        font-size: 1.1rem;
+        padding: 16px 20px;
+    }
+    
+    .btn-icon {
+        font-size: 1.2rem;
+    }
+    
+    .game-stats {
+        grid-template-columns: 1fr;
+        max-width: 300px;
+        gap: 12px;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-value {
+        font-size: 1.4rem;
+    }
+    
+    /* رابط بازی در موبایل */
+    .fuel-indicator {
+        top: 15px;
+        padding: 10px 15px;
+    }
+    
+    .fuel-bar {
+        width: 100px;
+    }
+    
+    .score-display {
+        top: 15px;
+        left: 15px;
+    }
+    
+    .score-item {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .bomb-timer {
+        bottom: 90px;
+        left: 20px;
+        padding: 8px 12px;
+    }
+    
+    .safe-time-indicator {
+        top: 15px;
+        right: 140px;
+        padding: 6px 10px;
+    }
+    
+    /* کنترل‌ها در موبایل */
+    .game-controls {
+        height: 100px;
+    }
+    
+    .bomb-button {
+        width: 60px;
+        height: 60px;
+        bottom: 20px;
+        left: 20px;
+    }
+    
+    .touch-controls {
+        width: 100px;
+        height: 100px;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .joystick-base {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .joystick-handle {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .pause-button {
+        width: 45px;
+        height: 45px;
+        bottom: 20px;
+        left: 90px;
+    }
+    
+    /* مینی مپ در موبایل */
+    #miniMap {
+        width: 110px;
+        height: 110px;
+        top: 15px;
+        right: 15px;
+    }
+    
+    /* المان‌های بازی در موبایل */
+    .player {
+        font-size: 70px;
+    }
+    
+    .enemy {
+        font-size: 35px;
+    }
+    
+    .coin {
+        font-size: 28px;
+    }
+    
+    .coin-number {
+        font-size: 11px;
+        padding: 2px 5px;
+    }
+    
+    /* مودال‌ها در موبایل */
+    .completion-modal {
+        padding: 30px;
+    }
+    
+    .completion-title {
+        font-size: 1.8rem;
+    }
+    
+    .completion-message {
+        font-size: 1.1rem;
+    }
+    
+    .completion-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .pause-modal {
+        padding: 30px;
+    }
+    
+    .pause-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* موبایل‌های کوچک */
+@media (max-width: 480px) {
+    .game-title {
+        font-size: 1.8rem;
+    }
+    
+    .game-header {
+        padding: 20px;
+    }
+    
+    .game-buttons {
+        max-width: 320px;
+        gap: 10px;
+    }
+    
+    .game-btn {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .game-btn.start {
+        font-size: 1rem;
+        padding: 14px 18px;
+    }
+    
+    .btn-icon {
+        font-size: 1.1rem;
+    }
+    
+    .game-stats {
+        max-width: 280px;
+    }
+    
+    .stat-card {
+        padding: 12px;
+    }
+    
+    .stat-icon {
+        font-size: 1.5rem;
+    }
+    
+    .stat-value {
+        font-size: 1.3rem;
+    }
+    
+    /* رابط بازی */
+    .fuel-indicator {
+        padding: 8px 12px;
+    }
+    
+    .fuel-bar {
+        width: 80px;
+    }
+    
+    .fuel-text {
+        font-size: 11px;
+    }
+    
+    .score-display {
+        top: 10px;
+        left: 10px;
+    }
+    
+    .score-item {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .bomb-timer {
+        bottom: 80px;
+        left: 15px;
+        padding: 6px 10px;
+    }
+    
+    .timer-text {
+        font-size: 11px;
+    }
+    
+    .safe-time-indicator {
+        top: 10px;
+        right: 120px;
+        padding: 5px 8px;
+    }
+    
+    .safe-text {
+        font-size: 10px;
+    }
+    
+    /* کنترل‌ها */
+    .bomb-button {
+        width: 55px;
+        height: 55px;
+        bottom: 15px;
+        left: 15px;
+    }
+    
+    .touch-controls {
+        width: 90px;
+        height: 90px;
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .joystick-base {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .joystick-handle {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .pause-button {
+        width: 40px;
+        height: 40px;
+        bottom: 15px;
+        left: 80px;
+    }
+    
+    /* مینی مپ */
+    #miniMap {
+        width: 90px;
+        height: 90px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .map-label {
+        font-size: 9px;
+        padding: 3px 6px;
+    }
+    
+    /* المان‌های بازی */
+    .player {
+        font-size: 60px;
+    }
+    
+    .enemy {
+        font-size: 30px;
+    }
+    
+    .coin {
+        font-size: 24px;
+    }
+}
+
+/* حالت landscape */
+@media (max-height: 500px) and (orientation: landscape) {
+    #mainScreen {
+        padding: 10px;
+        justify-content: flex-start;
+        overflow-y: auto;
+    }
+    
+    .game-header {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .game-title {
+        font-size: 1.6rem;
+    }
+    
+    .game-buttons {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 600px;
+        margin: 15px 0;
+    }
+    
+    .game-stats {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 600px;
+        margin: 15px 0;
+    }
+    
+    .stat-card {
+        padding: 10px;
+    }
+    
+    .developer-info {
+        margin-top: 10px;
+    }
+    
+    /* رابط بازی در حالت landscape */
+    .fuel-indicator {
+        top: 10px;
+    }
+    
+    .score-display {
+        top: 10px;
+    }
+    
+    .bomb-timer {
+        bottom: 60px;
+    }
+    
+    .game-controls {
+        height: 80px;
+    }
+    
+    .bomb-button {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+    }
+    
+    .touch-controls {
+        width: 80px;
+        height: 80px;
+        bottom: 15px;
+    }
+}
+
+/* نمایشگرهای بزرگ */
+@media (min-width: 1440px) {
+    .game-header {
+        max-width: 600px;
+    }
+    
+    .game-title {
+        font-size: 3.2rem;
+    }
+    
+    .game-subtitle {
+        font-size: 1.3rem;
+    }
+    
+    .game-buttons {
+        max-width: 500px;
+    }
+    
+    .game-btn {
+        padding: 20px 30px;
+        font-size: 1.2rem;
+    }
+    
+    .game-btn.start {
+        font-size: 1.4rem;
+        padding: 22px 30px;
+    }
+    
+    .game-stats {
+        max-width: 500px;
+    }
+    
+    .stat-card {
+        padding: 25px;
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+    }
+}
+
+/* پشتیبانی از حالت تاریک/روشن */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #000;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .game-header {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* پشتیبانی از کاهش حرکت */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+      }
