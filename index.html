@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازی اتصال میوه‌ها - Babylon.js</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff4e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --glass: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            color: white;
+        }
+
+        #gameContainer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            outline: none;
+        }
+
+        /* رابط کاربری روی Babylon */
+        #ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .ui-panel {
+            pointer-events: auto;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px;
+        }
+
+        /* هدر بازی */
+        #game-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1001;
+        }
+
+        .header-btn {
+            width: 50px;
+            height: 50px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .header-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .score-panel {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 15px 25px;
+            display: flex;
+            gap: 25px;
+            pointer-events: auto;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .score-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--warning);
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* منوی پایینی */
+        #bottom-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 0 20px;
+            z-index: 1001;
+        }
+
+        .menu-btn {
+            width: 60px;
+            height: 60px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.7rem;
+            gap: 4px;
+            pointer-events: auto;
+        }
+
+        .menu-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .menu-btn i {
+            font-size: 1.3rem;
+        }
+
+        /* صفحه شروع */
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(106, 17, 203, 0.9), rgba(37, 117, 252, 0.9));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            pointer-events: auto;
+        }
+
+        .game-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .start-btn {
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            background: linear-gradient(45deg, var(--accent), var(--warning));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 78, 80, 0.4);
+            margin-top: 30px;
+            pointer-events: auto;
+        }
+
+        .start-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* انیمیشن‌ها */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .pulsing {
+            animation: pulse 2s infinite;
+        }
+
+        /* رسپانسیو */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2.5rem;
+            }
+            
+            .score-panel {
+                padding: 10px 15px;
+                gap: 15px;
+            }
+            
+            .score-value {
+                font-size: 1.1rem;
+            }
+            
+            .menu-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 0.6rem;
+            }
+            
+            .menu-btn i {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- کانواس Babylon.js -->
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- رابط کاربری روی بازی -->
+    <div id="ui-overlay">
+        <!-- هدر بازی -->
+        <div id="game-header">
+            <div style="display: flex; gap: 10px;">
+                <button class="header-btn" id="btn-settings" title="تنظیمات">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="header-btn" id="btn-sound" title="صدا">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+
+            <div class="score-panel">
+                <div class="score-item">
+                    <div class="score-label">امتیاز</div>
+                    <div class="score-value" id="score">۰</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">مرحله</div>
+                    <div class="score-value" id="level">۱</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">زمان</div>
+                    <div class="score-value" id="timer">۶۰</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="header-btn" id="btn-help" title="راهنما">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <button class="header-btn" id="btn-exit" title="خروج">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- منوی پایینی -->
+        <div id="bottom-menu">
+            <button class="menu-btn" id="btn-home">
+                <i class="fas fa-home"></i>
+                <span>خانه</span>
+            </button>
+            <button class="menu-btn" id="btn-levels">
+                <i class="fas fa-layer-group"></i>
+                <span>مراحل</span>
+            </button>
+            <button class="menu-btn" id="btn-ai">
+                <i class="fas fa-robot"></i>
+                <span>هوش مصنوعی</span>
+            </button>
+            <button class="menu-btn" id="btn-powerups">
+                <i class="fas fa-magic"></i>
+                <span>قدرت‌ها</span>
+            </button>
+            <button class="menu-btn" id="btn-restart">
+                <i class="fas fa-redo"></i>
+                <span>شروع مجدد</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- صفحه شروع -->
+    <div id="start-screen">
+        <h1 class="game-title floating">اتصال میوه‌ها</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px; text-align: center;">
+            میوه‌های سه بعدی را به هم وصل کنید و با هوش مصنوعی رقابت کنید!
+        </p>
+        <button class="start-btn pulsing" id="start-game">
+            <i class="fas fa-play"></i>
+            شروع بازی
+        </button>
+    </div>
+
+    <!-- اسکریپت‌های بازی -->
+    <script src="js/babylon-scene.js"></script>
+    <script src="js/game-engine.js"></script>
+    <script src="js/fruit-manager.js"></script>
+    <script src="js/ai-engine.js"></script>
+    <script src="js/ui-manager.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/main.js"></script>
+
+    <script>
+        // مقداردهی اولیه بازی
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('بازی Babylon.js بارگذاری شد!');
+            
+            // مخفی کردن صفحه شروع با کلیک
+            document.getElementById('start-game').addEventListener('click', function() {
+                document.getElementById('start-screen').style.display = 'none';
+                // شروع بازی Babylon.js
+                if (typeof initGame === 'function') {
+                    initGame();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
