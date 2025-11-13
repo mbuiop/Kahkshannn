@@ -96,8 +96,9 @@ class BuildingSystem {
     }
 
     initializeBuildingSystem() {
-        // Create initial town hall
-        this.createBuilding('townhall', 0, 0, 1);
+        // Create initial town hall using placeBuilding instead
+           const initialPos = new BABYLON.Vector3(0, 0, 0);
+           this.placeBuilding('townhall', initialPos);
         
         // Set up construction timer
         setInterval(() => {
