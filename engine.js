@@ -21,7 +21,6 @@ class GameEngine {
         this.setupCamera();
         this.setupLighting();
         this.createSkybox();
-        this.setupPostProcessing();
         this.setupEnvironment();
         
         this.engine.runRenderLoop(() => {
