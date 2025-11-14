@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازی کلش سه‌بعدی - Babylon.js</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #ff8a00;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+        
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .file-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-item.active {
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            box-shadow: 0 4px 8px rgba(255, 138, 0, 0.4);
+        }
+        
+        .file-item:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .file-icon {
+            font-size: 18px;
+        }
+        
+        .file-status {
+            margin-left: auto;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #555;
+        }
+        
+        .file-status.loaded {
+            background: #4CAF50;
+        }
+        
+        .file-status.error {
+            background: #f44336;
+        }
+        
+        .game-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            outline: none;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ff8a00;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status-bar {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .file-info {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #ff8a00;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            color: #ff8a00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">⚔️</div>
+            <h1>بازی کلش سه‌بعدی</h1>
+        </div>
+        <div class="controls">
+            <button id="startBtn">شروع بازی</button>
+            <button id="resetBtn">بازنشانی</button>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="sidebar">
+            <h2>فایل‌های بازی</h2>
+            <div class="file-list" id="fileList">
+                <!-- فایل‌ها به صورت دینامیک اضافه خواهند شد -->
+            </div>
+            
+            <div class="instructions">
+                <h3>راهنما:</h3>
+                <ul>
+                    <li>فایل‌ها به ترتیب از <span class="highlight">m1.js</span> تا <span class="highlight">m20.js</span> اجرا می‌شوند</li>
+                    <li>برای اجرای هر فایل، روی آن کلیک کنید</li>
+                    <li>پس از رفع خطاهای هر فایل، به فایل بعدی بروید</li>
+                    <li>نمای بازی از بالا به صورت سه‌بعدی است</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="game-container">
+            <canvas id="renderCanvas"></canvas>
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner"></div>
+                <p>در حال بارگذاری Babylon.js...</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status-bar">
+        <div class="file-info">
+            <span>فایل فعال: <span id="currentFile">هیچکدام</span></span>
+            <span>وضعیت: <span id="fileStatus">آماده</span></span>
+        </div>
+        <div>Babylon.js v5.0.0 | بازی کلش سه‌بعدی</div>
+    </div>
+
+    <!-- فایل‌های اسکریپت بازی -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    
+    <!-- فایل‌های بازی -->
+    <script src="m1.js"></script>
+    <script src="m2.js"></script>
+    <script src="m3.js"></script>
+    <script src="m4.js"></script>
+    <script src="m5.js"></script>
+    <script src="m6.js"></script>
+    <script src="m7.js"></script>
+    <script src="m8.js"></script>
+    <script src="m9.js"></script>
+    <script src="m10.js"></script>
+    <script src="m11.js"></script>
+    <script src="m12.js"></script>
+    <script src="m13.js"></script>
+    <script src="m14.js"></script>
+    <script src="m15.js"></script>
+    <script src="m16.js"></script>
+    <script src="m17.js"></script>
+    <script src="m18.js"></script>
+    <script src="m19.js"></script>
+    <script src="m20.js"></script>
+    
+    <!-- اسکریپت اصلی -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('renderCanvas');
+            const engine = new BABYLON.Engine(canvas, true);
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const fileList = document.getElementById('fileList');
+            const currentFileElement = document.getElementById('currentFile');
+            const fileStatusElement = document.getElementById('fileStatus');
+            const startBtn = document.getElementById('startBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            let scene;
+            let activeFileIndex = -1;
+            const fileStatus = Array(20).fill('pending'); // وضعیت فایل‌ها
+            
+            // ایجاد صحنه بازی
+            function createScene() {
+                const scene = new BABYLON.Scene(engine);
+                scene.clearColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+                
+                // دوربین از نمای بالا
+                const camera = new BABYLON.ArcRotateCamera(
+                    "camera", 
+                    -Math.PI / 2, 
+                    Math.PI / 2, 
+                    50, 
+                    new BABYLON.Vector3(0, 0, 0), 
+                    scene
+                );
+                camera.attachControl(canvas, true);
+                
+                // نورپردازی
+                const light = new BABYLON.HemisphericLight(
+                    "light", 
+                    new BABYLON.Vector3(0, 1, 0), 
+                    scene
+                );
+                light.intensity = 0.7;
+                
+                // ایجاد زمین بازی
+                const ground = BABYLON.MeshBuilder.CreateGround(
+                    "ground", 
+                    {width: 100, height: 100}, 
+                    scene
+                );
+                
+                const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+                groundMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.8, 0.3);
+                ground.material = groundMaterial;
+                
+                // ایجاد شبکه برای زمین
+                const groundGrid = new BABYLON.GridMaterial("groundGrid", scene);
+                groundGrid.majorUnitFrequency = 5;
+                groundGrid.minorUnitVisibility = 0.3;
+                groundGrid.gridRatio = 1;
+                groundGrid.mainColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+                groundGrid.lineColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+                groundGrid.opacity = 0.7;
+                
+                // ایجاد چند ساختمان اولیه برای نمایش
+                createBuilding(-20, -20, scene);
+                createBuilding(20, 20, scene);
+                createBuilding(-20, 20, scene);
+                createBuilding(20, -20, scene);
+                
+                return scene;
+            }
+            
+            // تابع برای ایجاد ساختمان‌ها
+            function createBuilding(x, z, scene) {
+                const building = BABYLON.MeshBuilder.CreateBox(
+                    "building", 
+                    {width: 8, height: 10, depth: 8}, 
+                    scene
+                );
+                building.position = new BABYLON.Vector3(x, 5, z);
+                
+                const buildingMaterial = new BABYLON.StandardMaterial("buildingMaterial", scene);
+                buildingMaterial.diffuseColor = new BABYLON.Color3(
+                    0.5 + Math.random() * 0.5,
+                    0.3 + Math.random() * 0.3,
+                    0.1 + Math.random() * 0.2
+                );
+                building.material = buildingMaterial;
+                
+                return building;
+            }
+            
+            // ایجاد فهرست فایل‌ها در رابط کاربری
+            function initializeFileList() {
+                for (let i = 1; i <= 20; i++) {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.id = `file-${i}`;
+                    fileItem.innerHTML = `
+                        <div class="file-icon">📄</div>
+                        <span>m${i}.js</span>
+                        <div class="file-status"></div>
+                    `;
+                    
+                    fileItem.addEventListener('click', () => {
+                        setActiveFile(i);
+                    });
+                    
+                    fileList.appendChild(fileItem);
+                }
+            }
+            
+            // تنظیم فایل فعال
+            function setActiveFile(index) {
+                // غیرفعال کردن فایل قبلی
+                if (activeFileIndex > 0) {
+                    const prevFileItem = document.getElementById(`file-${activeFileIndex}`);
+                    prevFileItem.classList.remove('active');
+                }
+                
+                activeFileIndex = index;
+                const fileItem = document.getElementById(`file-${index}`);
+                fileItem.classList.add('active');
+                
+                currentFileElement.textContent = `m${index}.js`;
+                fileStatusElement.textContent = 'در حال اجرا...';
+                
+                // اجرای فایل مربوطه
+                executeFile(index);
+            }
+            
+            // اجرای فایل مربوطه
+            function executeFile(index) {
+                try {
+                    // در اینجا کد مربوط به اجرای فایل m{index}.js قرار می‌گیرد
+                    // برای نمونه، ما یک تاخیر شبیه‌سازی می‌کنیم
+                    setTimeout(() => {
+                        // شبیه‌سازی موفقیت‌آمیز اجرای فایل
+                        fileStatus[index-1] = 'loaded';
+                        const fileItem = document.getElementById(`file-${index}`);
+                        const statusIndicator = fileItem.querySelector('.file-status');
+                        statusIndicator.classList.add('loaded');
+                        
+                        fileStatusElement.textContent = 'اجرا شده';
+                        
+                        // اگر فایل بعدی وجود دارد، آن را فعال کن
+                        if (index < 20) {
+                            setActiveFile(index + 1);
+                        }
+                    }, 1000);
+                } catch (error) {
+                    // در صورت بروز خطا
+                    fileStatus[index-1] = 'error';
+                    const fileItem = document.getElementById(`file-${index}`);
+                    const statusIndicator = fileItem.querySelector('.file-status');
+                    statusIndicator.classList.add('error');
+                    
+                    fileStatusElement.textContent = 'خطا در اجرا';
+                    console.error(`خطا در اجرای فایل m${index}.js:`, error);
+                }
+            }
+            
+            // شروع بازی
+            startBtn.addEventListener('click', function() {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+                
+                // شروع از فایل اول
+                setActiveFile(1);
+            });
+            
+            // بازنشانی بازی
+            resetBtn.addEventListener('click', function() {
+                // بازنشانی وضعیت فایل‌ها
+                fileStatus.fill('pending');
+                activeFileIndex = -1;
+                
+                // بازنشانی رابط کاربری
+                const fileItems = document.querySelectorAll('.file-item');
+                fileItems.forEach(item => {
+                    item.classList.remove('active');
+                    const statusIndicator = item.querySelector('.file-status');
+                    statusIndicator.className = 'file-status';
+                });
+                
+                currentFileElement.textContent = 'هیچکدام';
+                fileStatusElement.textContent = 'آماده';
+                
+                // ایجاد صحنه جدید
+                if (scene) {
+                    scene.dispose();
+                }
+                scene = createScene();
+            });
+            
+            // راه‌اندازی اولیه
+            initializeFileList();
+            scene = createScene();
+            
+            // مخفی کردن صفحه بارگذاری پس از لود کامل
+            window.addEventListener('load', function() {
+                setTimeout(() => {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                    }, 500);
+                }, 2000);
+            });
+            
+            // رندر حلقه
+            engine.runRenderLoop(function() {
+                if (scene) {
+                    scene.render();
+                }
+            });
+            
+            // پاسخگویی به تغییر سایز پنجره
+            window.addEventListener('resize', function() {
+                engine.resize();
+            });
+        });
+    </script>
+</body>
+  </html>
