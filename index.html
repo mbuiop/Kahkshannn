@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بازی کهکشانی حرفه‌ای</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            overflow: hidden;
+            touch-action: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* آتشفشان‌های گوشه‌ها */
+        .corner-volcano {
+            position: fixed;
+            font-size: 20px;
+            z-index: 1;
+            filter: drop-shadow(0 0 10px #ff3300) drop-shadow(0 0 20px #ff5500);
+            animation: volcanoGlow 2s infinite alternate;
+        }
+        
+        .corner-volcano.top-left { top: 10px; left: 10px; }
+        .corner-volcano.top-right { top: 10px; right: 10px; }
+        .corner-volcano.bottom-left { bottom: 10px; left: 10px; }
+        .corner-volcano.bottom-right { bottom: 10px; right: 10px; }
+        
+        @keyframes volcanoGlow {
+            from { filter: drop-shadow(0 0 5px #ff3300) drop-shadow(0 0 10px #ff5500); }
+            to { filter: drop-shadow(0 0 15px #ff3300) drop-shadow(0 0 25px #ff5500); }
+        }
+        
+        #mainScreen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 2;
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #ff8a00, #e52e71, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(229, 46, 113, 0.5);
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        .subtitle {
+            font-size: 0.9rem;
+            color: #00ccff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px #00ccff;
+        }
+        
+        @keyframes titleGlow {
+            from { filter: drop-shadow(0 0 5px rgba(255, 138, 0, 0.7)); }
+            to { filter: drop-shadow(0 0 15px rgba(229, 46, 113, 0.7)); }
+        }
+        
+        /* گالری تصاویر - بزرگ‌تر شده */
+        .gallery-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .gallery-item {
+            width: 48%;
+            height: 120px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(0, 204, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.3);
+            background: linear-gradient(45deg, #ff0084, #33001b);
+            animation: float 6s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(0, 204, 255, 0.6);
+        }
+        
+        .gallery-item:nth-child(1) { 
+            animation-delay: 0s; 
+            background: linear-gradient(45deg, #ff6b6b, #c44569);
+        }
+        .gallery-item:nth-child(2) { 
+            animation-delay: 2s; 
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* دکمه‌های اصلی - کوچک و زیبا */
+        .main-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .main-btn {
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border: none;
+            padding: 10px 8px;
+            font-size: 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(0, 204, 255, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            min-height: 55px;
+            justify-content: center;
+        }
+        
+        .main-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 12px rgba(0, 204, 255, 0.6);
+        }
+        
+        .main-btn.start {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            box-shadow: 0 3px 8px rgba(0, 255, 136, 0.4);
+            font-size: 0.8rem;
+            padding: 12px 10px;
+            grid-column: span 3;
+            animation: pulse 2s infinite;
+        }
+        
+        .btn-icon {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 3px 8px rgba(0, 255, 136, 0.4); }
+            50% { transform: scale(1.03); box-shadow: 0 5px 12px rgba(0, 255, 136, 0.6); }
+        }
+        
+        /* دکمه اطلاعیه مدیریت */
+        .management-btn {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            border: none;
+            padding: 10px 8px;
+            font-size: 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(255, 68, 68, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            animation: redPulse 2s infinite;
+            grid-column: span 3;
+            min-height: 55px;
+            justify-content: center;
+        }
+        
+        .management-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 12px rgba(255, 68, 68, 0.6);
+        }
+        
+        @keyframes redPulse {
+            0%, 100% { box-shadow: 0 3px 8px rgba(255, 68, 68, 0.4); }
+            50% { box-shadow: 0 3px 12px rgba(255, 68, 68, 0.8), 0 0 15px rgba(255, 68, 68, 0.3); }
+        }
+        
+        /* پنل آمار */
+        .stats-panel {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 10px 0;
+            text-align: center;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 8px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #00ccff;
+            margin-top: 2px;
+        }
+
+        /* جوئستیک حرفه‌ای */
+        .joystick-container {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .joystick-base {
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 204, 255, 0.3);
+        }
+
+        .joystick-handle {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.6);
+            transition: transform 0.1s ease;
+            cursor: pointer;
+        }
+
+        .joystick-center {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .joystick-label {
+            color: #00ccff;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ccff;
+            margin-top: 5px;
+        }
+
+        /* کنترل‌های بازی */
+        .game-controls {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .bomb-btn {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+        }
+
+        .shoot-btn {
+            background: linear-gradient(45deg, #00ff88, #00cc66);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+        
+        /* رسپانسیو برای موبایل */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.7rem;
+            }
+            
+            .subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .gallery-item {
+                height: 100px;
+                font-size: 0.8rem;
+            }
+            
+            .main-btn {
+                padding: 8px 6px;
+                font-size: 0.7rem;
+                min-height: 50px;
+            }
+            
+            .main-btn.start {
+                font-size: 0.75rem;
+                padding: 10px 8px;
+            }
+            
+            .management-btn {
+                padding: 8px 6px;
+                font-size: 0.7rem;
+                min-height: 50px;
+            }
+            
+            .btn-icon {
+                font-size: 0.9rem;
+            }
+            
+            .stat-item {
+                padding: 5px 6px;
+            }
+            
+            .stat-value {
+                font-size: 0.9rem;
+            }
+
+            .joystick-base {
+                width: 80px;
+                height: 80px;
+            }
+
+            .joystick-handle {
+                width: 40px;
+                height: 40px;
+            }
+
+            .control-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-item {
+                height: 90px;
+            }
+            
+            .main-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .main-btn.start,
+            .management-btn {
+                grid-column: span 2;
+            }
+
+            .joystick-container {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .game-controls {
+                bottom: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- آتشفشان‌های گوشه‌ها -->
+    <div class="corner-volcano top-left">🌋</div>
+    <div class="corner-volcano top-right">🌋</div>
+    <div class="corner-volcano bottom-left">🌋</div>
+    <div class="corner-volcano bottom-right">🌋</div>
+    
+    <!-- صفحه اصلی -->
+    <div id="mainScreen">
+        <div class="header">
+            <h1>🚀 بازی کهکشانی</h1>
+            <div class="subtitle">ماجراجویی در دل سیارات ناشناخته</div>
+            
+            <!-- گالری تصاویر - بزرگ‌تر شده -->
+            <div class="gallery-container">
+                <div class="gallery-item">
+                    <span>🌌 فضای بازی 1</span>
+                </div>
+                <div class="gallery-item">
+                    <span>🪐 فضای بازی 2</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- دکمه‌های اصلی - کوچک و زیبا -->
+        <div class="main-buttons">
+            <button class="main-btn start" onclick="startGame()">
+                <span class="btn-icon">🎮</span>
+                شروع بازی
+            </button>
+            <button class="main-btn" onclick="showAchievements()">
+                <span class="btn-icon">🏆</span>
+                مدال‌ها
+            </button>
+            <button class="main-btn" onclick="showInstructions()">
+                <span class="btn-icon">📖</span>
+                راهنما
+            </button>
+            <button class="main-btn" onclick="showSettings()">
+                <span class="btn-icon">⚙️</span>
+                تنظیمات
+            </button>
+            <button class="management-btn" onclick="showManagement()">
+                <span class="btn-icon">🔔</span>
+                اطلاعیه
+            </button>
+        </div>
+        
+        <!-- پنل آمار -->
+        <div class="stats-panel">
+            <div class="stats">
+                <div class="stat-item">
+                    <div>بالاترین امتیاز</div>
+                    <div class="stat-value">۱۲۵۰</div>
+                </div>
+                <div class="stat-item">
+                    <div>بالاترین مرحله</div>
+                    <div class="stat-value">۸</div>
+                </div>
+                <div class="stat-item">
+                    <div>مدال‌های کسب شده</div>
+                    <div class="stat-value">۱۵/۱۰۰</div>
+                </div>
+                <div class="stat-item">
+                    <div>کل مدال‌ها</div>
+                    <div class="stat-value">۲,۸۵۰</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- جوئستیک و کنترل‌های بازی -->
+    <div class="joystick-container">
+        <div class="joystick-base" id="joystickBase">
+            <div class="joystick-handle" id="joystickHandle"></div>
+            <div class="joystick-center"></div>
+        </div>
+        <div class="joystick-label">هدایت سفینه</div>
+    </div>
+
+    <div class="game-controls">
+        <button class="control-btn bomb-btn" onclick="useBomb()" title="بمب">
+            💣
+        </button>
+        <button class="control-btn shoot-btn" onclick="shoot()" title="شلیک">
+            🔫
+        </button>
+    </div>
+
+    <!-- لینک به فایل JavaScript بازی -->
+    <script src="game.js"></script>
+
+    <script>
+        // توابع موقت برای تست دکمه‌ها تا زمانی که game.js بارگذاری شود
+        function startGame() {
+            alert('🎮 بازی شروع شد! (این پیام موقتی است)');
+            console.log('بازی شروع شد - منتظر game.js');
+        }
+        
+        function showAchievements() {
+            alert('🏆 مدال‌ها نمایش داده می‌شوند');
+        }
+        
+        function showInstructions() {
+            alert('📖 راهنمای بازی');
+        }
+        
+        function showSettings() {
+            alert('⚙️ تنظیمات بازی');
+        }
+        
+        function showManagement() {
+            alert('🔔 اطلاعیه مدیریت');
+        }
+
+        function useBomb() {
+            alert('💣 بمب استفاده شد!');
+        }
+
+        function shoot() {
+            alert('🔫 شلیک انجام شد!');
+        }
+
+        // سیستم جوئستیک حرفه‌ای
+        class Joystick {
+            constructor() {
+                this.base = document.getElementById('joystickBase');
+                this.handle = document.getElementById('joystickHandle');
+                this.isActive = false;
+                this.startX = 0;
+                this.startY = 0;
+                this.baseX = 0;
+                this.baseY = 0;
+                
+                this.init();
+            }
+            
+            init() {
+                this.base.addEventListener('touchstart', (e) => this.onTouchStart(e));
+                document.addEventListener('touchmove', (e) => this.onTouchMove(e));
+                document.addEventListener('touchend', () => this.onTouchEnd());
+                
+                // برای تست در دسکتاپ
+                this.base.addEventListener('mousedown', (e) => this.onMouseDown(e));
+                document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+                document.addEventListener('mouseup', () => this.onMouseUp());
+            }
+            
+            onTouchStart(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                this.activate(touch.clientX, touch.clientY);
+            }
+            
+            onMouseDown(e) {
+                e.preventDefault();
+                this.activate(e.clientX, e.clientY);
+            }
+            
+            activate(clientX, clientY) {
+                this.isActive = true;
+                this.startX = clientX;
+                this.startY = clientY;
+                
+                const rect = this.base.getBoundingClientRect();
+                this.baseX = rect.left + rect.width / 2;
+                this.baseY = rect.top + rect.height / 2;
+                
+                this.base.style.background = 'rgba(255, 255, 255, 0.25)';
+            }
+            
+            onTouchMove(e) {
+                if (!this.isActive) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                this.move(touch.clientX, touch.clientY);
+            }
+            
+            onMouseMove(e) {
+                if (!this.isActive) return;
+                this.move(e.clientX, e.clientY);
+            }
+            
+            move(clientX, clientY) {
+                const deltaX = clientX - this.startX;
+                const deltaY = clientY - this.startY;
+                
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                const limitedDistance = Math.min(distance, 30);
+                const angle = Math.atan2(deltaY, deltaX);
+                
+                // حرکت هندل جوئستیک
+                this.handle.style.transform = 
+                    `translate(${limitedDistance * Math.cos(angle)}px, ${limitedDistance * Math.sin(angle)}px)`;
+                
+                // ارسال داده حرکت به بازی
+                if (distance > 5) {
+                    const speed = (limitedDistance / 30) * 1.5;
+                    const moveX = Math.cos(angle) * speed;
+                    const moveY = Math.sin(angle) * speed;
+                    
+                    console.log(`حرکت سفینه: X=${moveX.toFixed(2)}, Y=${moveY.toFixed(2)}`);
+                }
+            }
+            
+            onTouchEnd() {
+                this.deactivate();
+            }
+            
+            onMouseUp() {
+                this.deactivate();
+            }
+            
+            deactivate() {
+                this.isActive = false;
+                this.handle.style.transform = 'translate(0, 0)';
+                this.base.style.background = 'rgba(255, 255, 255, 0.15)';
+            }
+        }
+
+        // راه‌اندازی جوئستیک
+        const joystick = new Joystick();
+        
+        // اضافه کردن افکت hover برای دکمه‌ها
+        document.querySelectorAll('.main-btn, .management-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px) scale(1.05)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0px) scale(1)';
+            });
+        });
+        
+        console.log('🎮 سیستم جوئستیک راه‌اندازی شد');
+        console.log('📁 صفحه اصلی بارگذاری شد');
+        console.log('🔗 منتظر بارگذاری game.js...');
+    </script>
+</body>
+  </html>
