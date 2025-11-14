@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بازی کهکشانی حرفه‌ای</title>
+    <link rel="icon" href="m.html" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- آتشفشان‌های گوشه‌ها -->
+    <div class="corner-volcano top-left">🌋</div>
+    <div class="corner-volcano top-right">🌋</div>
+    <div class="corner-volcano bottom-left">🌋</div>
+    <div class="corner-volcano bottom-right">🌋</div>
+    
+    <!-- صفحه اصلی -->
+    <div id="mainScreen">
+        <div class="header">
+            <h1>🚀 بازی کهکشانی حرفه‌ای</h1>
+            <div class="subtitle">ماجراجویی در دل سیارات ناشناخته</div>
+            
+            <!-- گالری تصاویر -->
+            <div class="gallery-container">
+                <div class="gallery-item">
+                    <img src="m1.jpg" alt="فضای بازی 1" onerror="this.style.display='none'">
+                </div>
+                <div class="gallery-item">
+                    <img src="m2.jpg" alt="فضای بازی 2" onerror="this.style.display='none'">
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-buttons">
+            <button class="main-btn start" onclick="startGame()">
+                <span class="btn-icon">🎮</span>
+                شروع بازی
+            </button>
+            <button class="main-btn" onclick="showAchievements()">
+                <span class="btn-icon">🏆</span>
+                مدال‌ها
+            </button>
+            <button class="main-btn" onclick="showInstructions()">
+                <span class="btn-icon">📖</span>
+                راهنما
+            </button>
+            <button class="main-btn" onclick="showSettings()">
+                <span class="btn-icon">⚙️</span>
+                تنظیمات
+            </button>
+            <button class="management-btn" onclick="showManagement()">
+                <span class="btn-icon">🔔</span>
+                اطلاعیه
+            </button>
+        </div>
+        
+        <div class="stats-panel">
+            <div class="stats">
+                <div class="stat-item">
+                    <div>بالاترین امتیاز</div>
+                    <div class="stat-value" id="highScore">0</div>
+                </div>
+                <div class="stat-item">
+                    <div>بالاترین مرحله</div>
+                    <div class="stat-value" id="highLevel">1</div>
+                </div>
+                <div class="stat-item">
+                    <div>مدال‌های کسب شده</div>
+                    <div class="stat-value" id="achievementsCount">0/100</div>
+                </div>
+                <div class="stat-item">
+                    <div>کل مدال‌ها</div>
+                    <div class="stat-value" id="totalCoinsCollected">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- صفحه بازی -->
+    <div id="gameScreen" class="hidden">
+        <div id="gameWorld"></div>
+    </div>
+
+    <!-- HUD بازی -->
+    <div class="game-hud hidden">
+        <div class="hud-item level-indicator">
+            مرحله: <span id="currentLevel">1</span>
+        </div>
+        <div class="hud-item fuel-indicator">
+            ⛽ سوخت: <span id="fuelLevel">100</span>%
+        </div>
+        <div class="hud-item score-indicator">
+            امتیاز: <span id="currentScore">0</span>
+        </div>
+    </div>
+
+    <!-- کنترل‌های بازی -->
+    <div class="game-controls hidden">
+        <button class="control-btn bomb-btn" onclick="game.useBomb()" title="بمب">
+            💣
+        </button>
+        <button class="control-btn special-btn" onclick="game.toggleAutoShoot()" title="شلیک خودکار">
+            🔫
+        </button>
+        <div class="joystick-container">
+            <div class="joystick">
+                <div class="joystick-handle"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نشانگر زمان امن -->
+    <div id="safeTimeIndicator" class="safe-time-indicator hidden">زمان امن: 5s</div>
+    
+    <!-- کنترل صدا -->
+    <div class="audio-controls">
+        <button class="audio-btn" onclick="game.toggleSound()">🔊 صدا</button>
+    </div>
+
+    <!-- نشانگر بازیکن -->
+    <div id="playerIndicator" class="hidden">🛸 این شما هستید!</div>
+    
+    <!-- صفحه پایان مرحله -->
+    <div id="levelComplete">
+        <h2>تبریک! 🎉</h2>
+        <p>مرحله <span id="completedLevel">1</span> تکمیل شد!</p>
+        <p>آماده مرحله بعدی هستی؟</p>
+        <button id="nextLevelButton">برو مرحله بعد</button>
+    </div>
+
+    <!-- لودینگ -->
+    <div id="loadingScreen" class="loading-container hidden">
+        <div class="coin-3d">🌏</div>
+        <div class="loading-text" id="loadingText">در حال بارگذاری...</div>
+    </div>
+
+    <!-- مدال‌ها -->
+    <div id="achievementsModal" class="achievement-modal hidden">
+        <div class="achievement-cup">🏆</div>
+        <h2>مدال‌های شما</h2>
+        <div class="achievement-grid" id="achievementGrid"></div>
+        <button class="main-btn" onclick="closeAchievements()">بستن</button>
+    </div>
+
+    <!-- راهنمای حرفه‌ای -->
+    <div id="instructionsModal" class="instructions-modal hidden">
+        <div class="instructions-content">
+            <h2>📖 راهنمای جامع بازی کهکشانی</h2>
+            <!-- محتوای راهنما -->
+            <button class="instructions-close" onclick="closeInstructions()">بستن راهنما</button>
+        </div>
+    </div>
+
+    <!-- مودال اطلاعیه مدیریت -->
+    <div id="managementModal" class="management-modal hidden">
+        <div class="management-content">
+            <h2>🔔 اطلاعیه مدیریت</h2>
+            <div class="management-message">
+                <p>🎮 <strong>به بازی کهکشانی حرفه‌ای خوش آمدید!</strong></p>
+                <p>✨ بازی کاملاً بهینه شده و آماده ارائه تجربه‌ای فوق‌العاده است.</p>
+            </div>
+            <button class="management-close" onclick="closeManagement()">بستن اطلاعیه</button>
+        </div>
+    </div>
+
+    <!-- تنظیمات -->
+    <div id="settingsModal" class="settings-modal hidden">
+        <div class="settings-content">
+            <h2>⚙️ تنظیمات بازی</h2>
+            <div class="setting-group">
+                <label class="setting-label">رنگ سفینه:</label>
+                <div class="color-options" id="colorOptions"></div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label">پس‌زمینه بازی:</label>
+                <div class="background-options" id="backgroundOptions"></div>
+            </div>
+            <button class="settings-close" onclick="closeSettings()">ذخیره و بستن</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+  </html>
