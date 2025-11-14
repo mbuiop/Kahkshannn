@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قبیله جنگجویان - گرافیک بالا</title>
+        <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Tahoma, Arial, sans-serif;
+            background: #000;
+        }
+                  #gameContainer {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+                  }
+                  #uiOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+                  }
+                  .tribePanel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #8B4513;
+            pointer-events: auto;
+                  }
+                  .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            pointer-events: auto;
+                  }
+                  button {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #A0522D;
+            transform: translateY(-2px);
+        }
+        </style>
+   </head>
+  <body>
+    <div id="gameContainer">
+        <canvas id="renderCanvas"></canvas>
+              <div id="uiOverlay">
+            <div class="tribePanel">
+                <h2>قبیله شما</h2>
+                <div id="tribeInfo">
+                    <div>جمعیت: <span id="population">0</span></div>
+                    <div>غذا: <span id="food">0</span></div>
+                    <div>چوب: <span id="wood">0</span></div>
+                    <div>سنگ: <span id="stone">0</span></div>
+                </div>
+            </div>
+                            <div class="controls">
+                <button id="addWarrior">آموزش جنگجو</button>
+                <button id="buildHut">ساخت کلبه</button>
+                <button id="zoomIn">بزرگنمایی</button>
+                <button id="zoomOut">کوچکنمایی</button>
+                <button id="moveCamera">حرکت دوربین</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="js/gameConfig.js"></script>
+    <script src="js/tribeManager.js"></script>
+    <script src="js/terrainManager.js"></script>
+    <script src="js/cameraController.js"></script>
+    <script src="js/main.js"></script>
+    </body>
+</html>
