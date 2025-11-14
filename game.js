@@ -127,36 +127,40 @@ class GalaxyGame {
         });
     }
 
-    setupJoystick() {
+        setupJoystick() {
         const joystick = document.querySelector('.joystick');
         const joystickHandle = document.querySelector('.joystick-handle');
-        let joystickBaseX, joystickBaseY;
-
+        let startX, startY;
+        let baseX, baseY;
         joystick.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
             const rect = joystick.getBoundingClientRect();
-            joystickBaseX = rect.left + rect.width / 2;
-            joystickBaseY = rect.top + rect.height / 2;
+            baseX = rect.left + rect.width / 2;
+            baseY = rect.top + rect.height / 2;
             this.joystickActive = true;
-        });
-
-        document.addEventListener('touchmove', (e) => {
+         });
+            document.addEventListener('touchmove', (e) => {
             if (!this.joystickActive || !this.gameState.running) return;
             e.preventDefault();
+            
 
             const touch = e.touches[0];
-            const deltaX = touch.clientX - joystickBaseX;
-            const deltaY = touch.clientY - joystickBaseY;
+            const deltaX = touch.clientX - startX;
+            const deltaY = touch.clientY - startY;
             
             const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            const angle = Math.atan2(deltaY, deltaX);
             const limitedDistance = Math.min(distance, 35);
+            const angle = Math.atan2(deltaY, deltaX);
 
             // حرکت هندل جویستیک
-            joystickHandle.style.transform = `translate(${limitedDistance * Math.cos(angle)}px, ${limitedDistance * Math.sin(angle)}px)`;
+            joystickHandle.style.transform = 
+            `translate(${limitedDistance * Math.cos(angle)}px, ${limitedDistance * Math.sin(angle)}px)`;
 
-            if (distance > 10) {
-                const speed = 8;
+            if (distance > 5) {
+                const speed = (limitedDistance / 35) * 8;
                 const newX = this.gameState.player.x + Math.cos(angle) * speed;
                 const newY = this.gameState.player.y + Math.sin(angle) * speed;
 
@@ -171,10 +175,12 @@ class GalaxyGame {
         });
 
         document.addEventListener('touchend', () => {
-            this.joystickActive = false;
-            joystickHandle.style.transform = 'translate(0, 0)';
-        });
-    }
+        this.joystickActive = false;
+        joystickHandle.style.transform = 'translate(0, 0)';
+    });
+   } 
+            
+            
 
     isTouchOnJoystick(x, y) {
         const joystick = document.querySelector('.joystick');
@@ -189,9 +195,16 @@ class GalaxyGame {
     }
 
     updatePlayerPosition() {
-        if (this.playerElement) {
-            this.playerElement.style.left = (this.gameState.player.x - this.gameState.player.size/2) + 'px';
-            this.playerElement.style.top = (this.gameState.player.y - this.gameState.player.size/2) + 'px';
+    if (this.playerElement) {
+        this.playerElement.style.left = (this.gameState.player.x - this.gameState.player.size/2) + 'px';
+        this.playerElement.style.top = (this.gameState.player.y - this.gameState.player.size/2) + 'px';
+        
+        // فقط موقعیت به‌روز شود، چرخش غیرفعال
+    }
+    
+        
+            
+            
 
             // چرخش سفینه بر اساس حرکت
             if (this.gameState.playerPath.length > 1) {
