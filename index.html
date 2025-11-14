@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جنگ قبیله‌ای - Clash Style Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tahoma', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            overflow: hidden;
+            height: 100vh;
+            color: white;
+            direction: rtl;
+        }
+        
+        #gameContainer {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: #1a1a1a;
+        }
+        
+        /* صفحه بارگذاری */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-content {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            border: 3px solid gold;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        
+        .loading-title {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: gold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .loading-subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        #loadingBar {
+            width: 400px;
+            height: 25px;
+            background: #333;
+            border-radius: 12px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 2px solid gold;
+        }
+        
+        #loadingProgress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        #loadingText {
+            font-size: 1.1em;
+            margin-top: 15px;
+            color: gold;
+            font-weight: bold;
+        }
+        
+        /* پنل دیباگ */
+        #debugPanel {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            border: 2px solid #00ff00;
+            font-family: 'Tahoma';
+            max-width: 300px;
+        }
+        
+        .debug-title {
+            color: #00ff00;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        
+        .debug-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .debug-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        
+        .debug-btn:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+        }
+        
+        /* نوتیفیکیشن */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 100, 255, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 2px solid gold;
+            font-size: 1.1em;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* راهنمای بازی */
+        #gameGuide {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid gold;
+            z-index: 2000;
+            display: none;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .guide-title {
+            color: gold;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        
+        .guide-content {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .guide-close {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        
+        /* استایل‌های موبایل */
+        @media (max-width: 768px) {
+            #loadingBar {
+                width: 300px;
+            }
+            
+            .loading-title {
+                font-size: 2em;
+            }
+            
+            #debugPanel {
+                max-width: 250px;
+                bottom: 5px;
+                left: 5px;
+            }
+            
+            .debug-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* انیمیشن‌ها */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- صفحه بارگذاری -->
+        <div id="loadingScreen">
+            <div class="loading-content fade-in">
+                <h1 class="loading-title pulse">🏰 جنگ قبیله‌ای</h1>
+                <p class="loading-subtitle">در حال بارگذاری دنیای حماسی...</p>
+                
+                <div id="loadingBar">
+                    <div id="loadingProgress"></div>
+                </div>
+                <div id="loadingText">0%</div>
+                
+                <div style="margin-top: 20px; font-size: 0.9em; color: #ccc;">
+                    <p>🎮 آماده برای نبردهای حماسی!</p>
+                    <p>⚔️ ساخت‌وساز و توسعه قبیله</p>
+                    <p>🛡️ دفاع در برابر دشمنان</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- پنل دیباگ -->
+        <div id="debugPanel">
+            <div class="debug-title">🔧 کنترل‌های توسعه</div>
+            <div class="debug-buttons">
+                <button class="debug-btn" onclick="window.debugGame.testBuild('wall')">🧱 ساخت دیوار</button>
+                <button class="debug-btn" onclick="window.debugGame.testBuild('goldmine')">💰 معدن طلا</button>
+                <button class="debug-btn" onclick="window.debugGame.testBuild('elixirfactory')">⚗️ کارخانه اکسیر</button>
+                <button class="debug-btn" onclick="window.debugGame.testBuild('barracks')">⚔️ سربازخانه</button>
+                <button class="debug-btn" onclick="window.debugGame.addResources()">💎 اضافه کردن منابع</button>
+                <button class="debug-btn" onclick="window.debugGame.showBuildings()">🏗️ نمایش ساختمان‌ها</button>
+                <button class="debug-btn" onclick="window.debugGame.spawnEnemy()">👹 حمله دشمن</button>
+                <button class="debug-btn" onclick="showGameGuide()">📖 راهنمای بازی</button>
+            </div>
+        </div>
+        
+        <!-- نوتیفیکیشن -->
+        <div class="notification" id="notification"></div>
+        
+        <!-- راهنمای بازی -->
+        <div id="gameGuide">
+            <h2 class="guide-title">🎮 راهنمای بازی</h2>
+            <div class="guide-content">
+                <p><strong>🏗️ ساخت‌وساز:</strong></p>
+                <p>• از دکمه‌های پایین برای ساخت ساختمان استفاده کنید</p>
+                <p>• روی زمین خالی کلیک کنید تا ساختمان ساخته شود</p>
+                
+                <p><strong>⚔️ نبرد:</strong></p>
+                <p>• هر ۵ دقیقه دشمنان به قبیله شما حمله می‌کنند</p>
+                <p>• از دیوارها و توپخانه‌ها برای دفاع استفاده کنید</p>
+                
+                <p><strong>💰 منابع:</strong></p>
+                <p>• معادن طلا و کارخانه‌های اکسیر منابع تولید می‌کنند</p>
+                <p>• برای ساخت و آموزش سرباز به منابع نیاز دارید</p>
+                
+                <p><strong>🎯 هدف بازی:</strong></p>
+                <p>• قبیله خود را توسعه دهید</p>
+                <p>• در برابر حملات دشمنان مقاومت کنید</p>
+                <p>• به سطح‌های بالاتر صعود کنید</p>
+            </div>
+            <button class="guide-close" onclick="hideGameGuide()">شروع بازی!</button>
+        </div>
+    </div>
+
+    <!-- بارگذاری کتابخانه Babylon.js -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    
+    <!-- بارگذاری فایل‌های بازی -->
+    <script>
+        // تابع برای بارگذاری پویای فایل‌های JS
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
+        // تابع اصلی بارگذاری بازی
+        async function loadGame() {
+            try {
+                console.log("🚀 شروع بارگذاری بازی...");
+                
+                // به‌روزرسانی نوار پیشرفت
+                const updateProgress = (percent, text) => {
+                    document.getElementById('loadingProgress').style.width = percent + '%';
+                    document.getElementById('loadingText').textContent = text;
+                };
+                
+                updateProgress(10, "در حال راه‌اندازی موتور بازی...");
+                
+                // بارگذاری فایل‌های بازی
+                updateProgress(30, "در حال بارگذاری موتور اصلی...");
+                await loadScript('m1.js');
+                
+                updateProgress(50, "در حال بارگذاری رابط کاربری...");
+                await loadScript('m2.js');
+                
+                updateProgress(70, "در حال بارگذاری انیمیشن‌ها...");
+                await loadScript('m3.js');
+                
+                updateProgress(90, "در حال بارگذاری سیستم مدیریت...");
+                await loadScript('m4.js');
+                
+                updateProgress(100, "آماده برای شروع!");
+                
+                console.log("✅ تمام فایل‌های بازی بارگذاری شدند");
+                
+                // مخفی کردن صفحه بارگذاری پس از تاخیر
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').style.display = 'none';
+                        showGameGuide();
+                    }, 500);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ خطا در بارگذاری بازی:', error);
+                document.getElementById('loadingText').textContent = 'خطا در بارگذاری بازی!';
+                document.getElementById('loadingText').style.color = '#ff4444';
+            }
+        }
+        
+        // شروع بارگذاری بازی
+        window.addEventListener('DOMContentLoaded', loadGame);
+    </script>
+    
+    <!-- اسکریپت دیباگ و کمکی -->
+    <script>
+        // توابع دیباگ
+        window.debugGame = {
+            testBuild: (type = "wall") => {
+                if (window.gameEngine) {
+                    window.gameEngine.setBuildMode(type);
+                    showNotification(`حالت ساخت فعال: ${getBuildingName(type)}`);
+                    console.log(`🔨 حالت ساخت فعال: ${type}`);
+                } else {
+                    showNotification("⚠️ بازی هنوز آماده نیست!", "error");
+                }
+            },
+            
+            addResources: () => {
+                if (window.gameEngine) {
+                    window.gameEngine.resources.gold += 1000;
+                    window.gameEngine.resources.elixir += 1000;
+                    if (window.gameEngine.updateResourceUI) {
+                        window.gameEngine.updateResourceUI();
+                    }
+                    showNotification("💎 1000 طلا و اکسیر اضافه شد!", "success");
+                    console.log("💰 منابع اضافه شد");
+                } else {
+                    showNotification("⚠️ بازی هنوز آماده نیست!", "error");
+                }
+            },
+            
+            showBuildings: () => {
+                if (window.gameEngine) {
+                    console.log("🏗️ ساختمان‌های موجود:", window.gameEngine.tribeLayout);
+                    showNotification("ساختمان‌ها در کنسول نمایش داده شدند", "info");
+                } else {
+                    showNotification("⚠️ بازی هنوز آماده نیست!", "error");
+                }
+            },
+            
+            spawnEnemy: () => {
+                if (window.gameEngine && window.gameEngine.spawnEnemy) {
+                    window.gameEngine.spawnEnemy();
+                    showNotification("👹 دشمن ظاهر شد!", "warning");
+                } else {
+                    showNotification("⚠️ سیستم نبرد آماده نیست!", "error");
+                }
+            },
+            
+            resetGame: () => {
+                if (confirm("آیا از بازنشانی بازی اطمینان دارید؟")) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            }
+        };
+        
+        // توابع کمکی
+        function getBuildingName(type) {
+            const names = {
+                'wall': 'دیوار',
+                'goldmine': 'معدن طلا',
+                'elixirfactory': 'کارخانه اکسیر',
+                'barracks': 'سربازخانه',
+                'cannon': 'توپخانه',
+                'townhall': 'سالن شهر'
+            };
+            return names[type] || type;
+        }
+        
+        function showNotification(message, type = "info") {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            
+            // تنظیم رنگ بر اساس نوع
+            const colors = {
+                'info': 'rgba(0, 100, 255, 0.9)',
+                'success': 'rgba(0, 200, 0, 0.9)',
+                'warning': 'rgba(255, 165, 0, 0.9)',
+                'error': 'rgba(255, 0, 0, 0.9)'
+            };
+            
+            notification.style.background = colors[type] || colors.info;
+            notification.style.display = 'block';
+            notification.style.animation = 'fadeIn 0.5s ease-out';
+            
+            // مخفی کردن خودکار
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        function showGameGuide() {
+            document.getElementById('gameGuide').style.display = 'block';
+        }
+        
+        function hideGameGuide() {
+            document.getElementById('gameGuide').style.display = 'none';
+            // شروع بازی پس از بستن راهنما
+            if (window.gameEngine && window.gameEngine.setupGameStart) {
+                window.gameEngine.setupGameStart();
+                showNotification("🎮 بازی شروع شد! ساختمان‌های خود را بسازید", "success");
+            }
+        }
+        
+        // مدیریت خطاهای全局
+        window.addEventListener('error', (event) => {
+            console.error('💥 خطای全局:', event.error);
+            showNotification(`خطا: ${event.error.message}`, "error");
+        });
+        
+        // مدیریت هشدارهای کنسول
+        const originalConsoleWarn = console.warn;
+        console.warn = function(...args) {
+            originalConsoleWarn.apply(console, args);
+            // نمایش هشدارهای مهم به کاربر
+            if (args[0] && typeof args[0] === 'string' && args[0].includes('Babylon')) {
+                showNotification(`هشدار: ${args[0]}`, "warning");
+            }
+        };
+        
+        // اطلاعات سیستم
+        console.log("🖥️ اطلاعات سیستم:");
+        console.log("• User Agent:", navigator.userAgent);
+        console.log("• Language:", navigator.language);
+        console.log("• Platform:", navigator.platform);
+        console.log("• Cookies Enabled:", navigator.cookieEnabled);
+        console.log("• Screen:", screen.width + "x" + screen.height);
+    </script>
+</body>
+  </html>
