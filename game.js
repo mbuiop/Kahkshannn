@@ -115,8 +115,8 @@ class GalaxyGame {
                     this.movePlayer(touch.clientX, touch.clientY);
                 }
             }
-        }, { passive: false });
-
+        },
+        { passive: false });
         // تنظیمات جویستیک
         this.setupJoystick();
 
@@ -128,11 +128,11 @@ class GalaxyGame {
     }
 
         setupJoystick() {
-        const joystick = document.querySelector('.joystick');
-        const joystickHandle = document.querySelector('.joystick-handle');
+           const joystick = document.querySelector('.joystick');
+           const joystickHandle = document.querySelector('.joystick-handle');
         let startX, startY;
         let baseX, baseY;
-        joystick.addEventListener('touchstart', (e) => {
+   joystick.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
             startX = touch.clientX;
@@ -141,7 +141,7 @@ class GalaxyGame {
             baseX = rect.left + rect.width / 2;
             baseY = rect.top + rect.height / 2;
             this.joystickActive = true;
-         });
+    });
             document.addEventListener('touchmove', (e) => {
             if (!this.joystickActive || !this.gameState.running) return;
             e.preventDefault();
@@ -188,7 +188,7 @@ class GalaxyGame {
         return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
     }
 
-    movePlayer(x, y) {
+      movePlayer(x, y) {
         this.gameState.player.x = x;
         this.gameState.player.y = y;
         this.updatePlayerPosition();
@@ -202,11 +202,8 @@ class GalaxyGame {
         // فقط موقعیت به‌روز شود، چرخش غیرفعال
     }
     
-        
-            
-            
 
-            // چرخش سفینه بر اساس حرکت
+         // چرخش سفینه بر اساس حرکت
             if (this.gameState.playerPath.length > 1) {
                 const currentPos = this.gameState.playerPath[this.gameState.playerPath.length - 1];
                 const prevPos = this.gameState.playerPath[this.gameState.playerPath.length - 2];
