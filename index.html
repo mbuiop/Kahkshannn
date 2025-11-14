@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازی کهکشانی سینمایی</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="stars"></div>
+        <div id="gameArea">
+            <!-- بازی اینجا رندر می‌شود -->
+        </div>
+        
+        <div id="uiContainer">
+            <div id="loadingScreen">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">در حال بارگذاری بازی کهکشانی...</div>
+            </div>
+            
+            <div id="topPanel" class="ui-panel">
+                <div class="stat-item">
+                    <div class="stat-label">امتیاز</div>
+                    <div class="stat-value" id="scoreValue">0</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">سوخت</div>
+                    <div class="stat-value" id="fuelValue">100%</div>
+                    <div id="fuelBar">
+                        <div id="fuelFill" style="width: 100%;"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">مرحله</div>
+                    <div class="stat-value" id="levelValue">1</div>
+                </div>
+            </div>
+            
+            <div id="centerPanel" class="ui-panel">
+                <h1 id="gameTitle">🚀 بازی کهکشانی</h1>
+                <button class="menu-btn start" id="startBtn">شروع بازی</button>
+                <button class="menu-btn" id="instructionsBtn">📖 راهنما</button>
+                <button class="menu-btn management" id="managementBtn">🔔 اطلاعیه مدیریت</button>
+            </div>
+            
+            <div id="gameControls">
+                <div id="joystickContainer">
+                    <div id="joystickBase"></div>
+                    <div id="joystickHandle"></div>
+                </div>
+                
+                <button id="bombButton">💣</button>
+            </div>
+            
+            <div id="notification" class="notification">
+                <div id="notificationText"></div>
+            </div>
+            
+            <!-- مودال راهنما -->
+            <div id="instructionsModal" class="modal">
+                <div class="modal-content">
+                    <h2>📖 راهنمای بازی</h2>
+                    <div style="text-align: right; line-height: 1.8; margin: 20px 0;">
+                        <p>🎯 <strong>هدف بازی:</strong> نابودی دشمنان و جمع‌آوری امتیاز</p>
+                        <p>🛸 <strong>کنترل سفینه:</strong> با جویستیک سمت راست حرکت کنید</p>
+                        <p>💣 <strong>بمب:</strong> با دکمه سمت چپ تمام دشمنان را نابود کنید</p>
+                        <p>🌋 <strong>دشمنان:</strong> از پایین صفحه ظاهر می‌شوند</p>
+                        <p>⛽ <strong>سوخت:</strong> با زمان کاهش می‌یابد</p>
+                    </div>
+                    <button class="modal-close" id="closeInstructions">بستن راهنما</button>
+                </div>
+            </div>
+            
+            <!-- مودال اطلاعیه مدیریت -->
+            <div id="managementModal" class="modal">
+                <div class="modal-content">
+                    <h2>🔔 اطلاعیه مدیریت</h2>
+                    <div style="text-align: right; line-height: 1.8; margin: 20px 0; padding: 20px; background: rgba(255, 68, 68, 0.1); border-radius: 10px; border: 1px solid rgba(255, 68, 68, 0.3);">
+                        <p>🎮 <strong>به بازی کهکشانی خوش آمدید!</strong></p>
+                        <p>✨ بازی کاملاً بهینه شده و آماده ارائه تجربه‌ای فوق‌العاده است.</p>
+                        <p>⭐ از بازی لذت ببرید و به کهکشان‌های دور سفر کنید!</p>
+                    </div>
+                    <button class="modal-close" id="closeManagement">بستن اطلاعیه</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- فایل JavaScript بازی -->
+    <script src="m1.js"></script>
+</body>
+</html>
