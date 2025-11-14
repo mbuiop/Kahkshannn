@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازی کهکشانی سینمایی حرفه‌ای</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+        }
+        
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+        }
+        
+        #uiContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .ui-panel {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 40px rgba(0, 200, 255, 0.4);
+            pointer-events: all;
+        }
+        
+        #topPanel {
+            top: 25px;
+            left: 25px;
+            right: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 25px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 15px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ccff;
+            text-shadow: 0 0 12px #00ccff;
+        }
+        
+        #fuelBar {
+            width: 140px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        
+        #fuelFill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00ccff);
+            border-radius: 9px;
+            transition: width 0.3s;
+            box-shadow: 0 0 12px #00ff88;
+        }
+        
+        #centerPanel {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s;
+            pointer-events: all;
+            min-width: 320px;
+        }
+        
+        #gameTitle {
+            font-size: 3rem;
+            color: #00ccff;
+            text-shadow: 0 0 25px #00ccff;
+            margin-bottom: 30px;
+            animation: titleGlow 2s infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 25px #00ccff; }
+            to { text-shadow: 0 0 35px #00ccff, 0 0 50px #0066ff; }
+        }
+        
+        .menu-btn {
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0, 204, 255, 0.6);
+            transition: all 0.3s;
+            margin: 12px;
+            width: 240px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .menu-btn:hover::before {
+            left: 100%;
+        }
+        
+        .menu-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 7px 25px rgba(0, 204, 255, 0.8);
+        }
+        
+        .menu-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .menu-btn.start {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.6);
+            font-size: 1.5rem;
+            padding: 20px 32px;
+        }
+        
+        .menu-btn.achievements {
+            background: linear-gradient(45deg, #ffaa00, #ff5500);
+            box-shadow: 0 5px 20px rgba(255, 170, 0, 0.6);
+        }
+        
+        .menu-btn.management {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            box-shadow: 0 5px 20px rgba(255, 68, 68, 0.6);
+            animation: redPulse 2s infinite;
+        }
+        
+        @keyframes redPulse {
+            0%, 100% { box-shadow: 0 5px 20px rgba(255, 68, 68, 0.6); }
+            50% { box-shadow: 0 5px 30px rgba(255, 68, 68, 0.9), 0 0 40px rgba(255, 68, 68, 0.5); }
+        }
+        
+        #gameControls {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            right: 25px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+        
+        #joystickContainer {
+            width: 130px;
+            height: 130px;
+            pointer-events: none;
+        }
+        
+        #joystickBase {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.4);
+        }
+        
+        #joystickHandle {
+            position: absolute;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border-radius: 50%;
+            box-shadow: 0 0 18px rgba(0, 204, 255, 0.8);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+        }
+        
+        #bombButton {
+            width: 75px;
+            height: 75px;
+            background: radial-gradient(circle, #ff4444, #cc0000);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.6);
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: all;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #bombButton::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        #bombButton:hover::before {
+            left: 100%;
+        }
+        
+        #bombButton:hover {
+            transform: scale(1.1);
+            box-shadow: 0 7px 25px rgba(255, 0, 0, 0.8);
+        }
+        
+        #bombButton:active {
+            transform: scale(0.95);
+        }
+        
+        #bombButton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.92);
+            color: white;
+            padding: 25px 35px;
+            border-radius: 18px;
+            border: 2px solid #00ccff;
+            text-align: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(0, 200, 255, 0.5);
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.96);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            color: white;
+            padding: 25px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background: rgba(0, 0, 0, 0.92);
+            padding: 35px;
+            border-radius: 25px;
+            max-width: 550px;
+            max-height: 85vh;
+            overflow-y: auto;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.1);
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 200, 255, 0.3);
+        }
+        
+        .modal h2 {
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            color: #00ccff;
+            text-shadow: 0 0 15px #00ccff;
+        }
+        
+        .modal-close {
+            margin-top: 25px;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 204, 255, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 204, 255, 0.7);
+        }
+        
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 25px 0;
+            max-width: 350px;
+        }
+        
+        .achievement-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            min-height: 85px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .achievement-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-3px);
+        }
+        
+        .achievement-item.locked {
+            opacity: 0.4;
+            filter: grayscale(0.7);
+        }
+        
+        .achievement-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .achievement-item.unlocked .achievement-icon {
+            animation: achievementGlow 2s infinite alternate;
+        }
+        
+        @keyframes achievementGlow {
+            from { filter: drop-shadow(0 0 5px gold); }
+            to { filter: drop-shadow(0 0 15px gold); }
+        }
+        
+        .instructions-content {
+            text-align: right;
+            line-height: 1.9;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .instructions-content p {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+            color: #e0e0e0;
+        }
+        
+        .instructions-content strong {
+            color: #00ccff;
+        }
+        
+        .management-message {
+            background: rgba(255, 68, 68, 0.08);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 68, 68, 0.2);
+            margin: 25px 0;
+            text-align: right;
+        }
+        
+        .management-message p {
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: #ffaaaa;
+            margin-bottom: 12px;
+        }
+        
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 300;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 6px solid rgba(255, 255, 255, 0.1);
+            border-top: 6px solid #00ccff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 25px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.3rem;
+            color: #00ccff;
+            text-shadow: 0 0 10px #00ccff;
+        }
+        
+        @media (max-width: 768px) {
+            #gameControls {
+                display: flex;
+            }
+            
+            #gameTitle {
+                font-size: 2.3rem;
+            }
+            
+            .menu-btn {
+                padding: 14px 28px;
+                font-size: 1.1rem;
+                width: 220px;
+            }
+            
+            .menu-btn.start {
+                font-size: 1.3rem;
+                padding: 16px 28px;
+            }
+            
+            .stat-value {
+                font-size: 1.3rem;
+            }
+            
+            .modal-content {
+                padding: 25px;
+                margin: 15px;
+            }
+            
+            .achievement-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #topPanel {
+                top: 15px;
+                left: 15px;
+                right: 15px;
+                padding: 15px 20px;
+            }
+            
+            #gameTitle {
+                font-size: 1.8rem;
+            }
+            
+            .menu-btn {
+                padding: 12px 24px;
+                font-size: 1rem;
+                width: 200px;
+                margin: 8px;
+            }
+            
+            .menu-btn.start {
+                font-size: 1.1rem;
+                padding: 14px 24px;
+            }
+            
+            .stat-item {
+                margin: 0 8px;
+            }
+            
+            .stat-value {
+                font-size: 1.1rem;
+            }
+            
+            .stat-label {
+                font-size: 0.75rem;
+            }
+            
+            #fuelBar {
+                width: 100px;
+            }
+            
+            #joystickContainer {
+                width: 110px;
+                height: 110px;
+            }
+            
+            #joystickBase {
+                width: 90px;
+                height: 90px;
+            }
+            
+            #joystickHandle {
+                width: 45px;
+                height: 45px;
+            }
+            
+            #bombButton {
+                width: 65px;
+                height: 65px;
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    
+    <div id="uiContainer">
+        <div id="loadingScreen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">در حال بارگذاری بازی کهکشانی...</div>
+        </div>
+        
+        <div id="topPanel" class="ui-panel" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-label">امتیاز</div>
+                <div class="stat-value" id="scoreValue">0</div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-label">سوخت</div>
+                <div class="stat-value" id="fuelValue">100%</div>
+                <div id="fuelBar">
+                    <div id="fuelFill" style="width: 100%;"></div>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-label">مرحله</div>
+                <div class="stat-value" id="levelValue">1</div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-label">سکه</div>
+                <div class="stat-value" id="coinsValue">0</div>
+            </div>
+        </div>
+        
+        <div id="centerPanel" class="ui-panel">
+            <h1 id="gameTitle">🚀 بازی کهکشانی سینمایی</h1>
+            <button class="menu-btn start" id="startBtn">🎮 شروع بازی</button>
+            <button class="menu-btn achievements" id="achievementsBtn">🏆 مدال‌ها و دستاوردها</button>
+            <button class="menu-btn" id="instructionsBtn">📖 راهنمای جامع بازی</button>
+            <button class="menu-btn management" id="managementBtn">🔔 اطلاعیه مدیریت سیستم</button>
+        </div>
+        
+        <div id="gameControls">
+            <div id="joystickContainer">
+                <div id="joystickBase"></div>
+                <div id="joystickHandle"></div>
+            </div>
+            
+            <button id="bombButton">💣</button>
+        </div>
+        
+        <div id="notification" class="notification">
+            <div id="notificationText"></div>
+        </div>
+        
+        <!-- مودال مدال‌ها و دستاوردها -->
+        <div id="achievementsModal" class="modal">
+            <div class="modal-content">
+                <h2>🏆 مدال‌ها و دستاوردهای شما</h2>
+                <div class="achievement-grid" id="achievementGrid">
+                    <!-- مدال‌ها توسط JavaScript ساخته می‌شوند -->
+                </div>
+                <button class="modal-close" id="closeAchievements">بستن پنجره مدال‌ها</button>
+            </div>
+        </div>
+        
+        <!-- مودال راهنمای جامع بازی -->
+        <div id="instructionsModal" class="modal">
+            <div class="modal-content">
+                <h2>📖 راهنمای جامع بازی کهکشانی</h2>
+                <div class="instructions-content">
+                    <p>🎯 <strong>هدف اصلی بازی:</strong><br>
+                    هدایت سفینه فضایی و نابودی دشمنان کهکشانی برای کسب امتیاز و مدال‌های طلایی. شما باید در محیط سه بعدی حرکت کرده و با دشمنان مبارزه کنید.</p>
+
+                    <p>🛸 <strong>سیستم کنترل سفینه:</strong><br>
+                    • از جویستیک سمت راست پایین برای حرکت استفاده کنید<br>
+                    • حرکت کاملاً روان و حرفه‌ای در تمام جهات<br>
+                    • سفینه به صورت خودکار به سمت دشمنان شلیک می‌کند</p>
+
+                    <p>💣 <strong>سیستم بمب هسته‌ای:</strong><br>
+                    • از دکمه بمب سمت چپ پایین استفاده کنید<br>
+                    • هر بمب ۳ سکه هزینه دارد<br>
+                    • تمام دشمنان در محدوده انفجار نابود می‌شوند<br>
+                    • افکت‌های بصری خیره کننده</p>
+
+                    <p>🌋 <strong>انواع دشمنان:</strong><br>
+                    • <strong>دشمن پایه:</strong> سرعت و قدرت معمولی<br>
+                    • <strong>دشمن سریع:</strong> حرکت سریع‌تر<br>
+                    • <strong>دشمن شلیک‌کننده:</strong> توانایی شلیک به سمت شما</p>
+
+                    <p>⛽ <strong>سیستم سوخت و مدیریت منابع:</strong><br>
+                    • سوخت به تدریج کاهش می‌یابد<br>
+                    • با نابودی دشمنان سوخت دریافت می‌کنید<br>
+                    • مدیریت سوخت برای ادامه بازی حیاتی است</p>
+
+                    <p>💰 <strong>سیستم اقتصادی و سکه‌ها:</strong><br>
+                    • با نابودی دشمنان سکه کسب کنید<br>
+                    • از سکه‌ها برای خرید بمب استفاده کنید<br>
+                    • جمع‌آوری سکه‌ها برای دستاوردها ضروری است</p>
+
+                    <p>🏆 <strong>سیستم مدال و دستاوردها:</strong><br>
+                    • ۱۲ مدال مختلف برای کسب کردن<br>
+                    • دستاوردهای متنوع با شرایط مختلف<br>
+                    • ردیابی پیشرفت در پنل مدال‌ها</p>
+
+                    <p>⭐ <strong>نکات پیشرفته:</strong><br>
+                    • از محیط برای پنهان شدن استفاده کنید<br>
+                    • بمب‌ها را برای موقعیت‌های بحرانی ذخیره کنید<br>
+                    • الگوی حرکت دشمنان را مطالعه کنید<br>
+                    • همیشه مراقب نشانگر سوخت باشید</p>
+                </div>
+                <button class="modal-close" id="closeInstructions">بستن راهنما</button>
+            </div>
+        </div>
+        
+        <!-- مودال اطلاعیه مدیریت سیستم -->
+        <div id="managementModal" class="modal">
+            <div class="modal-content">
+                <h2>🔔 اطلاعیه مدیریت سیستم</h2>
+                <div class="management-message">
+                    <p>🎮 <strong>به بازی کهکشانی سینمایی خوش آمدید!</strong></p>
+                    <p>✨ این بازی با پیشرفته‌ترین تکنولوژی‌های روز دنیا طراحی و پیاده‌سازی شده است.</p>
+                    <p>🚀 <strong>ویژگی‌های فنی سیستم:</strong></p>
+                    <p>• موتور گرافیکی Babylon.js با پشتیبانی سخت‌افزاری<br>
+                       • رندر سه بعدی واقعی با سایه‌زنی پیشرفته<br>
+                       • سیستم فیزیکی دقیق و بهینه‌سازی شده<br>
+                       • مدیریت حافظه و منابع پیشرفته</p>
+                    <p>🎯 <strong>بهبودهای اخیر سیستم:</strong></p>
+                    <p>• بهینه‌سازی عملکرد برای دستگاه‌های مختلف<br>
+                       • بهبود سیستم ذرات و افکت‌های بصری<br>
+                       • افزودن هوش مصنوعی پیشرفته برای دشمنان<br>
+                       • توسعه سیستم صوتی چند کاناله</p>
+                    <p>⭐ <strong>تضمین کیفیت:</strong></p>
+                    <p>• تست شده روی طیف وسیعی از دستگاه‌ها<br>
+                       • بهینه‌سازی برای اجرای روان<br>
+                       • پشتیبانی از رزولوشن‌های مختلف<br>
+                       • تجربه کاربری یکپارچه</p>
+                    <p>🎊 از بازی لذت ببرید و به کهکشان‌های دور سفر کنید!</p>
+                </div>
+                <button class="modal-close" id="closeManagement">بستن اطلاعیه</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Babylon.js Libraries -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    
+    <!-- فایل JS اصلی بازی -->
+    <script src="m1.js"></script>
+</body>
+  </html>
