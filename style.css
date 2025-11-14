@@ -382,24 +382,23 @@ h1 {
     box-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
 }
 
-/* جویستیک */
-.joystick-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .joystick {
     width: 80px;
     height: 80px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
     backdrop-filter: blur(10px);
     position: relative;
+    transition: all 0.2s;
+}
+
+.joystick:active {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
 }
 
 .joystick-handle {
@@ -407,10 +406,9 @@ h1 {
     height: 40px;
     background: linear-gradient(45deg, #00ccff, #0066ff);
     border-radius: 50%;
-    box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.6);
     transition: transform 0.1s;
 }
-
 .safe-time-indicator {
     position: fixed;
     top: 80px;
