@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازی کهکشانی سینمایی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+        }
+        
+        #uiContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .ui-element {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            pointer-events: all;
+        }
+        
+        #scorePanel {
+            top: 20px;
+            left: 20px;
+            font-size: 1.2rem;
+        }
+        
+        #fuelPanel {
+            top: 20px;
+            right: 20px;
+            font-size: 1.2rem;
+        }
+        
+        #controlsPanel {
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 204, 255, 0.5);
+            transition: all 0.3s;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 204, 255, 0.7);
+        }
+        
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #bombBtn {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.5);
+        }
+        
+        #messagePanel {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+        
+        #messagePanel.show {
+            opacity: 1;
+        }
+        
+        #joystickContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: 150px;
+            pointer-events: none;
+            display: none;
+        }
+        
+        #joystickBase {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            backdrop-filter: blur(10px);
+        }
+        
+        #joystickHandle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+        }
+        
+        @media (max-width: 768px) {
+            #joystickContainer {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    
+    <div id="uiContainer">
+        <div id="scorePanel" class="ui-element">
+            امتیاز: <span id="scoreValue">0</span>
+        </div>
+        
+        <div id="fuelPanel" class="ui-element">
+            سوخت: <span id="fuelValue">100</span>%
+        </div>
+        
+        <div id="controlsPanel" class="ui-element">
+            <button id="fireBtn" class="control-btn">🔥 شلیک</button>
+            <button id="bombBtn" class="control-btn">💣 بمب</button>
+            <button id="pauseBtn" class="control-btn">⏸️ توقف</button>
+        </div>
+        
+        <div id="messagePanel" class="ui-element">
+            <div id="messageText"></div>
+        </div>
+        
+        <div id="joystickContainer">
+            <div id="joystickBase"></div>
+            <div id="joystickHandle"></div>
+        </div>
+    </div>
+
+    <!-- Babylon.js Library -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    
+    <script>
+        // متغیرهای اصلی بازی
+        let canvas, engine, scene, camera, light;
+        let playerShip, enemyShips = [], bullets = [], enemyBullets = [];
+        let score = 0, fuel = 100, gameRunning = true;
+        let joystickActive = false, joystickX = 0, joystickY = 0;
+        
+        // تنظیمات بازی
+        const GAME_SETTINGS = {
+            playerSpeed: 0.5,
+            bulletSpeed: 1.5,
+            enemySpeed: 0.3,
+            enemyBulletSpeed: 0.8,
+            fuelConsumption: 0.05,
+            fuelRefillPerEnemy: 5,
+            enemySpawnRate: 2000, // میلی‌ثانیه
+            enemyBulletRate: 1500 // میلی‌ثانیه
+        };
+        
+        // راه‌اندازی بازی
+        window.addEventListener('DOMContentLoaded', function() {
+            // ایجاد موتور و صحنه
+            canvas = document.getElementById('renderCanvas');
+            engine = new BABYLON.Engine(canvas, true);
+            scene = new BABYLON.Scene(engine);
+            
+            // ایجاد دوربین از نمای بالا
+            camera = new BABYLON.ArcRotateCamera(
+                "camera", 
+                -Math.PI / 2, 
+                Math.PI / 2, 
+                50, 
+                new BABYLON.Vector3(0, 0, 0), 
+                scene
+            );
+            camera.attachControl(canvas, true);
+            camera.lowerBetaLimit = Math.PI / 3;
+            camera.upperBetaLimit = Math.PI / 2.2;
+            
+            // ایجاد نور
+            light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = 0.7;
+            
+            // ایجاد پس‌زمینه پهناور (زمین فوتبال)
+            createStadium();
+            
+            // ایجاد سفینه کاربر
+            createPlayerShip();
+            
+            // ایجاد دیوارهای اطراف
+            createWalls();
+            
+            // شروع تولید دشمن‌ها
+            setInterval(spawnEnemy, GAME_SETTINGS.enemySpawnRate);
+            
+            // حلقه اصلی بازی
+            scene.registerBeforeRender(function() {
+                if (gameRunning) {
+                    updatePlayer();
+                    updateBullets();
+                    updateEnemies();
+                    updateEnemyBullets();
+                    checkCollisions();
+                    consumeFuel();
+                }
+            });
+            
+            // تنظیم کنترل‌ها
+            setupControls();
+            
+            // راه‌اندازی موتور
+            engine.runRenderLoop(function() {
+                scene.render();
+            });
+            
+            // تنظیم ریسایز
+            window.addEventListener('resize', function() {
+                engine.resize();
+            });
+        });
+        
+        // ایجاد استادیوم (زمین فوتبال)
+        function createStadium() {
+            // کف استادیوم
+            const ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 100, height: 60}, scene);
+            const groundMaterial = new BABYLON.StandardMaterial("groundMat", scene);
+            groundMaterial.diffuseTexture = new BABYLON.Texture("https://i.imgur.com/6Q6f9QK.jpg", scene);
+            groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+            ground.material = groundMaterial;
+            
+            // خطوط زمین فوتبال
+            const lineMaterial = new BABYLON.StandardMaterial("lineMat", scene);
+            lineMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
+            lineMaterial.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+            
+            // خط میانی
+            const centerLine = BABYLON.MeshBuilder.CreateBox("centerLine", {width: 2, height: 60, depth: 0.1}, scene);
+            centerLine.position.x = 0;
+            centerLine.material = lineMaterial;
+            
+            // دایره مرکزی
+            const centerCircle = BABYLON.MeshBuilder.CreateTorus("centerCircle", {diameter: 10, thickness: 0.5}, scene);
+            centerCircle.position.x = 0;
+            centerCircle.rotation.x = Math.PI / 2;
+            centerCircle.material = lineMaterial;
+            
+            // محوطه جریمه
+            const penaltyArea1 = BABYLON.MeshBuilder.CreateBox("penaltyArea1", {width: 30, height: 10, depth: 0.1}, scene);
+            penaltyArea1.position.x = -35;
+            penaltyArea1.material = lineMaterial;
+            
+            const penaltyArea2 = BABYLON.MeshBuilder.CreateBox("penaltyArea2", {width: 30, height: 10, depth: 0.1}, scene);
+            penaltyArea2.position.x = 35;
+            penaltyArea2.material = lineMaterial;
+            
+            // دروازه‌ها
+            const goalMaterial = new BABYLON.StandardMaterial("goalMat", scene);
+            goalMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+            
+            const goal1 = BABYLON.MeshBuilder.CreateBox("goal1", {width: 2, height: 15, depth: 5}, scene);
+            goal1.position.x = -50;
+            goal1.material = goalMaterial;
+            
+            const goal2 = BABYLON.MeshBuilder.CreateBox("goal2", {width: 2, height: 15, depth: 5}, scene);
+            goal2.position.x = 50;
+            goal2.material = goalMaterial;
+            
+            // ایجاد آسمان
+            const skybox = BABYLON.MeshBuilder.CreateBox("skybox", {size: 500}, scene);
+            const skyboxMaterial = new BABYLON.StandardMaterial("skyboxMat", scene);
+            skyboxMaterial.backFaceCulling = false;
+            skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://assets.babylonjs.com/textures/skybox", scene);
+            skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+            skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+            skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+            skybox.material = skyboxMaterial;
+        }
+        
+        // ایجاد دیوارهای اطراف زمین
+        function createWalls() {
+            const wallMaterial = new BABYLON.StandardMaterial("wallMat", scene);
+            wallMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+            
+            // دیوار بالا
+            const topWall = BABYLON.MeshBuilder.CreateBox("topWall", {width: 100, height: 5, depth: 2}, scene);
+            topWall.position.y = 2.5;
+            topWall.position.z = -30;
+            topWall.material = wallMaterial;
+            
+            // دیوار پایین
+            const bottomWall = BABYLON.MeshBuilder.CreateBox("bottomWall", {width: 100, height: 5, depth: 2}, scene);
+            bottomWall.position.y = 2.5;
+            bottomWall.position.z = 30;
+            bottomWall.material = wallMaterial;
+            
+            // دیوار چپ
+            const leftWall = BABYLON.MeshBuilder.CreateBox("leftWall", {width: 2, height: 5, depth: 60}, scene);
+            leftWall.position.y = 2.5;
+            leftWall.position.x = -50;
+            leftWall.material = wallMaterial;
+            
+            // دیوار راست
+            const rightWall = BABYLON.MeshBuilder.CreateBox("rightWall", {width: 2, height: 5, depth: 60}, scene);
+            rightWall.position.y = 2.5;
+            rightWall.position.x = 50;
+            rightWall.material = wallMaterial;
+        }
+        
+        // ایجاد سفینه کاربر
+        function createPlayerShip() {
+            // بدنه اصلی سفینه
+            const ship = BABYLON.MeshBuilder.CreateCylinder("ship", {diameterTop: 0, diameterBottom: 3, height: 1, tessellation: 6}, scene);
+            
+            // موتورهای سفینه
+            const engine1 = BABYLON.MeshBuilder.CreateCylinder("engine1", {diameterTop: 0.5, diameterBottom: 1, height: 1}, scene);
+            engine1.position.z = -1.5;
+            engine1.parent = ship;
+            
+            const engine2 = BABYLON.MeshBuilder.CreateCylinder("engine2", {diameterTop: 0.5, diameterBottom: 1, height: 1}, scene);
+            engine2.position.z = -1.5;
+            engine2.position.x = 0.8;
+            engine2.parent = ship;
+            
+            const engine3 = BABYLON.MeshBuilder.CreateCylinder("engine3", {diameterTop: 0.5, diameterBottom: 1, height: 1}, scene);
+            engine3.position.z = -1.5;
+            engine3.position.x = -0.8;
+            engine3.parent = ship;
+            
+            // مواد سفینه
+            const shipMaterial = new BABYLON.StandardMaterial("shipMat", scene);
+            shipMaterial.diffuseColor = new BABYLON.Color3(0, 0.5, 1);
+            shipMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+            ship.material = shipMaterial;
+            
+            const engineMaterial = new BABYLON.StandardMaterial("engineMat", scene);
+            engineMaterial.diffuseColor = new BABYLON.Color3(1, 0.5, 0);
+            engineMaterial.emissiveColor = new BABYLON.Color3(0.5, 0.2, 0);
+            engine1.material = engineMaterial;
+            engine2.material = engineMaterial;
+            engine3.material = engineMaterial;
+            
+            // سیستم ذرات برای موتورها
+            const particleSystem = new BABYLON.ParticleSystem("particles", 2000, scene);
+            particleSystem.particleTexture = new BABYLON.Texture("https://assets.babylonjs.com/textures/flare.png", scene);
+            particleSystem.emitter = engine1;
+            particleSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0);
+            particleSystem.maxEmitBox = new BABYLON.Vector3(0, 0, 0);
+            particleSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
+            particleSystem.color2 = new BABYLON.Color4(1, 0, 0, 1.0);
+            particleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
+            particleSystem.minSize = 0.1;
+            particleSystem.maxSize = 0.5;
+            particleSystem.minLifeTime = 0.3;
+            particleSystem.maxLifeTime = 0.5;
+            particleSystem.emitRate = 1500;
+            particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+            particleSystem.gravity = new BABYLON.Vector3(0, 0, -10);
+            particleSystem.direction1 = new BABYLON.Vector3(0, 0, -1);
+            particleSystem.direction2 = new BABYLON.Vector3(0, 0, -1);
+            particleSystem.minAngularSpeed = 0;
+            particleSystem.maxAngularSpeed = Math.PI;
+            particleSystem.minEmitPower = 1;
+            particleSystem.maxEmitPower = 3;
+            particleSystem.updateSpeed = 0.005;
+            particleSystem.start();
+            
+            playerShip = ship;
+            playerShip.position = new BABYLON.Vector3(0, 3, 0);
+            playerShip.rotation.x = Math.PI / 2;
+        }
+        
+        // ایجاد دشمن
+        function spawnEnemy() {
+            if (!gameRunning) return;
+            
+            const enemy = BABYLON.MeshBuilder.CreateBox("enemy", {width: 2, height: 1, depth: 2}, scene);
+            
+            const enemyMaterial = new BABYLON.StandardMaterial("enemyMat", scene);
+            enemyMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+            enemyMaterial.emissiveColor = new BABYLON.Color3(0.3, 0, 0);
+            enemy.material = enemyMaterial;
+            
+            // موقعیت تصادفی در پایین صفحه
+            const x = Math.random() * 80 - 40;
+            enemy.position = new BABYLON.Vector3(x, 1, 25);
+            
+            enemyShips.push(enemy);
+            
+            // شلیک دشمن
+            setTimeout(() => {
+                if (enemy.isDisposed()) return;
+                enemyShoot(enemy);
+            }, GAME_SETTINGS.enemyBulletRate);
+        }
+        
+        // شلیک دشمن
+        function enemyShoot(enemy) {
+            if (!gameRunning || enemy.isDisposed()) return;
+            
+            const bullet = BABYLON.MeshBuilder.CreateSphere("enemyBullet", {diameter: 0.5}, scene);
+            const bulletMaterial = new BABYLON.StandardMaterial("enemyBulletMat", scene);
+            bulletMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+            bulletMaterial.emissiveColor = new BABYLON.Color3(0.5, 0, 0);
+            bullet.material = bulletMaterial;
+            
+            bullet.position = enemy.position.clone();
+            
+            enemyBullets.push(bullet);
+        }
+        
+        // شلیک کاربر
+        function playerShoot() {
+            if (!gameRunning) return;
+            
+            const bullet = BABYLON.MeshBuilder.CreateSphere("bullet", {diameter: 0.5}, scene);
+            const bulletMaterial = new BABYLON.StandardMaterial("bulletMat", scene);
+            bulletMaterial.diffuseColor = new BABYLON.Color3(0, 1, 1);
+            bulletMaterial.emissiveColor = new BABYLON.Color3(0, 0.5, 0.5);
+            bullet.material = bulletMaterial;
+            
+            bullet.position = playerShip.position.clone();
+            
+            bullets.push(bullet);
+        }
+        
+        // به‌روزرسانی موقعیت کاربر
+        function updatePlayer() {
+            if (joystickActive) {
+                // حرکت با جویستیک
+                playerShip.position.x += joystickX * GAME_SETTINGS.playerSpeed;
+                playerShip.position.z += joystickY * GAME_SETTINGS.playerSpeed;
+            }
+            
+            // محدود کردن حرکت به داخل زمین
+            playerShip.position.x = Math.max(-45, Math.min(45, playerShip.position.x));
+            playerShip.position.z = Math.max(-25, Math.min(25, playerShip.position.z));
+        }
+        
+        // به‌روزرسانی گلوله‌ها
+        function updateBullets() {
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                bullet.position.z += GAME_SETTINGS.bulletSpeed;
+                
+                // حذف گلوله اگر از صفحه خارج شد
+                if (bullet.position.z > 30) {
+                    bullet.dispose();
+                    bullets.splice(i, 1);
+                }
+            }
+        }
+        
+        // به‌روزرسانی گلوله‌های دشمن
+        function updateEnemyBullets() {
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                const bullet = enemyBullets[i];
+                bullet.position.z -= GAME_SETTINGS.enemyBulletSpeed;
+                
+                // حذف گلوله اگر از صفحه خارج شد
+                if (bullet.position.z < -30) {
+                    bullet.dispose();
+                    enemyBullets.splice(i, 1);
+                }
+            }
+        }
+        
+        // به‌روزرسانی دشمن‌ها
+        function updateEnemies() {
+            for (let i = enemyShips.length - 1; i >= 0; i--) {
+                const enemy = enemyShips[i];
+                
+                // حرکت به سمت کاربر
+                const direction = playerShip.position.subtract(enemy.position).normalize();
+                enemy.position.addInPlace(direction.scale(GAME_SETTINGS.enemySpeed));
+                
+                // چرخش به سمت کاربر
+                enemy.lookAt(playerShip.position);
+            }
+        }
+        
+        // بررسی برخوردها
+        function checkCollisions() {
+            // برخورد گلوله‌های کاربر با دشمن‌ها
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                
+                for (let j = enemyShips.length - 1; j >= 0; j--) {
+                    const enemy = enemyShips[j];
+                    
+                    if (bullet.intersectsMesh(enemy, false)) {
+                        // انفجار
+                        createExplosion(enemy.position);
+                        
+                        // حذف دشمن و گلوله
+                        enemy.dispose();
+                        enemyShips.splice(j, 1);
+                        
+                        bullet.dispose();
+                        bullets.splice(i, 1);
+                        
+                        // افزایش امتیاز و سوخت
+                        score += 100;
+                        fuel = Math.min(100, fuel + GAME_SETTINGS.fuelRefillPerEnemy);
+                        updateUI();
+                        
+                        break;
+                    }
+                }
+            }
+            
+            // برخورد گلوله‌های دشمن با کاربر
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                const bullet = enemyBullets[i];
+                
+                if (bullet.intersectsMesh(playerShip, false)) {
+                    // انفجار
+                    createExplosion(playerShip.position);
+                    
+                    // حذف گلوله
+                    bullet.dispose();
+                    enemyBullets.splice(i, 1);
+                    
+                    // کاهش سوخت
+                    fuel -= 20;
+                    updateUI();
+                    
+                    if (fuel <= 0) {
+                        gameOver();
+                    }
+                    
+                    break;
+                }
+            }
+            
+            // برخورد دشمن با کاربر
+            for (let i = enemyShips.length - 1; i >= 0; i--) {
+                const enemy = enemyShips[i];
+                
+                if (enemy.intersectsMesh(playerShip, false)) {
+                    // انفجار
+                    createExplosion(enemy.position);
+                    
+                    // حذف دشمن
+                    enemy.dispose();
+                    enemyShips.splice(i, 1);
+                    
+                    // کاهش سوخت
+                    fuel -= 30;
+                    updateUI();
+                    
+                    if (fuel <= 0) {
+                        gameOver();
+                    }
+                    
+                    break;
+                }
+            }
+        }
+        
+        // ایجاد انفجار
+        function createExplosion(position) {
+            const explosion = BABYLON.MeshBuilder.CreateSphere("explosion", {diameter: 3}, scene);
+            const explosionMaterial = new BABYLON.StandardMaterial("explosionMat", scene);
+            explosionMaterial.diffuseColor = new BABYLON.Color3(1, 0.5, 0);
+            explosionMaterial.emissiveColor = new BABYLON.Color3(1, 0.3, 0);
+            explosion.material = explosionMaterial;
+            
+            explosion.position = position.clone();
+            
+            // انیمیشن انفجار
+            const keys = [];
+            keys.push({frame: 0, value: 0});
+            keys.push({frame: 5, value: 3});
+            keys.push({frame: 10, value: 0});
+            
+            const animation = new BABYLON.Animation("explosionAnimation", "scaling", 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            animation.setKeys(keys);
+            
+            explosion.animations = [animation];
+            scene.beginAnimation(explosion, 0, 10, false, 1, () => {
+                explosion.dispose();
+            });
+        }
+        
+        // مصرف سوخت
+        function consumeFuel() {
+            fuel -= GAME_SETTINGS.fuelConsumption;
+            updateUI();
+            
+            if (fuel <= 0) {
+                gameOver();
+            }
+        }
+        
+        // پایان بازی
+        function gameOver() {
+            gameRunning = false;
+            showMessage("بازی تمام شد! امتیاز نهایی: " + score);
+            
+            setTimeout(() => {
+                resetGame();
+            }, 3000);
+        }
+        
+        // بازنشانی بازی
+        function resetGame() {
+            // حذف تمام دشمن‌ها و گلوله‌ها
+            enemyShips.forEach(enemy => enemy.dispose());
+            enemyShips = [];
+            
+            bullets.forEach(bullet => bullet.dispose());
+            bullets = [];
+            
+            enemyBullets.forEach(bullet => bullet.dispose());
+            enemyBullets = [];
+            
+            // بازنشانی موقعیت کاربر
+            playerShip.position = new BABYLON.Vector3(0, 3, 0);
+            
+            // بازنشانی امتیاز و سوخت
+            score = 0;
+            fuel = 100;
+            updateUI();
+            
+            // پنهان کردن پیام
+            hideMessage();
+            
+            // شروع مجدد بازی
+            gameRunning = true;
+        }
+        
+        // به‌روزرسانی رابط کاربری
+        function updateUI() {
+            document.getElementById('scoreValue').textContent = score;
+            document.getElementById('fuelValue').textContent = Math.max(0, Math.round(fuel));
+            
+            // تغییر رنگ نشانگر سوخت
+            const fuelPanel = document.getElementById('fuelPanel');
+            if (fuel < 20) {
+                fuelPanel.style.background = 'rgba(255, 0, 0, 0.7)';
+            } else if (fuel < 50) {
+                fuelPanel.style.background = 'rgba(255, 165, 0, 0.7)';
+            } else {
+                fuelPanel.style.background = 'rgba(0, 0, 0, 0.7)';
+            }
+        }
+        
+        // نمایش پیام
+        function showMessage(text) {
+            const messagePanel = document.getElementById('messagePanel');
+            const messageText = document.getElementById('messageText');
+            
+            messageText.textContent = text;
+            messagePanel.classList.add('show');
+        }
+        
+        // پنهان کردن پیام
+        function hideMessage() {
+            const messagePanel = document.getElementById('messagePanel');
+            messagePanel.classList.remove('show');
+        }
+        
+        // تنظیم کنترل‌ها
+        function setupControls() {
+            // دکمه شلیک
+            document.getElementById('fireBtn').addEventListener('click', playerShoot);
+            
+            // دکمه بمب
+            document.getElementById('bombBtn').addEventListener('click', function() {
+                if (!gameRunning) return;
+                
+                // حذف تمام دشمن‌ها
+                enemyShips.forEach(enemy => {
+                    createExplosion(enemy.position);
+                    enemy.dispose();
+                });
+                enemyShips = [];
+                
+                // حذف تمام گلوله‌های دشمن
+                enemyBullets.forEach(bullet => bullet.dispose());
+                enemyBullets = [];
+                
+                // افزایش امتیاز
+                score += 500;
+                updateUI();
+            });
+            
+            // دکمه توقف
+            document.getElementById('pauseBtn').addEventListener('click', function() {
+                gameRunning = !gameRunning;
+                this.textContent = gameRunning ? '⏸️ توقف' : '▶️ ادامه';
+            });
+            
+            // کنترل‌های صفحه‌کلید
+            window.addEventListener('keydown', function(e) {
+                if (!gameRunning) return;
+                
+                switch(e.key) {
+                    case 'ArrowUp':
+                    case 'w':
+                    case 'W':
+                        playerShip.position.z -= GAME_SETTINGS.playerSpeed;
+                        break;
+                    case 'ArrowDown':
+                    case 's':
+                    case 'S':
+                        playerShip.position.z += GAME_SETTINGS.playerSpeed;
+                        break;
+                    case 'ArrowLeft':
+                    case 'a':
+                    case 'A':
+                        playerShip.position.x -= GAME_SETTINGS.playerSpeed;
+                        break;
+                    case 'ArrowRight':
+                    case 'd':
+                    case 'D':
+                        playerShip.position.x += GAME_SETTINGS.playerSpeed;
+                        break;
+                    case ' ':
+                        playerShoot();
+                        break;
+                }
+            });
+            
+            // کنترل لمسی (جویستیک)
+            setupJoystick();
+        }
+        
+        // تنظیم جویستیک لمسی
+        function setupJoystick() {
+            const joystickBase = document.getElementById('joystickBase');
+            const joystickHandle = document.getElementById('joystickHandle');
+            const joystickContainer = document.getElementById('joystickContainer');
+            
+            let touchId = null;
+            let baseRect = null;
+            
+            joystickContainer.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                if (touchId !== null) return;
+                
+                const touch = e.touches[0];
+                touchId = touch.identifier;
+                
+                baseRect = joystickContainer.getBoundingClientRect();
+                joystickActive = true;
+            });
+            
+            joystickContainer.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                if (touchId === null) return;
+                
+                // پیدا کردن لمسی که شروع کردیم
+                let touch = null;
+                for (let i = 0; i < e.touches.length; i++) {
+                    if (e.touches[i].identifier === touchId) {
+                        touch = e.touches[i];
+                        break;
+                    }
+                }
+                
+                if (!touch) return;
+                
+                // محاسبه موقعیت نسبی
+                const x = touch.clientX - baseRect.left - baseRect.width / 2;
+                const y = touch.clientY - baseRect.top - baseRect.height / 2;
+                
+                // محدود کردن به دایره
+                const distance = Math.sqrt(x * x + y * y);
+                const maxDistance = baseRect.width / 2 - 25;
+                
+                if (distance > maxDistance) {
+                    const angle = Math.atan2(y, x);
+                    joystickX = Math.cos(angle);
+                    joystickY = Math.sin(angle);
+                    
+                    joystickHandle.style.transform = `translate(${Math.cos(angle) * maxDistance}px, ${Math.sin(angle) * maxDistance}px)`;
+                } else {
+                    joystickX = x / maxDistance;
+                    joystickY = y / maxDistance;
+                    
+                    joystickHandle.style.transform = `translate(${x}px, ${y}px)`;
+                }
+            });
+            
+            joystickContainer.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                touchId = null;
+                joystickActive = false;
+                joystickX = 0;
+                joystickY = 0;
+                joystickHandle.style.transform = 'translate(0, 0)';
+            });
+            
+            joystickContainer.addEventListener('touchcancel', function(e) {
+                e.preventDefault();
+                touchId = null;
+                joystickActive = false;
+                joystickX = 0;
+                joystickY = 0;
+                joystickHandle.style.transform = 'translate(0, 0)';
+            });
+        }
+    </script>
+</body>
+  </html>
