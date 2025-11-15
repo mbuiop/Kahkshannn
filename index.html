@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turret War Pro - جنگ تیربار حرفه‌ای</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/stats.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SobelOperatorShader.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #0a0f1d;
+            color: white;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        #gameContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        /* UI بالای صفحه */
+        #topUI {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 100;
+            border-bottom: 1px solid #444;
+        }
+        
+        #scorePanel {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid;
+            font-weight: bold;
+            font-size: 16px;
+            min-width: 120px;
+        }
+        
+        .score-item.coins {
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+        
+        .score-item.level {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+        
+        .score-item.time {
+            border-color: #2196F3;
+            color: #2196F3;
+        }
+        
+        /* UI پایین صفحه */
+        #bottomUI {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 10px;
+            z-index: 100;
+            gap: 10px;
+            border-top: 1px solid #444;
+        }
+        
+        #turretPanel {
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            border-radius: 15px;
+            border: 2px solid #555;
+            overflow-x: auto;
+            max-width: 95vw;
+        }
+        
+        .turret-button {
+            width: 60px;
+            height: 60px;
+            background: rgba(50, 50, 50, 0.8);
+            border: 2px solid #777;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-size: 10px;
+            gap: 3px;
+            flex-shrink: 0;
+        }
+        
+        .turret-button:hover {
+            transform: scale(1.05);
+            border-color: #FFD700;
+            background: rgba(70, 70, 70, 0.9);
+        }
+        
+        .turret-button.selected {
+            border-color: #4CAF50;
+            background: rgba(70, 100, 70, 0.9);
+        }
+        
+        .turret-button i {
+            font-size: 20px;
+        }
+        
+        #actionPanel {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-button {
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 100px;
+            justify-content: center;
+        }
+        
+        .action-button:hover {
+            background: linear-gradient(45deg, #2E7D32, #4CAF50);
+            transform: scale(1.05);
+        }
+        
+        .action-button.upgrade {
+            background: linear-gradient(45deg, #FF9800, #EF6C00);
+        }
+        
+        .action-button.upgrade:hover {
+            background: linear-gradient(45deg, #EF6C00, #FF9800);
+        }
+        
+        .action-button.jet {
+            background: linear-gradient(45deg, #9C27B0, #6A1B9A);
+        }
+        
+        .action-button.jet:hover {
+            background: linear-gradient(45deg, #6A1B9A, #9C27B0);
+        }
+        
+        /* UI ارتقاء */
+        #upgradeUI {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid gold;
+            color: white;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            min-width: 300px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        
+        .upgrade-header {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .upgrade-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            border: none;
+            padding: 10px 20px;
+            margin: 8px;
+            border-radius: 8px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            width: 150px;
+        }
+        
+        .upgrade-button:hover {
+            background: linear-gradient(45deg, #FFA500, #FFD700);
+            transform: scale(1.05);
+        }
+        
+        .upgrade-button:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* منو اصلی */
+        #mainMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            gap: 30px;
+        }
+        
+        .game-title {
+            font-size: 40px;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 250px;
+        }
+        
+        .menu-button {
+            background: linear-gradient(45deg, #2196F3, #0D47A1);
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .menu-button:hover {
+            background: linear-gradient(45deg, #0D47A1, #2196F3);
+            transform: scale(1.05);
+        }
+        
+        /* صفحه بارگذاری */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0f1d;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            gap: 30px;
+        }
+        
+        .loading-bar-container {
+            width: 300px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2196F3, #0D47A1);
+            border-radius: 10px;
+            transition: width 0.5s;
+            width: 0%;
+        }
+        
+        .loading-text {
+            font-size: 18px;
+            color: #FFD700;
+        }
+        
+        /* اطلاعیه */
+        .notification {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            color: white;
+            z-index: 120;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        /* صفحه مرحله کامل شده */
+        #levelCompleteUI {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid #4CAF50;
+            color: white;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            min-width: 300px;
+        }
+        
+        /* صفحه خرید جنگنده */
+        #jetPurchaseUI {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid #9C27B0;
+            color: white;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            min-width: 300px;
+        }
+        
+        /* رسپانسیو */
+        @media (max-width: 768px) {
+            #topUI {
+                height: 60px;
+                padding: 0 10px;
+            }
+            
+            .score-item {
+                min-width: auto;
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+            
+            #bottomUI {
+                height: 90px;
+                padding: 8px;
+            }
+            
+            .turret-button {
+                width: 50px;
+                height: 50px;
+                font-size: 9px;
+            }
+            
+            .turret-button i {
+                font-size: 16px;
+            }
+            
+            .action-button {
+                padding: 6px 12px;
+                font-size: 11px;
+                min-width: 80px;
+            }
+            
+            .game-title {
+                font-size: 30px;
+            }
+            
+            .menu-button {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            #upgradeUI, #levelCompleteUI, #jetPurchaseUI {
+                min-width: 90vw;
+                padding: 15px;
+            }
+            
+            .upgrade-button {
+                width: 120px;
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- صفحه بارگذاری -->
+    <div id="loadingScreen">
+        <div class="game-title">Turret War Pro</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar"></div>
+        </div>
+        <div class="loading-text" id="loadingText">در حال بارگذاری بازی...</div>
+    </div>
+
+    <!-- منو اصلی -->
+    <div id="mainMenu">
+        <div class="game-title">Turret War Pro<br><span style="font-size: 20px;">جنگ تیربار حرفه‌ای</span></div>
+        <div class="menu-buttons">
+            <button class="menu-button" id="startGameBtn">
+                <i class="fas fa-play"></i> شروع بازی جدید
+            </button>
+            <button class="menu-button" id="continueGameBtn">
+                <i class="fas fa-redo"></i> ادامه بازی قبلی
+            </button>
+        </div>
+    </div>
+
+    <!-- کانتینر بازی -->
+    <div id="gameContainer"></div>
+
+    <!-- UI بالای صفحه -->
+    <div id="topUI">
+        <div id="scorePanel">
+            <div class="score-item coins">
+                <i class="fas fa-coins"></i>
+                <span id="coinsCount">0</span>
+            </div>
+            <div class="score-item level">
+                <i class="fas fa-flag"></i>
+                <span id="levelCount">1</span>
+            </div>
+            <div class="score-item time">
+                <i class="fas fa-clock"></i>
+                <span id="timeCount">60</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI پایین صفحه -->
+    <div id="bottomUI">
+        <div id="turretPanel">
+            <div class="turret-button selected" data-turret="basic">
+                <i class="fas fa-crosshairs"></i>
+                <span>پایه</span>
+            </div>
+            <div class="turret-button" data-turret="rapid">
+                <i class="fas fa-bolt"></i>
+                <span>سریع</span>
+            </div>
+            <div class="turret-button" data-turret="sniper">
+                <i class="fas fa-bullseye"></i>
+                <span>تک‌تیر</span>
+            </div>
+            <div class="turret-button" data-turret="cannon">
+                <i class="fas fa-bomb"></i>
+                <span>توپخانه</span>
+            </div>
+            <div class="turret-button" data-turret="laser">
+                <i class="fas fa-burn"></i>
+                <span>لیزر</span>
+            </div>
+            <div class="turret-button" data-turret="missile">
+                <i class="fas fa-rocket"></i>
+                <span>موشک</span>
+            </div>
+            <div class="turret-button" data-turret="plasma">
+                <i class="fas fa-atom"></i>
+                <span>پلاسما</span>
+            </div>
+            <div class="turret-button" data-turret="freeze">
+                <i class="fas fa-snowflake"></i>
+                <span>انجماد</span>
+            </div>
+            <div class="turret-button" data-turret="poison">
+                <i class="fas fa-skull-crossbones"></i>
+                <span>سمی</span>
+            </div>
+            <div class="turret-button" data-turret="ultimate">
+                <i class="fas fa-crown"></i>
+                <span>نهایی</span>
+            </div>
+        </div>
+        
+        <div id="actionPanel">
+            <button class="action-button upgrade" id="upgradeBtn">
+                <i class="fas fa-arrow-up"></i> ارتقاء (10K)
+            </button>
+            <button class="action-button" id="placeTurretBtn">
+                <i class="fas fa-plus"></i> قراردادن
+            </button>
+            <button class="action-button jet" id="jetBtn">
+                <i class="fas fa-fighter-jet"></i> جنگنده (100M)
+            </button>
+        </div>
+    </div>
+
+    <!-- UI ارتقاء -->
+    <div id="upgradeUI">
+        <div class="upgrade-header">
+            <i class="fas fa-arrow-up"></i>
+            <span id="upgradeTitle">ارتقاء تیربار</span>
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <p>سطح فعلی: <span id="currentLevel">1</span></p>
+            <p>هزینه ارتقاء: <span id="upgradeCost">10,000</span> 🪙</p>
+            <p>میزان آسیب: <span id="currentDamage">10</span> → <span id="nextDamage">15</span></p>
+            <p>محدوده: <span id="currentRange">20</span> → <span id="nextRange">25</span></p>
+        </div>
+        
+        <div>
+            <button class="upgrade-button" id="confirmUpgradeBtn">ارتقاء دهید</button>
+            <button class="upgrade-button" id="cancelUpgradeBtn">لغو</button>
+        </div>
+    </div>
+
+    <!-- صفحه مرحله کامل شده -->
+    <div id="levelCompleteUI">
+        <div class="upgrade-header">
+            <i class="fas fa-trophy"></i>
+            <span>مرحله کامل شد!</span>
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <p>پاداش مرحله: <span id="levelReward">5,000</span> 🪙</p>
+            <p>زمان باقیمانده: <span id="timeBonus">20</span> ثانیه</p>
+            <p>پاداش زمان: <span id="timeReward">2,000</span> 🪙</p>
+            <p>کل پاداش: <span id="totalReward">7,000</span> 🪙</p>
+        </div>
+        
+        <div>
+            <button class="upgrade-button" id="nextLevelBtn">مرحله بعد</button>
+        </div>
+    </div>
+
+    <!-- صفحه خرید جنگنده -->
+    <div id="jetPurchaseUI">
+        <div class="upgrade-header">
+            <i class="fas fa-fighter-jet"></i>
+            <span>خرید جنگنده</span>
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <p>هزینه: <span id="jetCost">100,000,000</span> 🪙</p>
+            <p>توانایی: بمباران هوایی قدرتمند</p>
+            <p>مدت زمان: 30 ثانیه</p>
+        </div>
+        
+        <div>
+            <button class="upgrade-button" id="confirmJetBtn">خرید جنگنده</button>
+            <button class="upgrade-button" id="cancelJetBtn">لغو</button>
+        </div>
+    </div>
+
+    <!-- اطلاعیه -->
+    <div class="notification" id="notification">
+        <i class="fas fa-bell"></i>
+        <span id="notificationText">این یک اطلاعیه است</span>
+    </div>
+
+    <script>
+        // ==================== متغیرهای اصلی بازی ====================
+        let scene, camera, renderer, controls, composer;
+        let stats;
+        let clock = new THREE.Clock();
+        
+        let gameState = {
+            coins: 0,
+            level: 1,
+            timeLeft: 60,
+            selectedTurret: 'basic',
+            playerTurrets: [],
+            aiTurrets: [],
+            projectiles: [],
+            aiProjectiles: [],
+            boxes: [],
+            jet: null,
+            jetActive: false,
+            jetTimeLeft: 0,
+            gameActive: false,
+            explosions: [],
+            particles: [],
+            smokeParticles: []
+        };
+
+        // داده‌های تیربارها
+        const turretData = {
+            basic: { 
+                name: "تیربار پایه", 
+                damage: 10, 
+                range: 20, 
+                fireRate: 1, 
+                cost: 0, 
+                color: 0x000000, 
+                projectileColor: 0xFFFFFF, 
+                size: 1,
+                upgradeCost: 10000
+            },
+            rapid: { 
+                name: "تیربار سریع", 
+                damage: 8, 
+                range: 18, 
+                fireRate: 3, 
+                cost: 5000, 
+                color: 0x4444FF, 
+                projectileColor: 0x4444FF, 
+                size: 1.1,
+                upgradeCost: 15000
+            },
+            sniper: { 
+                name: "تیربار تک‌تیر", 
+                damage: 50, 
+                range: 35, 
+                fireRate: 0.3, 
+                cost: 10000, 
+                color: 0x888888, 
+                projectileColor: 0x888888, 
+                size: 1.2,
+                upgradeCost: 20000
+            },
+            cannon: { 
+                name: "توپخانه", 
+                damage: 30, 
+                range: 25, 
+                fireRate: 0.8, 
+                cost: 15000, 
+                color: 0x8B4513, 
+                projectileColor: 0xFF4500, 
+                size: 1.3,
+                upgradeCost: 25000
+            },
+            laser: { 
+                name: "لیزر", 
+                damage: 15, 
+                range: 22, 
+                fireRate: 2, 
+                cost: 20000, 
+                color: 0x00FF00, 
+                projectileColor: 0x00FF00, 
+                size: 1.2,
+                upgradeCost: 30000
+            },
+            missile: { 
+                name: "موشک", 
+                damage: 40, 
+                range: 30, 
+                fireRate: 0.5, 
+                cost: 30000, 
+                color: 0xFFA500, 
+                projectileColor: 0xFFA500, 
+                size: 1.4,
+                upgradeCost: 35000
+            },
+            plasma: { 
+                name: "پلاسما", 
+                damage: 25, 
+                range: 24, 
+                fireRate: 1.2, 
+                cost: 40000, 
+                color: 0x9932CC, 
+                projectileColor: 0x9932CC, 
+                size: 1.3,
+                upgradeCost: 40000
+            },
+            freeze: { 
+                name: "انجماد", 
+                damage: 5, 
+                range: 20, 
+                fireRate: 1, 
+                cost: 50000, 
+                color: 0x00CED1, 
+                projectileColor: 0x00CED1, 
+                size: 1.2,
+                upgradeCost: 45000
+            },
+            poison: { 
+                name: "سمی", 
+                damage: 12, 
+                range: 22, 
+                fireRate: 1.5, 
+                cost: 60000, 
+                color: 0x32CD32, 
+                projectileColor: 0x32CD32, 
+                size: 1.3,
+                upgradeCost: 50000
+            },
+            ultimate: { 
+                name: "نهایی", 
+                damage: 100, 
+                range: 40, 
+                fireRate: 1, 
+                cost: 100000, 
+                color: 0xFFD700, 
+                projectileColor: 0xFFD700, 
+                size: 1.5,
+                upgradeCost: 100000
+            }
+        };
+
+        // ==================== راه‌اندازی Three.js ====================
+        function initThreeJS() {
+            // ایجاد صحنه
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0f1d);
+            scene.fog = null;
+
+            // ایجاد دوربین از نمای بالا
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 100, 0);
+            camera.lookAt(0, 0, 0);
+
+            // ایجاد رندرر
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1;
+            document.getElementById('gameContainer').appendChild(renderer.domElement);
+
+            // ایجاد سیستم پس‌پردازش
+            composer = new THREE.EffectComposer(renderer);
+            const renderPass = new THREE.RenderPass(scene, camera);
+            composer.addPass(renderPass);
+            
+            const fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
+            fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+            composer.addPass(fxaaPass);
+            
+            const copyPass = new THREE.ShaderPass(THREE.CopyShader);
+            copyPass.renderToScreen = true;
+            composer.addPass(copyPass);
+
+            // نورپردازی پیشرفته
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 100, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 500;
+            directionalLight.shadow.camera.left = -100;
+            directionalLight.shadow.camera.right = 100;
+            directionalLight.shadow.camera.top = 100;
+            directionalLight.shadow.camera.bottom = -100;
+            scene.add(directionalLight);
+
+            // نور نقطه‌ای برای جلوه‌های ویژه
+            const pointLight = new THREE.PointLight(0xff4400, 1, 100);
+            pointLight.position.set(0, 10, 0);
+            scene.add(pointLight);
+
+            // ایجاد زمین با جزئیات بالا
+            createAdvancedGround();
+            
+            // ایجاد تیربارهای اولیه
+            createInitialTurrets();
+            
+            // ایجاد جعبه‌ها
+            createBoxes();
+
+            // راه‌اندازی بازی
+            startGame();
+        }
+
+        // ایجاد زمین پیشرفته
+        function createAdvancedGround() {
+            // زمین اصلی
+            const groundGeometry = new THREE.PlaneGeometry(200, 200, 50, 50);
+            const groundMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x2E8B57,
+                side: THREE.DoubleSide
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // ایجاد جزئیات روی زمین
+            createGroundDetails();
+        }
+
+        // ایجاد جزئیات زمین
+        function createGroundDetails() {
+            // ایجاد خطوط تقسیم زمین
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.3 });
+            
+            // خطوط عمودی
+            for (let i = -90; i <= 90; i += 20) {
+                const points = [];
+                points.push(new THREE.Vector3(i, 0.1, -90));
+                points.push(new THREE.Vector3(i, 0.1, 90));
+                
+                const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(lineGeometry, lineMaterial);
+                scene.add(line);
+            }
+            
+            // خطوط افقی
+            for (let i = -90; i <= 90; i += 20) {
+                const points = [];
+                points.push(new THREE.Vector3(-90, 0.1, i));
+                points.push(new THREE.Vector3(90, 0.1, i));
+                
+                const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(lineGeometry, lineMaterial);
+                scene.add(line);
+            }
+            
+            // ایجاد منطقه‌های ویژه
+            createSpecialZones();
+        }
+
+        // ایجاد منطقه‌های ویژه
+        function createSpecialZones() {
+            // منطقه کاربر (سمت چپ)
+            const userZoneGeometry = new THREE.PlaneGeometry(80, 160);
+            const userZoneMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x0000FF, 
+                transparent: true, 
+                opacity: 0.1,
+                side: THREE.DoubleSide
+            });
+            const userZone = new THREE.Mesh(userZoneGeometry, userZoneMaterial);
+            userZone.rotation.x = -Math.PI / 2;
+            userZone.position.set(-50, 0.05, 0);
+            scene.add(userZone);
+            
+            // منطقه دشمن (سمت راست)
+            const enemyZoneGeometry = new THREE.PlaneGeometry(80, 160);
+            const enemyZoneMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xFF0000, 
+                transparent: true, 
+                opacity: 0.1,
+                side: THREE.DoubleSide
+            });
+            const enemyZone = new THREE.Mesh(enemyZoneGeometry, enemyZoneMaterial);
+            enemyZone.rotation.x = -Math.PI / 2;
+            enemyZone.position.set(50, 0.05, 0);
+            scene.add(enemyZone);
+        }
+
+        // ایجاد تیربارهای اولیه
+        function createInitialTurrets() {
+            // تیربارهای کاربر (سمت چپ)
+            for (let i = 0; i < 10; i++) {
+                const x = -80 + Math.random() * 10;
+                const z = -80 + (i * 16);
+                createPlayerTurret('basic', x, z);
+            }
+            
+            // تیربارهای هوش مصنوعی (سمت راست)
+            for (let i = 0; i < 10; i++) {
+                const x = 80 - Math.random() * 10;
+                const z = -80 + (i * 16);
+                createAITurret(x, z);
+            }
+        }
+
+        // ایجاد جعبه‌ها
+        function createBoxes() {
+            // جعبه سمت چپ (کاربر)
+            const box1Geometry = new THREE.BoxGeometry(8, 8, 8);
+            const box1Material = new THREE.MeshLambertMaterial({ color: 0x0000FF });
+            const box1 = new THREE.Mesh(box1Geometry, box1Material);
+            box1.position.set(-90, 4, 0);
+            box1.castShadow = true;
+            scene.add(box1);
+            
+            gameState.boxes.push({
+                mesh: box1,
+                health: 100,
+                maxHealth: 100,
+                side: 'player'
+            });
+            
+            // جعبه سمت راست (هوش مصنوعی)
+            const box2Geometry = new THREE.BoxGeometry(8, 8, 8);
+            const box2Material = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
+            const box2 = new THREE.Mesh(box2Geometry, box2Material);
+            box2.position.set(90, 4, 0);
+            box2.castShadow = true;
+            scene.add(box2);
+            
+            gameState.boxes.push({
+                mesh: box2,
+                health: 100,
+                maxHealth: 100,
+                side: 'ai'
+            });
+        }
+
+        // ایجاد تیربار کاربر با جزئیات بالا
+        function createPlayerTurret(type, x, z) {
+            const data = turretData[type];
+            if (!data) return;
+
+            // ایجاد گروه برای تیربار
+            const turretGroup = new THREE.Group();
+            turretGroup.position.set(x, 0, z);
+
+            // ایجاد پایه تیربار
+            const baseGeometry = new THREE.CylinderGeometry(3 * data.size, 4 * data.size, 2 * data.size, 16);
+            const baseMaterial = new THREE.MeshLambertMaterial({ color: data.color });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = data.size;
+            base.castShadow = true;
+            turretGroup.add(base);
+            
+            // ایجاد بدنه اصلی
+            const bodyGeometry = new THREE.CylinderGeometry(2 * data.size, 2.5 * data.size, 4 * data.size, 16);
+            const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 4 * data.size;
+            body.castShadow = true;
+            turretGroup.add(body);
+            
+            // ایجاد لوله تیربار
+            const barrelGeometry = new THREE.CylinderGeometry(0.5 * data.size, 0.5 * data.size, 6 * data.size, 8);
+            const barrelMaterial = new THREE.MeshLambertMaterial({ color: 0x222222 });
+            const barrel = new THREE.Mesh(barrelGeometry, barrelMaterial);
+            barrel.position.set(3 * data.size, 4 * data.size, 0);
+            barrel.rotation.z = Math.PI / 2;
+            barrel.castShadow = true;
+            turretGroup.add(barrel);
+            
+            // ایجاد چرخ‌ها با جزئیات
+            for (let i = 0; i < 4; i++) {
+                const wheelGeometry = new THREE.CylinderGeometry(1.5 * data.size, 1.5 * data.size, 1 * data.size, 16);
+                const wheelMaterial = new THREE.MeshLambertMaterial({ color: 0x111111 });
+                const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                
+                const angle = (i * Math.PI / 2);
+                wheel.position.set(
+                    Math.cos(angle) * 3.5 * data.size,
+                    0.5 * data.size,
+                    Math.sin(angle) * 3.5 * data.size
+                );
+                wheel.rotation.x = Math.PI / 2;
+                wheel.castShadow = true;
+                turretGroup.add(wheel);
+                
+                // ایجاد رینگ چرخ
+                const rimGeometry = new THREE.CylinderGeometry(1 * data.size, 1 * data.size, 1.2 * data.size, 16);
+                const rimMaterial = new THREE.MeshLambertMaterial({ color: 0xCCCCCC });
+                const rim = new THREE.Mesh(rimGeometry, rimMaterial);
+                rim.rotation.x = Math.PI / 2;
+                rim.castShadow = true;
+                wheel.add(rim);
+            }
+            
+            // ایجاد دکل آنتن
+            const antennaGeometry = new THREE.CylinderGeometry(0.1 * data.size, 0.1 * data.size, 3 * data.size, 8);
+            const antennaMaterial = new THREE.MeshLambertMaterial({ color: 0xCCCCCC });
+            const antenna = new THREE.Mesh(antennaGeometry, antennaMaterial);
+            antenna.position.set(0, 7 * data.size, 0);
+            antenna.castShadow = true;
+            turretGroup.add(antenna);
+            
+            scene.add(turretGroup);
+
+            const turret = {
+                type: type,
+                name: data.name,
+                group: turretGroup,
+                barrel: barrel,
+                x: x,
+                z: z,
+                damage: data.damage,
+                range: data.range,
+                fireRate: data.fireRate,
+                cooldown: 0,
+                level: 1,
+                target: null,
+                color: data.color,
+                projectileColor: data.projectileColor,
+                health: 100,
+                maxHealth: 100
+            };
+
+            gameState.playerTurrets.push(turret);
+            return turret;
+        }
+
+        // ایجاد تیربار هوش مصنوعی با جزئیات
+        function createAITurret(x, z) {
+            // ایجاد گروه برای تیربار
+            const turretGroup = new THREE.Group();
+            turretGroup.position.set(x, 0, z);
+
+            // ایجاد پایه تیربار
+            const baseGeometry = new THREE.CylinderGeometry(3, 4, 2, 16);
+            const baseMaterial = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = 1;
+            base.castShadow = true;
+            turretGroup.add(base);
+            
+            // ایجاد بدنه اصلی
+            const bodyGeometry = new THREE.CylinderGeometry(2, 2.5, 4, 16);
+            const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x660000 });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 4;
+            body.castShadow = true;
+            turretGroup.add(body);
+            
+            // ایجاد لوله تیربار
+            const barrelGeometry = new THREE.CylinderGeometry(0.5, 0.5, 6, 8);
+            const barrelMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+            const barrel = new THREE.Mesh(barrelGeometry, barrelMaterial);
+            barrel.position.set(3, 4, 0);
+            barrel.rotation.z = Math.PI / 2;
+            barrel.castShadow = true;
+            turretGroup.add(barrel);
+            
+            // ایجاد چرخ‌ها
+            for (let i = 0; i < 4; i++) {
+                const wheelGeometry = new THREE.CylinderGeometry(1.5, 1.5, 1, 16);
+                const wheelMaterial = new THREE.MeshLambertMaterial({ color: 0x111111 });
+                const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                
+                const angle = (i * Math.PI / 2);
+                wheel.position.set(
+                    Math.cos(angle) * 3.5,
+                    0.5,
+                    Math.sin(angle) * 3.5
+                );
+                wheel.rotation.x = Math.PI / 2;
+                wheel.castShadow = true;
+                turretGroup.add(wheel);
+            }
+            
+            scene.add(turretGroup);
+
+            const turret = {
+                group: turretGroup,
+                barrel: barrel,
+                x: x,
+                z: z,
+                damage: 10 + (gameState.level * 2),
+                range: 20,
+                fireRate: 0.8,
+                cooldown: 0,
+                target: null,
+                health: 50 + (gameState.level * 10),
+                maxHealth: 50 + (gameState.level * 10)
+            };
+
+            gameState.aiTurrets.push(turret);
+            return turret;
+        }
+
+        // ==================== شروع بازی ====================
+        function startGame() {
+            // به‌روزرسانی UI
+            updateUI();
+            
+            // شروع تایمر
+            setInterval(updateGameTimer, 1000);
+            
+            // شروع انیمیشن
+            animate();
+            
+            // نمایش اطلاعیه
+            showNotification("بازی شروع شد! تیربارهای دشمن را نابود کنید.");
+            
+            gameState.gameActive = true;
+        }
+
+        // ==================== سیستم تیربارها ====================
+        function updateTurrets() {
+            // تیربارهای کاربر
+            gameState.playerTurrets.forEach(turret => {
+                if (turret.cooldown > 0) {
+                    turret.cooldown--;
+                }
+
+                // پیدا کردن نزدیک‌ترین هدف
+                let closestTarget = null;
+                let closestDistance = turret.range;
+
+                // اولویت با تیربارهای دشمن
+                gameState.aiTurrets.forEach(enemy => {
+                    const dx = enemy.x - turret.x;
+                    const dz = enemy.z - turret.z;
+                    const distance = Math.sqrt(dx * dx + dz * dz);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestTarget = enemy;
+                    }
+                });
+
+                // اگر تیربار دشمنی نبود، جعبه دشمن را هدف بگیر
+                if (!closestTarget) {
+                    gameState.boxes.forEach(box => {
+                        if (box.side === 'ai' && box.health > 0) {
+                            const dx = box.mesh.position.x - turret.x;
+                            const dz = box.mesh.position.z - turret.z;
+                            const distance = Math.sqrt(dx * dx + dz * dz);
+
+                            if (distance < closestDistance) {
+                                closestDistance = distance;
+                                closestTarget = box;
+                            }
+                        }
+                    });
+                }
+
+                if (closestTarget && turret.cooldown === 0) {
+                    // چرخش لوله به سمت هدف
+                    const targetX = closestTarget.mesh ? closestTarget.mesh.position.x : closestTarget.x;
+                    const targetZ = closestTarget.mesh ? closestTarget.mesh.position.z : closestTarget.z;
+                    
+                    const angle = Math.atan2(targetZ - turret.z, targetX - turret.x);
+                    turret.barrel.rotation.y = -angle + Math.PI / 2;
+                    
+                    // شلیک به هدف
+                    createProjectile(turret, closestTarget);
+                    turret.cooldown = 60 / turret.fireRate; // تبدیل نرخ شلیک به فریم
+                    
+                    // ایجاد افکت شلیک
+                    createMuzzleFlash(turret.barrel.position.x + turret.x, 
+                                     turret.barrel.position.y, 
+                                     turret.barrel.position.z + turret.z);
+                }
+            });
+
+            // تیربارهای هوش مصنوعی
+            gameState.aiTurrets.forEach(turret => {
+                if (turret.cooldown > 0) {
+                    turret.cooldown--;
+                }
+
+                // پیدا کردن نزدیک‌ترین هدف
+                let closestTarget = null;
+                let closestDistance = turret.range;
+
+                // اولویت با تیربارهای کاربر
+                gameState.playerTurrets.forEach(player => {
+                    const dx = player.x - turret.x;
+                    const dz = player.z - turret.z;
+                    const distance = Math.sqrt(dx * dx + dz * dz);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestTarget = player;
+                    }
+                });
+
+                // اگر تیربار کاربری نبود، جعبه کاربر را هدف بگیر
+                if (!closestTarget) {
+                    gameState.boxes.forEach(box => {
+                        if (box.side === 'player' && box.health > 0) {
+                            const dx = box.mesh.position.x - turret.x;
+                            const dz = box.mesh.position.z - turret.z;
+                            const distance = Math.sqrt(dx * dx + dz * dz);
+
+                            if (distance < closestDistance) {
+                                closestDistance = distance;
+                                closestTarget = box;
+                            }
+                        }
+                    });
+                }
+
+                if (closestTarget && turret.cooldown === 0) {
+                    // چرخش لوله به سمت هدف
+                    const targetX = closestTarget.mesh ? closestTarget.mesh.position.x : closestTarget.x;
+                    const targetZ = closestTarget.mesh ? closestTarget.mesh.position.z : closestTarget.z;
+                    
+                    const angle = Math.atan2(targetZ - turret.z, targetX - turret.x);
+                    turret.barrel.rotation.y = -angle + Math.PI / 2;
+                    
+                    // شلیک به هدف
+                    createAIProjectile(turret, closestTarget);
+                    turret.cooldown = 60 / turret.fireRate;
+                    
+                    // ایجاد افکت شلیک
+                    createMuzzleFlash(turret.barrel.position.x + turret.x, 
+                                     turret.barrel.position.y, 
+                                     turret.barrel.position.z + turret.z, 
+                                     true);
+                }
+            });
+        }
+
+        // ایجاد افکت شلیک
+        function createMuzzleFlash(x, y, z, isAI = false) {
+            const flashGeometry = new THREE.SphereGeometry(0.8, 8, 8);
+            const flashMaterial = new THREE.MeshBasicMaterial({ 
+                color: isAI ? 0xFF0000 : 0xFFFF00,
+                transparent: true,
+                opacity: 0.8
+            });
+            const flash = new THREE.Mesh(flashGeometry, flashMaterial);
+            flash.position.set(x, y, z);
+            scene.add(flash);
+            
+            // انیمیشن فلش
+            let scale = 1;
+            const flashInterval = setInterval(() => {
+                scale += 0.5;
+                flash.scale.set(scale, scale, scale);
+                flashMaterial.opacity -= 0.1;
+                
+                if (flashMaterial.opacity <= 0) {
+                    scene.remove(flash);
+                    clearInterval(flashInterval);
+                }
+            }, 50);
+        }
+
+        // ایجاد پرتابه کاربر با فیزیک پیشرفته
+        function createProjectile(turret, target) {
+            const geometry = new THREE.SphereGeometry(0.5, 8, 8);
+            const material = new THREE.MeshBasicMaterial({ color: turret.projectileColor });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(turret.x, 5, turret.z);
+            scene.add(mesh);
+
+            const targetX = target.mesh ? target.mesh.position.x : target.x;
+            const targetZ = target.mesh ? target.mesh.position.z : target.z;
+
+            const projectile = {
+                mesh: mesh,
+                startX: turret.x,
+                startZ: turret.z,
+                targetX: targetX,
+                targetZ: targetZ,
+                progress: 0,
+                speed: 0.05,
+                damage: turret.damage,
+                target: target,
+                type: 'player',
+                trailParticles: []
+            };
+
+            gameState.projectiles.push(projectile);
+            
+            // ایجاد ذرات دنباله
+            createProjectileTrail(projectile);
+        }
+
+        // ایجاد پرتابه هوش مصنوعی
+        function createAIProjectile(turret, target) {
+            const geometry = new THREE.SphereGeometry(0.5, 8, 8);
+            const material = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(turret.x, 5, turret.z);
+            scene.add(mesh);
+
+            const targetX = target.mesh ? target.mesh.position.x : target.x;
+            const targetZ = target.mesh ? target.mesh.position.z : target.z;
+
+            const projectile = {
+                mesh: mesh,
+                startX: turret.x,
+                startZ: turret.z,
+                targetX: targetX,
+                targetZ: targetZ,
+                progress: 0,
+                speed: 0.05,
+                damage: turret.damage,
+                target: target,
+                type: 'ai',
+                trailParticles: []
+            };
+
+            gameState.aiProjectiles.push(projectile);
+            
+            // ایجاد ذرات دنباله
+            createProjectileTrail(projectile, true);
+        }
+
+        // ایجاد دنباله برای پرتابه
+        function createProjectileTrail(projectile, isAI = false) {
+            const trailInterval = setInterval(() => {
+                if (projectile.progress >= 1) {
+                    clearInterval(trailInterval);
+                    return;
+                }
+                
+                const trailGeometry = new THREE.SphereGeometry(0.2, 4, 4);
+                const trailMaterial = new THREE.MeshBasicMaterial({ 
+                    color: isAI ? 0xFF4444 : 0xFFFFFF,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const trail = new THREE.Mesh(trailGeometry, trailMaterial);
+                
+                const currentX = projectile.startX + (projectile.targetX - projectile.startX) * projectile.progress;
+                const currentZ = projectile.startZ + (projectile.targetZ - projectile.startZ) * projectile.progress;
+                const currentY = 5 + Math.sin(projectile.progress * Math.PI) * 10;
+                
+                trail.position.set(currentX, currentY, currentZ);
+                scene.add(trail);
+                
+                projectile.trailParticles.push({
+                    mesh: trail,
+                    life: 1.0
+                });
+            }, 50);
+        }
+
+        // به‌روزرسانی پرتابه‌ها
+        function updateProjectiles() {
+            // پرتابه‌های کاربر
+            for (let i = gameState.projectiles.length - 1; i >= 0; i--) {
+                const projectile = gameState.projectiles[i];
+                projectile.progress += projectile.speed;
+
+                const currentX = projectile.startX + (projectile.targetX - projectile.startX) * projectile.progress;
+                const currentZ = projectile.startZ + (projectile.targetZ - projectile.startZ) * projectile.progress;
+                const currentY = 5 + Math.sin(projectile.progress * Math.PI) * 10;
+
+                projectile.mesh.position.set(currentX, currentY, currentZ);
+
+                // به‌روزرسانی ذرات دنباله
+                for (let j = projectile.trailParticles.length - 1; j >= 0; j--) {
+                    const particle = projectile.trailParticles[j];
+                    particle.life -= 0.05;
+                    particle.mesh.material.opacity = particle.life * 0.6;
+                    
+                    if (particle.life <= 0) {
+                        scene.remove(particle.mesh);
+                        projectile.trailParticles.splice(j, 1);
+                    }
+                }
+
+                if (projectile.progress >= 1) {
+                    // بررسی برخورد با هدف
+                    const target = projectile.target;
+                    
+                    if (target.health !== undefined) {
+                        // هدف یک تیربار یا جعبه است
+                        target.health -= projectile.damage;
+                        
+                        // ایجاد افکت برخورد
+                        createHitEffect(currentX, currentY, currentZ, projectile.type === 'player');
+                        
+                        if (target.health <= 0) {
+                            // نابودی هدف
+                            if (target.mesh || target.group) {
+                                const targetMesh = target.mesh || target.group;
+                                scene.remove(targetMesh);
+                                
+                                // اگر تیربار دشمن است، سکه ایجاد کن
+                                if (gameState.aiTurrets.includes(target)) {
+                                    createCoinEffect(projectile.targetX, projectile.targetZ);
+                                    gameState.aiTurrets.splice(gameState.aiTurrets.indexOf(target), 1);
+                                    gameState.coins += 100 * gameState.level;
+                                }
+                                
+                                // اگر جعبه دشمن است، پاداش بیشتر
+                                if (gameState.boxes.includes(target) && target.side === 'ai') {
+                                    gameState.coins += 1000 * gameState.level;
+                                    checkLevelComplete();
+                                }
+                            }
+                        }
+                    }
+
+                    scene.remove(projectile.mesh);
+                    gameState.projectiles.splice(i, 1);
+                }
+            }
+
+            // پرتابه‌های هوش مصنوعی
+            for (let i = gameState.aiProjectiles.length - 1; i >= 0; i--) {
+                const projectile = gameState.aiProjectiles[i];
+                projectile.progress += projectile.speed;
+
+                const currentX = projectile.startX + (projectile.targetX - projectile.startX) * projectile.progress;
+                const currentZ = projectile.startZ + (projectile.targetZ - projectile.startZ) * projectile.progress;
+                const currentY = 5 + Math.sin(projectile.progress * Math.PI) * 10;
+
+                projectile.mesh.position.set(currentX, currentY, currentZ);
+
+                // به‌روزرسانی ذرات دنباله
+                for (let j = projectile.trailParticles.length - 1; j >= 0; j--) {
+                    const particle = projectile.trailParticles[j];
+                    particle.life -= 0.05;
+                    particle.mesh.material.opacity = particle.life * 0.6;
+                    
+                    if (particle.life <= 0) {
+                        scene.remove(particle.mesh);
+                        projectile.trailParticles.splice(j, 1);
+                    }
+                }
+
+                if (projectile.progress >= 1) {
+                    // بررسی برخورد با هدف
+                    const target = projectile.target;
+                    
+                    if (target.health !== undefined) {
+                        // هدف یک تیربار یا جعبه است
+                        target.health -= projectile.damage;
+                        
+                        // ایجاد افکت برخورد
+                        createHitEffect(currentX, currentY, currentZ, false);
+                        
+                        if (target.health <= 0) {
+                            // نابودی هدف
+                            if (target.mesh || target.group) {
+                                const targetMesh = target.mesh || target.group;
+                                scene.remove(targetMesh);
+                                
+                                // اگر تیربار کاربر است
+                                if (gameState.playerTurrets.includes(target)) {
+                                    gameState.playerTurrets.splice(gameState.playerTurrets.indexOf(target), 1);
+                                }
+                                
+                                // اگر جعبه کاربر است، بازی تمام شد
+                                if (gameState.boxes.includes(target) && target.side === 'player') {
+                                    showNotification("جعبه شما نابود شد! بازی را باختید.");
+                                    gameState.gameActive = false;
+                                }
+                            }
+                        }
+                    }
+
+                    scene.remove(projectile.mesh);
+                    gameState.aiProjectiles.splice(i, 1);
+                }
+            }
+        }
+
+        // ایجاد افکت برخورد
+        function createHitEffect(x, y, z, isPlayer) {
+            // ایجاد ذرات انفجار
+            for (let i = 0; i < 10; i++) {
+                const particleGeometry = new THREE.SphereGeometry(0.2, 4, 4);
+                const particleMaterial = new THREE.MeshBasicMaterial({ 
+                    color: isPlayer ? 0xFFFF00 : 0xFF0000,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                particle.position.set(x, y, z);
+                scene.add(particle);
+                
+                // سرعت تصادفی برای ذرات
+                const velocity = {
+                    x: (Math.random() - 0.5) * 0.5,
+                    y: Math.random() * 0.5,
+                    z: (Math.random() - 0.5) * 0.5
+                };
+                
+                const life = 1.0;
+                
+                gameState.particles.push({
+                    mesh: particle,
+                    velocity: velocity,
+                    life: life
+                });
+            }
+        }
+
+        // به‌روزرسانی ذرات
+        function updateParticles() {
+            for (let i = gameState.particles.length - 1; i >= 0; i--) {
+                const particle = gameState.particles[i];
+                
+                // حرکت ذره
+                particle.mesh.position.x += particle.velocity.x;
+                particle.mesh.position.y += particle.velocity.y;
+                particle.mesh.position.z += particle.velocity.z;
+                
+                // کاهش سرعت
+                particle.velocity.y -= 0.01;
+                
+                // کاهش عمر
+                particle.life -= 0.02;
+                particle.mesh.material.opacity = particle.life * 0.8;
+                
+                // اگر عمر ذره به پایان رسید یا به زمین برخورد کرد
+                if (particle.life <= 0 || particle.mesh.position.y <= 0) {
+                    scene.remove(particle.mesh);
+                    gameState.particles.splice(i, 1);
+                }
+            }
+        }
+
+        // ایجاد افکت سکه
+        function createCoinEffect(x, z) {
+            const geometry = new THREE.CylinderGeometry(2, 2, 0.5, 16);
+            const material = new THREE.MeshLambertMaterial({ color: 0xFFD700 });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(x, 5, z);
+            scene.add(mesh);
+
+            // انیمیشن سکه
+            let progress = 0;
+            const coinAnimation = setInterval(() => {
+                progress += 0.05;
+                mesh.position.y = 5 + Math.sin(progress * Math.PI) * 10;
+                mesh.rotation.y += 0.1;
+                
+                if (progress >= 1) {
+                    scene.remove(mesh);
+                    clearInterval(coinAnimation);
+                }
+            }, 50);
+        }
+
+        // ==================== سیستم جنگنده ====================
+        function createJet() {
+            if (gameState.jetActive) return;
+            
+            // ایجاد مدل جنگنده
+            const jetGroup = new THREE.Group();
+            
+            // بدنه اصلی
+            const bodyGeometry = new THREE.ConeGeometry(3, 10, 8);
+            const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x00BFFF });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.rotation.z = Math.PI / 2;
+            jetGroup.add(body);
+            
+            // بال‌ها
+            const wingGeometry = new THREE.BoxGeometry(15, 1, 5);
+            const wingMaterial = new THREE.MeshLambertMaterial({ color: 0x0080FF });
+            const wing = new THREE.Mesh(wingGeometry, wingMaterial);
+            wing.position.set(0, 0, 0);
+            jetGroup.add(wing);
+            
+            // دم
+            const tailGeometry = new THREE.BoxGeometry(2, 4, 3);
+            const tailMaterial = new THREE.MeshLambertMaterial({ color: 0x0066CC });
+            const tail = new THREE.Mesh(tailGeometry, tailMaterial);
+            tail.position.set(-8, 0, 0);
+            jetGroup.add(tail);
+            
+            jetGroup.position.set(-100, 30, 0);
+            scene.add(jetGroup);
+
+            gameState.jet = {
+                group: jetGroup,
+                x: -100,
+                y: 30,
+                z: 0,
+                speed: 2,
+                bombCooldown: 0,
+                active: true,
+                smokeParticles: []
+            };
+            
+            gameState.jetActive = true;
+            gameState.jetTimeLeft = 30 * 60; // 30 ثانیه در فریم‌ها
+            
+            // ایجاد ذرات دود
+            createJetSmoke();
+        }
+
+        // ایجاد دود برای جنگنده
+        function createJetSmoke() {
+            const smokeInterval = setInterval(() => {
+                if (!gameState.jet || !gameState.jetActive) {
+                    clearInterval(smokeInterval);
+                    return;
+                }
+                
+                const smokeGeometry = new THREE.SphereGeometry(0.5, 4, 4);
+                const smokeMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0x888888,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                const smoke = new THREE.Mesh(smokeGeometry, smokeMaterial);
+                smoke.position.set(
+                    gameState.jet.x - 5,
+                    gameState.jet.y + (Math.random() - 0.5) * 2,
+                    gameState.jet.z + (Math.random() - 0.5) * 2
+                );
+                scene.add(smoke);
+                
+                gameState.jet.smokeParticles.push({
+                    mesh: smoke,
+                    life: 1.0
+                });
+            }, 100);
+        }
+
+        function updateJet() {
+            if (!gameState.jet || !gameState.jetActive) return;
+            
+            // حرکت جنگنده
+            gameState.jet.x += gameState.jet.speed;
+            gameState.jet.group.position.x = gameState.jet.x;
+            
+            // حرکت موجی
+            gameState.jet.group.position.y = 30 + Math.sin(gameState.jet.x * 0.05) * 10;
+            
+            // چرخش برای نمایش حرکت
+            gameState.jet.group.rotation.y += 0.02;
+            
+            // به‌روزرسانی ذرات دود
+            for (let i = gameState.jet.smokeParticles.length - 1; i >= 0; i--) {
+                const smoke = gameState.jet.smokeParticles[i];
+                smoke.life -= 0.02;
+                smoke.mesh.material.opacity = smoke.life * 0.7;
+                smoke.mesh.scale.multiplyScalar(1.02);
+                
+                if (smoke.life <= 0) {
+                    scene.remove(smoke.mesh);
+                    gameState.jet.smokeParticles.splice(i, 1);
+                }
+            }
+            
+            // بمباران
+            if (gameState.jet.bombCooldown <= 0) {
+                createBomb(gameState.jet.x, gameState.jet.group.position.y, gameState.jet.z);
+                gameState.jet.bombCooldown = 30; // هر نیم ثانیه یک بمب
+            } else {
+                gameState.jet.bombCooldown--;
+            }
+            
+            // بررسی زمان جنگنده
+            gameState.jetTimeLeft--;
+            if (gameState.jetTimeLeft <= 0) {
+                scene.remove(gameState.jet.group);
+                gameState.jet = null;
+                gameState.jetActive = false;
+                showNotification("زمان جنگنده به پایان رسید.");
+            }
+            
+            // اگر جنگنده از صحنه خارج شد
+            if (gameState.jet.x > 100) {
+                scene.remove(gameState.jet.group);
+                gameState.jet = null;
+                gameState.jetActive = false;
+            }
+        }
+
+        function createBomb(x, y, z) {
+            const geometry = new THREE.SphereGeometry(1, 8, 8);
+            const material = new THREE.MeshBasicMaterial({ color: 0xFF4500 });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(x, y, z);
+            scene.add(mesh);
+
+            const bomb = {
+                mesh: mesh,
+                x: x,
+                y: y,
+                z: z,
+                speed: 2,
+                active: true
+            };
+
+            // انیمیشن سقوط بمب
+            const bombInterval = setInterval(() => {
+                if (!bomb.active) {
+                    clearInterval(bombInterval);
+                    return;
+                }
+                
+                bomb.y -= bomb.speed;
+                bomb.mesh.position.y = bomb.y;
+                
+                // بررسی برخورد با زمین
+                if (bomb.y <= 1) {
+                    // ایجاد انفجار
+                    createExplosion(bomb.x, bomb.z);
+                    scene.remove(bomb.mesh);
+                    bomb.active = false;
+                    clearInterval(bombInterval);
+                }
+            }, 50);
+        }
+
+        function createExplosion(x, z) {
+            // ایجاد افکت انفجار
+            const geometry = new THREE.SphereGeometry(1, 16, 16);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0xFF4500,
+                transparent: true,
+                opacity: 0.8
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(x, 1, z);
+            scene.add(mesh);
+
+            // انیمیشن انفجار
+            let scale = 1;
+            const explosionInterval = setInterval(() => {
+                scale += 0.5;
+                mesh.scale.set(scale, scale, scale);
+                material.opacity -= 0.05;
+                
+                if (material.opacity <= 0) {
+                    scene.remove(mesh);
+                    clearInterval(explosionInterval);
+                }
+            }, 50);
+            
+            // آسیب به تیربارهای دشمن در محدوده انفجار
+            gameState.aiTurrets.forEach(turret => {
+                const dx = turret.x - x;
+                const dz = turret.z - z;
+                const distance = Math.sqrt(dx * dx + dz * dz);
+                
+                if (distance < 15) {
+                    turret.health -= 50;
+                    
+                    if (turret.health <= 0) {
+                        scene.remove(turret.group);
+                        createCoinEffect(turret.x, turret.z);
+                        gameState.aiTurrets.splice(gameState.aiTurrets.indexOf(turret), 1);
+                        gameState.coins += 100 * gameState.level;
+                    }
+                }
+            });
+            
+            // آسیب به جعبه دشمن در محدوده انفجار
+            gameState.boxes.forEach(box => {
+                if (box.side === 'ai' && box.health > 0) {
+                    const dx = box.mesh.position.x - x;
+                    const dz = box.mesh.position.z - z;
+                    const distance = Math.sqrt(dx * dx + dz * dz);
+                    
+                    if (distance < 15) {
+                        box.health -= 50;
+                        
+                        if (box.health <= 0) {
+                            scene.remove(box.mesh);
+                            gameState.coins += 1000 * gameState.level;
+                            checkLevelComplete();
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==================== سیستم بازی ====================
+        function updateGameTimer() {
+            if (!gameState.gameActive) return;
+            
+            if (gameState.timeLeft > 0) {
+                gameState.timeLeft--;
+                document.getElementById('timeCount').textContent = gameState.timeLeft;
+            } else {
+                // زمان تمام شد
+                showNotification("زمان به پایان رسید! بازی را باختید.");
+                gameState.gameActive = false;
+            }
+        }
+
+        function checkLevelComplete() {
+            // بررسی آیا همه تیربارهای دشمن نابود شده‌اند
+            const aiTurretsDestroyed = gameState.aiTurrets.length === 0;
+            
+            // بررسی آیا جعبه دشمن نابود شده است
+            const aiBoxDestroyed = gameState.boxes.find(box => box.side === 'ai' && box.health <= 0) !== undefined;
+            
+            if (aiTurretsDestroyed && aiBoxDestroyed) {
+                // مرحله کامل شد
+                const timeBonus = Math.floor(gameState.timeLeft / 3);
+                const levelReward = 5000 * gameState.level;
+                const totalReward = levelReward + timeBonus;
+                
+                gameState.coins += totalReward;
+                
+                document.getElementById('levelReward').textContent = levelReward.toLocaleString();
+                document.getElementById('timeBonus').textContent = gameState.timeLeft;
+                document.getElementById('timeReward').textContent = timeBonus.toLocaleString();
+                document.getElementById('totalReward').textContent = totalReward.toLocaleString();
+                
+                document.getElementById('levelCompleteUI').style.display = 'block';
+                gameState.gameActive = false;
+            }
+        }
+
+        function nextLevel() {
+            gameState.level++;
+            gameState.timeLeft = 60;
+            
+            // ایجاد تیربارهای جدید برای دشمن
+            for (let i = 0; i < 10 + gameState.level; i++) {
+                const x = 80 - Math.random() * 10;
+                const z = -80 + (i * (160 / (10 + gameState.level)));
+                createAITurret(x, z);
+            }
+            
+            // بازسازی جعبه دشمن
+            const aiBox = gameState.boxes.find(box => box.side === 'ai');
+            if (aiBox && aiBox.health <= 0) {
+                const boxGeometry = new THREE.BoxGeometry(8, 8, 8);
+                const boxMaterial = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
+                const box = new THREE.Mesh(boxGeometry, boxMaterial);
+                box.position.set(90, 4, 0);
+                box.castShadow = true;
+                scene.add(box);
+                
+                aiBox.mesh = box;
+                aiBox.health = 100;
+            }
+            
+            // به‌روزرسانی UI
+            updateUI();
+            document.getElementById('levelCompleteUI').style.display = 'none';
+            gameState.gameActive = true;
+            
+            showNotification(`مرحله ${gameState.level} شروع شد!`);
+        }
+
+        // ==================== سیستم ارتقاء ====================
+        function upgradeTurret() {
+            const selectedTurret = gameState.selectedTurret;
+            const turretDataItem = turretData[selectedTurret];
+            
+            if (!turretDataItem) return;
+            
+            // بررسی سکه کافی
+            const upgradeCost = turretDataItem.upgradeCost * (gameState.playerTurrets.filter(t => t.type === selectedTurret).length + 1);
+            
+            if (gameState.coins < upgradeCost) {
+                showNotification("سکه کافی برای ارتقاء ندارید!");
+                return;
+            }
+            
+            // کسر سکه
+            gameState.coins -= upgradeCost;
+            
+            // ارتقاء همه تیربارهای این نوع
+            gameState.playerTurrets.forEach(turret => {
+                if (turret.type === selectedTurret) {
+                    turret.level++;
+                    turret.damage += 5;
+                    turret.range += 2;
+                    turret.fireRate += 0.1;
+                }
+            });
+            
+            // به‌روزرسانی UI
+            updateUI();
+            
+            showNotification(`همه تیربارهای ${turretDataItem.name} به سطح بعدی ارتقاء یافتند!`);
+        }
+
+        // قرار دادن تیربار جدید
+        function placeTurret() {
+            const selectedTurret = gameState.selectedTurret;
+            const turretDataItem = turretData[selectedTurret];
+            
+            if (!turretDataItem) return;
+            
+            // بررسی سکه کافی
+            if (gameState.coins < turretDataItem.cost) {
+                showNotification("سکه کافی برای قرار دادن این تیربار ندارید!");
+                return;
+            }
+            
+            // کسر سکه
+            gameState.coins -= turretDataItem.cost;
+            
+            // پیدا کردن موقعیت خالی
+            let x, z;
+            let attempts = 0;
+            
+            do {
+                x = -80 + Math.random() * 70;
+                z = -80 + Math.random() * 160;
+                attempts++;
+            } while (isPositionOccupied(x, z) && attempts < 100);
+            
+            if (attempts >= 100) {
+                showNotification("فضای کافی برای قرار دادن تیربار جدید وجود ندارد!");
+                gameState.coins += turretDataItem.cost; // برگرداندن سکه
+                return;
+            }
+            
+            // ایجاد تیربار
+            createPlayerTurret(selectedTurret, x, z);
+            
+            // به‌روزرسانی UI
+            updateUI();
+            
+            showNotification(`یک تیربار ${turretDataItem.name} قرار داده شد!`);
+        }
+
+        function isPositionOccupied(x, z) {
+            for (const turret of gameState.playerTurrets) {
+                const dx = turret.x - x;
+                const dz = turret.z - z;
+                const distance = Math.sqrt(dx * dx + dz * dz);
+                
+                if (distance < 10) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // خرید جنگنده
+        function purchaseJet() {
+            const jetCost = 100000000;
+            
+            if (gameState.coins < jetCost) {
+                showNotification("سکه کافی برای خرید جنگنده ندارید!");
+                return;
+            }
+            
+            // کسر سکه
+            gameState.coins -= jetCost;
+            
+            // ایجاد جنگنده
+            createJet();
+            
+            // به‌روزرسانی UI
+            updateUI();
+            
+            showNotification("جنگنده خریداری شد! به مدت 30 ثانیه فعال خواهد بود.");
+            document.getElementById('jetPurchaseUI').style.display = 'none';
+        }
+
+        // ==================== UI و رابط کاربری ====================
+        function updateUI() {
+            document.getElementById('coinsCount').textContent = gameState.coins.toLocaleString();
+            document.getElementById('levelCount').textContent = gameState.level;
+            document.getElementById('timeCount').textContent = gameState.timeLeft;
+            
+            // به‌روزرسانی دکمه‌ها
+            const selectedTurretData = turretData[gameState.selectedTurret];
+            const upgradeCost = selectedTurretData.upgradeCost * (gameState.playerTurrets.filter(t => t.type === gameState.selectedTurret).length + 1);
+            
+            document.getElementById('upgradeBtn').textContent = `ارتقاء (${upgradeCost.toLocaleString()})`;
+            document.getElementById('upgradeBtn').disabled = gameState.coins < upgradeCost;
+            
+            document.getElementById('placeTurretBtn').textContent = `قراردادن (${selectedTurretData.cost.toLocaleString()})`;
+            document.getElementById('placeTurretBtn').disabled = gameState.coins < selectedTurretData.cost;
+            
+            document.getElementById('jetBtn').disabled = gameState.coins < 100000000 || gameState.jetActive;
+        }
+
+        function showNotification(text) {
+            const notification = document.getElementById('notification');
+            document.getElementById('notificationText').textContent = text;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // ==================== انیمیشن بازی ====================
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            
+            // به‌روزرسانی اجزای بازی
+            if (gameState.gameActive) {
+                updateTurrets();
+                updateProjectiles();
+                updateJet();
+                updateParticles();
+            }
+            
+            // رندر صحنه با سیستم پس‌پردازش
+            composer.render(delta);
+        }
+
+        // ==================== مدیریت رویدادها ====================
+        function setupEventListeners() {
+            // دکمه شروع بازی
+            document.getElementById('startGameBtn').addEventListener('click', function() {
+                document.getElementById('mainMenu').style.display = 'none';
+                initThreeJS();
+            });
+            
+            // دکمه ادامه بازی
+            document.getElementById('continueGameBtn').addEventListener('click', function() {
+                // بارگذاری وضعیت بازی از localStorage
+                const savedGame = localStorage.getItem('turretWarPro');
+                if (savedGame) {
+                    const parsedGame = JSON.parse(savedGame);
+                    gameState.coins = parsedGame.coins || 0;
+                    gameState.level = parsedGame.level || 1;
+                    
+                    document.getElementById('mainMenu').style.display = 'none';
+                    initThreeJS();
+                } else {
+                    showNotification("هیچ بازی ذخیره شده‌ای پیدا نشد!");
+                }
+            });
+            
+            // دکمه‌های انتخاب تیربار
+            const turretButtons = document.querySelectorAll('.turret-button');
+            turretButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // حذف کلاس selected از همه دکمه‌ها
+                    turretButtons.forEach(btn => btn.classList.remove('selected'));
+                    
+                    // اضافه کردن کلاس selected به دکمه کلیک شده
+                    this.classList.add('selected');
+                    
+                    // به‌روزرسانی تیربار انتخاب شده
+                    gameState.selectedTurret = this.getAttribute('data-turret');
+                    
+                    // به‌روزرسانی UI
+                    updateUI();
+                });
+            });
+            
+            // دکمه ارتقاء
+            document.getElementById('upgradeBtn').addEventListener('click', function() {
+                upgradeTurret();
+            });
+            
+            // دکمه قرار دادن تیربار
+            document.getElementById('placeTurretBtn').addEventListener('click', function() {
+                placeTurret();
+            });
+            
+            // دکمه جنگنده
+            document.getElementById('jetBtn').addEventListener('click', function() {
+                document.getElementById('jetPurchaseUI').style.display = 'block';
+            });
+            
+            // دکمه‌های UI ارتقاء
+            document.getElementById('confirmUpgradeBtn').addEventListener('click', function() {
+                upgradeTurret();
+                document.getElementById('upgradeUI').style.display = 'none';
+            });
+            
+            document.getElementById('cancelUpgradeBtn').addEventListener('click', function() {
+                document.getElementById('upgradeUI').style.display = 'none';
+            });
+            
+            // دکمه مرحله بعد
+            document.getElementById('nextLevelBtn').addEventListener('click', function() {
+                nextLevel();
+            });
+            
+            // دکمه‌های UI جنگنده
+            document.getElementById('confirmJetBtn').addEventListener('click', function() {
+                purchaseJet();
+            });
+            
+            document.getElementById('cancelJetBtn').addEventListener('click', function() {
+                document.getElementById('jetPurchaseUI').style.display = 'none';
+            });
+            
+            // تغییر اندازه پنجره
+            window.addEventListener('resize', () => {
+                if (camera && renderer) {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    composer.setSize(window.innerWidth, window.innerHeight);
+                }
+            });
+            
+            // ذخیره بازی هنگام بسته شدن
+            window.addEventListener('beforeunload', () => {
+                localStorage.setItem('turretWarPro', JSON.stringify({
+                    coins: gameState.coins,
+                    level: gameState.level
+                }));
+            });
+        }
+
+        // ==================== بارگذاری بازی ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            let progress = 0;
+            const loadingBar = document.getElementById('loadingBar');
+            const loadingText = document.getElementById('loadingText');
+            const loadingScreen = document.getElementById('loadingScreen');
+            const mainMenu = document.getElementById('mainMenu');
+            
+            const loadingInterval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        mainMenu.style.display = 'flex';
+                    }, 500);
+                }
+                
+                loadingBar.style.width = `${progress}%`;
+                
+                if (progress < 30) {
+                    loadingText.textContent = "در حال بارگذاری مدل‌های سه بعدی...";
+                } else if (progress < 60) {
+                    loadingText.textContent = "در حال بارگذاری سیستم فیزیک...";
+                } else if (progress < 90) {
+                    loadingText.textContent = "در حال راه‌اندازی موتور بازی...";
+                } else {
+                    loadingText.textContent = "آماده برای شروع!";
+                }
+            }, 200);
+            
+            // راه‌اندازی مدیریت رویدادها
+            setupEventListeners();
+        });
+    </script>
+</body>
+  </html>
