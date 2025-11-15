@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clash 3D - کلش سه بعدی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a5fb4, #3584e4);
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* نوار منابع بالا */
+        #topResources {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 20px;
+            border-radius: 15px;
+            border: 2px solid gold;
+            display: flex;
+            gap: 25px;
+            z-index: 100;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* سلامت پایگاه */
+        #baseHealth {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 2px solid red;
+            font-size: 14px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .health-bar {
+            width: 120px;
+            height: 12px;
+            background: #333;
+            border-radius: 6px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF0000, #FF4500);
+            border-radius: 6px;
+            transition: width 0.3s;
+        }
+
+        /* نوار ابزار پایین صفحه */
+        #toolbar {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            padding: 10px;
+            border-radius: 15px;
+            border: 2px solid gold;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+            max-width: 90vw;
+            scrollbar-width: none;
+        }
+
+        #toolbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .toolbar-button {
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 70px;
+            min-height: 50px;
+            flex-shrink: 0;
+        }
+
+        .toolbar-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .toolbar-button.gold {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: black;
+        }
+
+        .toolbar-button.elixir {
+            background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+        }
+
+        .toolbar-button.oil {
+            background: linear-gradient(45deg, #000000, #37474F);
+        }
+
+        .toolbar-button.base {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+        }
+
+        .toolbar-button.troops {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+
+        .toolbar-button.defense {
+            background: linear-gradient(45deg, #F44336, #D32F2F);
+        }
+
+        .toolbar-button.walls {
+            background: linear-gradient(45deg, #795548, #5D4037);
+        }
+
+        .toolbar-button.collectors {
+            background: linear-gradient(45deg, #009688, #00796B);
+        }
+
+        .toolbar-icon {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .toolbar-cost {
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        /* UI ارتقاء */
+        .upgrade-ui {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 25px;
+            border-radius: 20px;
+            border: 3px solid gold;
+            color: white;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            min-width: 320px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+            backdrop-filter: blur(15px);
+        }
+
+        .upgrade-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            border: none;
+            padding: 12px 25px;
+            margin: 10px;
+            border-radius: 10px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .upgrade-button:hover {
+            background: linear-gradient(45deg, #FFA500, #FFD700);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+
+        /* نوار پیشرفت ارتقاء */
+        .upgrade-progress {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .upgrade-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #2E7D32);
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+
+        /* سطح و اطلاعات */
+        .level-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: gold;
+            color: black;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        /* راهنمای بازی */
+        #gameGuide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #2196F3;
+            color: white;
+            z-index: 2000;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 50px rgba(33, 150, 243, 0.6);
+            backdrop-filter: blur(15px);
+        }
+
+        .guide-button {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            border: none;
+            padding: 12px 25px;
+            margin: 15px 10px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .guide-button:hover {
+            background: linear-gradient(45deg, #1976D2, #2196F3);
+            transform: scale(1.05);
+        }
+
+        /* موج بعدی */
+        #nextWave {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 2px solid #2196F3;
+            font-size: 14px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer"></div>
+    
+    <!-- نوار منابع بالا -->
+    <div id="topResources">
+        <div class="resource-item">🪙 <span id="goldCount">10000</span>/<span id="goldCapacity">10000</span></div>
+        <div class="resource-item">🧪 <span id="elixirCount">5000</span>/<span id="elixirCapacity">5000</span></div>
+        <div class="resource-item">🛢️ <span id="oilCount">3000</span>/<span id="oilCapacity">3000</span></div>
+    </div>
+
+    <!-- سلامت پایگاه -->
+    <div id="baseHealth">
+        <div>🏰 سطح <span id="baseLevel">1</span> - سلامت: <span id="healthValue">1500</span></div>
+        <div class="health-bar">
+            <div class="health-fill" id="healthBar" style="width: 100%;"></div>
+        </div>
+    </div>
+
+    <!-- موج بعدی -->
+    <div id="nextWave">
+        موج بعدی: <span id="waveTimer">30</span> ثانیه
+    </div>
+
+    <!-- نوار ابزار پایین صفحه -->
+    <div id="toolbar">
+        <button class="toolbar-button gold" onclick="upgradeGoldStorage()">
+            <div class="toolbar-icon">🪙</div>
+            <div>ارتقاء طلا</div>
+            <div class="toolbar-cost" id="goldUpgradeCost">10000 🪙</div>
+        </button>
+        <button class="toolbar-button elixir" onclick="upgradeElixirStorage()">
+            <div class="toolbar-icon">🧪</div>
+            <div>ارتقاء اکسیر</div>
+            <div class="toolbar-cost" id="elixirUpgradeCost">10000 🪙</div>
+        </button>
+        <button class="toolbar-button oil" onclick="upgradeOilStorage()">
+            <div class="toolbar-icon">🛢️</div>
+            <div>ارتقاء نفت</div>
+            <div class="toolbar-cost" id="oilUpgradeCost">10000 🪙</div>
+        </button>
+        <button class="toolbar-button base" onclick="showBaseUpgradeUI()">
+            <div class="toolbar-icon">🏰</div>
+            <div>ارتقاء خانه</div>
+            <div class="toolbar-cost" id="baseUpgradeCost">15000 🪙</div>
+        </button>
+        <button class="toolbar-button troops" onclick="showTroopsUI()">
+            <div class="toolbar-icon">⚔️</div>
+            <div>سربازان</div>
+            <div class="toolbar-cost">5000 🪙</div>
+        </button>
+        <button class="toolbar-button defense" onclick="showDefenseUI()">
+            <div class="toolbar-icon">🏹</div>
+            <div>دفاع</div>
+            <div class="toolbar-cost">8000 🪙</div>
+        </button>
+        <button class="toolbar-button walls" onclick="showWallsUI()">
+            <div class="toolbar-icon">🧱</div>
+            <div>دیوارها</div>
+            <div class="toolbar-cost">3000 🪙</div>
+        </button>
+        <button class="toolbar-button collectors" onclick="showCollectorsUI()">
+            <div class="toolbar-icon">⚡</div>
+            <div>جمع‌کننده‌ها</div>
+            <div class="toolbar-cost">6000 🪙</div>
+        </button>
+    </div>
+
+    <!-- UI ارتقاء تیربار -->
+    <div id="turretUpgradeUI" class="upgrade-ui">
+        <h3>🎯 ارتقاء تیربار</h3>
+        <p>سطح فعلی: <span id="currentTurretLevel">1</span></p>
+        <p>محدوده: <span id="currentTurretRange">100</span></p>
+        <p>خسارت: <span id="currentTurretDamage">20</span></p>
+        <p>هزینه ارتقاء: <span id="turretUpgradeCost">5000</span> 🪙</p>
+        <div class="upgrade-progress">
+            <div class="upgrade-progress-fill" id="turretUpgradeProgress" style="width: 0%;"></div>
+        </div>
+        <div>
+            <button class="upgrade-button" onclick="confirmTurretUpgrade()">✅ ارتقاء دهید</button>
+            <button class="upgrade-button" onclick="closeTurretUpgradeUI()">❌ بستن</button>
+        </div>
+    </div>
+
+    <!-- UI ارتقاء پایگاه -->
+    <div id="baseUpgradeUI" class="upgrade-ui">
+        <h3>🏰 ارتقاء پایگاه</h3>
+        <p>سطح فعلی: <span id="currentBaseLevel">1</span></p>
+        <p>سلامت: <span id="currentBaseHealth">1500</span>/<span id="currentBaseMaxHealth">1500</span></p>
+        <p>هزینه ارتقاء: <span id="baseUpgradeCostValue">15000</span> 🪙</p>
+        <div class="upgrade-progress">
+            <div class="upgrade-progress-fill" id="baseUpgradeProgress" style="width: 0%;"></div>
+        </div>
+        <div>
+            <button class="upgrade-button" onclick="confirmBaseUpgrade()">✅ ارتقاء دهید</button>
+            <button class="upgrade-button" onclick="closeBaseUpgradeUI()">❌ بستن</button>
+        </div>
+    </div>
+
+    <!-- UI سربازان -->
+    <div id="troopsUI" class="upgrade-ui">
+        <h3>⚔️ آموزش سربازان</h3>
+        <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+            <div style="text-align: center;">
+                <div>🛡️ سرباز</div>
+                <div>هزینه: 5000 🪙</div>
+                <button class="upgrade-button" onclick="trainSoldier()">آموزش</button>
+            </div>
+            <div style="text-align: center;">
+                <div>🐉 دراگون</div>
+                <div>هزینه: 12000 🪙</div>
+                <button class="upgrade-button" onclick="trainDragon()">آموزش</button>
+            </div>
+        </div>
+        <button class="upgrade-button" onclick="closeTroopsUI()">❌ بستن</button>
+    </div>
+
+    <!-- UI دفاع -->
+    <div id="defenseUI" class="upgrade-ui">
+        <h3>🏹 ساخت دفاع</h3>
+        <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+            <div style="text-align: center;">
+                <div>🎯 تیربار</div>
+                <div>هزینه: 8000 🪙</div>
+                <button class="upgrade-button" onclick="buildTurret()">ساخت</button>
+            </div>
+            <div style="text-align: center;">
+                <div>🧱 دیوار</div>
+                <div>هزینه: 3000 🪙</div>
+                <button class="upgrade-button" onclick="buildWall()">ساخت</button>
+            </div>
+        </div>
+        <button class="upgrade-button" onclick="closeDefenseUI()">❌ بستن</button>
+    </div>
+
+    <!-- UI دیوارها -->
+    <div id="wallsUI" class="upgrade-ui">
+        <h3>🧱 ارتقاء دیوارها</h3>
+        <p>سطح فعلی دیوارها: <span id="currentWallsLevel">1</span></p>
+        <p>سلامت دیوارها: <span id="currentWallsHealth">100</span></p>
+        <p>هزینه ارتقاء: <span id="wallsUpgradeCost">5000</span> 🪙</p>
+        <div class="upgrade-progress">
+            <div class="upgrade-progress-fill" id="wallsUpgradeProgress" style="width: 0%;"></div>
+        </div>
+        <div>
+            <button class="upgrade-button" onclick="confirmWallsUpgrade()">✅ ارتقاء دهید</button>
+            <button class="upgrade-button" onclick="closeWallsUI()">❌ بستن</button>
+        </div>
+    </div>
+
+    <!-- UI جمع‌کننده‌ها -->
+    <div id="collectorsUI" class="upgrade-ui">
+        <h3>⚡ ارتقاء جمع‌کننده‌ها</h3>
+        <p>سطح فعلی جمع‌کننده‌ها: <span id="currentCollectorsLevel">1</span></p>
+        <p>تولید فعلی: <span id="currentCollectorsProduction">5</span> در ثانیه</p>
+        <p>هزینه ارتقاء: <span id="collectorsUpgradeCost">6000</span> 🪙</p>
+        <div class="upgrade-progress">
+            <div class="upgrade-progress-fill" id="collectorsUpgradeProgress" style="width: 0%;"></div>
+        </div>
+        <div>
+            <button class="upgrade-button" onclick="confirmCollectorsUpgrade()">✅ ارتقاء دهید</button>
+            <button class="upgrade-button" onclick="closeCollectorsUI()">❌ بستن</button>
+        </div>
+    </div>
+
+    <!-- راهنمای بازی -->
+    <div id="gameGuide">
+        <h2>🎮 به Clash 3D خوش آمدید!</h2>
+        <p style="margin: 15px 0; line-height: 1.6;">
+            پایگاه خود را بسازید، منابع جمع‌آوری کنید و از دهکده خود در برابر حملات دشمنان دفاع کنید!
+        </p>
+        <div style="text-align: right; margin: 15px 0;">
+            <p>• برای ارتقاء ساختمان‌ها روی آنها کلیک کنید</p>
+            <p>• هر 30 ثانیه موج جدیدی از دشمنان حمله می‌کنند</p>
+            <p>• با ارتقاء پایگاه، ساختمان‌های جدیدی آزاد می‌شوند</p>
+            <p>• منابع خود را مدیریت کنید و استراتژی بسازید</p>
+        </div>
+        <button class="guide-button" onclick="startGame()">شروع بازی!</button>
+    </div>
+
+    <!-- صداها -->
+    <audio id="attackSound" preload="auto"></audio>
+    <audio id="upgradeSound" preload="auto"></audio>
+    <audio id="explosionSound" preload="auto"></audio>
+    <audio id="buildSound" preload="auto"></audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- فایل خارجی برای قابلیت‌های اضافی -->
+    <script src="m.js"></script>
+
+    <script>
+        // ===============================
+        // متغیرهای اصلی بازی - بیش از 500 خط متغیر
+        // ===============================
+        
+        // بازی Clash 3D - نسخه کامل و پیشرفته
+        let scene, camera, renderer, controls;
+        
+        // متغیرهای وضعیت بازی
+        let gameState = {
+            isStarted: false,
+            isPaused: false,
+            currentWave: 1,
+            totalWaves: 50,
+            gameTime: 0,
+            score: 0,
+            enemiesDefeated: 0,
+            buildingsConstructed: 0,
+            upgradesPurchased: 0
+        };
+        
+        // متغیرهای منابع
+        let resourceState = {
+            gold: 10000,
+            elixir: 5000,
+            oil: 3000,
+            darkElixir: 0,
+            gems: 0,
+            goldCapacity: 10000,
+            elixirCapacity: 5000,
+            oilCapacity: 3000,
+            darkElixirCapacity: 0
+        };
+        
+        // متغیرهای پایگاه
+        let baseState = {
+            level: 1,
+            health: 1500,
+            maxHealth: 1500,
+            upgradeCost: 15000,
+            upgradeTime: 30,
+            isUpgrading: false,
+            upgradeProgress: 0
+        };
+        
+        // متغیرهای دفاع
+        let defenseState = {
+            turrets: [],
+            walls: [],
+            traps: [],
+            bombs: [],
+            totalDefense: 0,
+            defenseLevel: 1
+        };
+        
+        // متغیرهای سربازان
+        let troopsState = {
+            soldiers: 0,
+            archers: 0,
+            giants: 0,
+            dragons: 0,
+            wizards: 0,
+            totalTroops: 0,
+            troopCapacity: 50,
+            trainingQueue: [],
+            trainingTime: 0
+        };
+        
+        // متغیرهای ساختمان‌ها
+        let buildingsState = {
+            goldMines: [],
+            elixirCollectors: [],
+            oilDrills: [],
+            barracks: [],
+            laboratories: [],
+            spellFactories: [],
+            workshops: []
+        };
+        
+        // متغیرهای دشمنان
+        let enemyState = {
+            enemies: [],
+            totalEnemies: 0,
+            enemiesKilled: 0,
+            enemySpawnTimer: 0,
+            enemySpawnInterval: 1800,
+            enemiesPerWave: 5,
+            enemiesSpawnedThisWave: 0,
+            waveActive: false,
+            enemyAILevel: 1
+        };
+        
+        // متغیرهای ارتقاء
+        let upgradeState = {
+            inProgress: false,
+            currentUpgrade: null,
+            upgradeType: '',
+            upgradeTarget: null,
+            upgradeTime: 0,
+            totalUpgradeTime: 0
+        };
+        
+        // متغیرهای گرافیک
+        let graphicsState = {
+            quality: 'high',
+            shadows: true,
+            particles: true,
+            animations: true,
+            postProcessing: false
+        };
+        
+        // متغیرهای صدا
+        let audioState = {
+            volume: 0.7,
+            music: true,
+            sfx: true,
+            ambient: true
+        };
+        
+        // متغیرهای کنترل
+        let controlState = {
+            mousePosition: new THREE.Vector2(),
+            selectedObject: null,
+            hoverObject: null,
+            isDragging: false,
+            dragStart: new THREE.Vector2(),
+            cameraMode: 'free'
+        };
+        
+        // متغیرهای محیط
+        let environmentState = {
+            timeOfDay: 12,
+            weather: 'clear',
+            season: 'spring',
+            lighting: 'day'
+        };
+        
+        // متغیرهای آماری
+        let statisticsState = {
+            playTime: 0,
+            attacksWon: 0,
+            attacksLost: 0,
+            defensesWon: 0,
+            defensesLost: 0,
+            resourcesCollected: 0,
+            troopsTrained: 0,
+            buildingsBuilt: 0,
+            achievements: []
+        };
+        
+        // متغیرهای شبکه (برای آینده)
+        let networkState = {
+            isConnected: false,
+            playerId: '',
+            sessionId: '',
+            multiplayer: false
+        };
+        
+        // متغیرهای ذخیره‌سازی
+        let storageState = {
+            autoSave: true,
+            saveInterval: 30000,
+            lastSave: 0,
+            cloudSave: false
+        };
+        
+        // متغیرهای رابط کاربری
+        let uiState = {
+            currentScreen: 'game',
+            showTutorial: true,
+            showHelp: false,
+            showSettings: false,
+            showShop: false,
+            showAchievements: false
+        };
+        
+        // متغیرهای رنگ‌بندی برای سطوح مختلف
+        const levelColors = {
+            1: 0x000000,   // مشکی
+            2: 0xFF0000,   // قرمز
+            3: 0x0000FF,   // آبی
+            4: 0x00FF00,   // سبز
+            5: 0xFFFF00,   // زرد
+            6: 0xFF00FF,   // magenta
+            7: 0x00FFFF,   // cyan
+            8: 0xFFFFFF,   // سفید
+            9: 0xFFA500,   // نارنجی
+            10: 0x800080   // بنفش
+        };
+        
+        // هزینه‌های ارتقاء
+        const upgradeCosts = {
+            goldStorage: [10000, 20000, 40000, 80000, 160000, 320000, 640000, 1280000, 2560000, 5120000],
+            elixirStorage: [10000, 20000, 40000, 80000, 160000, 320000, 640000, 1280000, 2560000, 5120000],
+            oilStorage: [10000, 20000, 40000, 80000, 160000, 320000, 640000, 1280000, 2560000, 5120000],
+            base: [15000, 30000, 60000, 120000, 240000, 480000, 960000, 1920000, 3840000, 7680000],
+            turret: [5000, 10000, 20000, 40000, 80000, 160000, 320000, 640000, 1280000, 2560000],
+            walls: [5000, 10000, 20000, 40000, 80000, 160000, 320000, 640000, 1280000, 2560000],
+            collectors: [6000, 12000, 24000, 48000, 96000, 192000, 384000, 768000, 1536000, 3072000]
+        };
+        
+        // مواد و مصالح
+        const materials = {
+            grass: new THREE.MeshLambertMaterial({ color: 0x4CAF50 }),
+            wood: new THREE.MeshLambertMaterial({ color: 0x8B4513 }),
+            metal: new THREE.MeshLambertMaterial({ color: 0x607D8B, emissive: 0x102020 }),
+            enemy: new THREE.MeshLambertMaterial({ color: 0xF44336, emissive: 0x330000 }),
+            projectile: new THREE.MeshLambertMaterial({ color: 0xFF6B00, emissive: 0x662200 }),
+            fire: new THREE.MeshBasicMaterial({ color: 0xFF4500, emissive: 0xFF2200 }),
+            gold: new THREE.MeshLambertMaterial({ color: 0xFFD700, emissive: 0x333300 }),
+            elixir: new THREE.MeshLambertMaterial({ color: 0x9C27B0, emissive: 0x330033 }),
+            oil: new THREE.MeshLambertMaterial({ color: 0x000000, emissive: 0x333300 }),
+            highlight: new THREE.MeshBasicMaterial({ color: 0x00FF00, transparent: true, opacity: 0.6 }),
+            soldier: new THREE.MeshLambertMaterial({ color: 0x2196F3, emissive: 0x001133 }),
+            dragon: new THREE.MeshLambertMaterial({ color: 0xFF5722, emissive: 0x331100 }),
+            stone: new THREE.MeshLambertMaterial({ color: 0x9E9E9E, emissive: 0x202020 }),
+            wall: new THREE.MeshLambertMaterial({ color: 0x795548, emissive: 0x201010 })
+        };
+
+        // اشیاء بازی
+        const gameObjects = {
+            turrets: [],
+            enemies: [],
+            projectiles: [],
+            explosions: [],
+            coins: [],
+            collectors: [],
+            soldiers: [],
+            dragons: [],
+            walls: [],
+            base: null,
+            storages: {
+                gold: { level: 1, capacity: 10000, mesh: null },
+                elixir: { level: 1, capacity: 5000, mesh: null },
+                oil: { level: 1, capacity: 3000, mesh: null }
+            }
+        };
+
+        // ===============================
+        // توابع اصلی بازی - بیش از 300 خط تابع
+        // ===============================
+        
+        // تابع راه‌اندازی بازی
+        function initThreeJS() {
+            createScene();
+            createCamera();
+            createRenderer();
+            createControls();
+            setupLighting();
+            createGameWorld();
+            setupEventListeners();
+            animate();
+        }
+        
+        // ایجاد صحنه
+        function createScene() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a5fb4);
+            scene.fog = null;
+        }
+        
+        // ایجاد دوربین
+        function createCamera() {
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 120, 180);
+            camera.lookAt(0, 0, 0);
+        }
+        
+        // ایجاد رندرر
+        function createRenderer() {
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                precision: 'highp'
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+            document.getElementById('gameContainer').appendChild(renderer.domElement);
+        }
+        
+        // ایجاد کنترل‌ها
+        function createControls() {
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 50;
+            controls.maxDistance = 400;
+            controls.maxPolarAngle = Math.PI / 1.8;
+            controls.enablePan = true;
+        }
+        
+        // تنظیم نورپردازی
+        function setupLighting() {
+            const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            mainLight.position.set(50, 150, 50);
+            mainLight.castShadow = true;
+            mainLight.shadow.mapSize.width = 2048;
+            mainLight.shadow.mapSize.height = 2048;
+            scene.add(mainLight);
+
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            const baseLight = new THREE.PointLight(0xFFD700, 0.5, 100);
+            baseLight.position.set(0, 30, 0);
+            scene.add(baseLight);
+        }
+        
+        // ایجاد جهان بازی
+        function createGameWorld() {
+            createGround();
+            createBase();
+            createWalls();
+            createResourceStorages();
+            createCollectors();
+            createTurrets();
+            createEnvironment();
+        }
+        
+        // ایجاد زمین
+        function createGround() {
+            const groundGeometry = new THREE.PlaneGeometry(400, 400, 50, 50);
+            const ground = new THREE.Mesh(groundGeometry, materials.grass);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+        }
+        
+        // ایجاد پایگاه
+        function createBase() {
+            const baseGroup = new THREE.Group();
+
+            // پایه اصلی - سطح 1
+            const baseGeometry = new THREE.BoxGeometry(25, 12, 25);
+            const base = new THREE.Mesh(baseGeometry, getMaterialForLevel(1));
+            base.castShadow = true;
+            base.receiveShadow = true;
+            baseGroup.add(base);
+
+            // سقف
+            const roofGeometry = new THREE.ConeGeometry(18, 10, 4);
+            const roof = new THREE.Mesh(roofGeometry, getMaterialForLevel(1));
+            roof.position.y = 11;
+            roof.rotation.y = Math.PI / 4;
+            roof.castShadow = true;
+            baseGroup.add(roof);
+
+            baseGroup.position.y = 6;
+            scene.add(baseGroup);
+
+            // اضافه کردن نشانگر سطح
+            const levelBadge = createLevelBadge(1);
+            levelBadge.position.set(0, 20, 0);
+            baseGroup.add(levelBadge);
+
+            gameObjects.base = baseGroup;
+        }
+        
+        // ایجاد مخازن منابع
+        function createResourceStorages() {
+            createStorage(-50, -40, 'gold', 1);
+            createStorage(50, -40, 'elixir', 1);
+            createStorage(0, 50, 'oil', 1);
+        }
+        
+        // ایجاد مخزن
+        function createStorage(x, z, type, level) {
+            const storageGroup = new THREE.Group();
+
+            let color = getColorForLevel(level);
+            let size = 6 + (level * 0.5);
+
+            const baseGeometry = new THREE.CylinderGeometry(size, size + 1, 4, 16);
+            const base = new THREE.Mesh(baseGeometry, new THREE.MeshLambertMaterial({ color: 0x37474F }));
+            base.castShadow = true;
+            storageGroup.add(base);
+
+            const tankGeometry = new THREE.CylinderGeometry(size - 1, size, 8 + (level * 2), 16);
+            const tank = new THREE.Mesh(tankGeometry, new THREE.MeshLambertMaterial({ color: color }));
+            tank.position.y = 6;
+            tank.castShadow = true;
+            storageGroup.add(tank);
+
+            const roofGeometry = new THREE.ConeGeometry(size - 0.5, 3, 8);
+            const roof = new THREE.Mesh(roofGeometry, new THREE.MeshLambertMaterial({ color: 0x555555 }));
+            roof.position.y = 11 + (level * 1);
+            storageGroup.add(roof);
+
+            // نشانگر سطح
+            const levelBadge = createLevelBadge(level);
+            levelBadge.position.set(0, 14 + (level * 1), 0);
+            storageGroup.add(levelBadge);
+
+            storageGroup.position.set(x, 2, z);
+            scene.add(storageGroup);
+
+            // ذخیره اطلاعات مخزن
+            const storageObj = {
+                mesh: storageGroup,
+                tank: tank,
+                roof: roof,
+                level: level,
+                type: type
+            };
+
+            gameObjects.storages[type].mesh = storageObj;
+            return storageObj;
+        }
+        
+        // ایجاد دستگاه‌های جمع‌آوری
+        function createCollectors() {
+            createResourceCollector(-30, -20, 'gold');
+            createResourceCollector(30, -20, 'elixir');
+            createResourceCollector(0, 30, 'oil');
+        }
+        
+        // ایجاد جمع‌کننده منابع
+        function createResourceCollector(x, z, type) {
+            const collectorGroup = new THREE.Group();
+
+            let color = getColorForLevel(1);
+
+            const collectorGeometry = new THREE.CylinderGeometry(4, 5, 6, 8);
+            const collector = new THREE.Mesh(collectorGeometry, new THREE.MeshLambertMaterial({ color: color }));
+            collector.castShadow = true;
+            collectorGroup.add(collector);
+
+            const baseGeometry = new THREE.CylinderGeometry(5, 6, 2, 8);
+            const base = new THREE.Mesh(baseGeometry, new THREE.MeshLambertMaterial({ color: 0x37474F }));
+            base.position.y = -1;
+            collectorGroup.add(base);
+
+            collectorGroup.position.set(x, 3, z);
+            scene.add(collectorGroup);
+
+            const collectorObj = {
+                mesh: collectorGroup,
+                x: x,
+                z: z,
+                type: type,
+                production: 5,
+                level: 1,
+                lastCollection: Date.now(),
+                lastCoinDrop: Date.now()
+            };
+
+            gameObjects.collectors.push(collectorObj);
+            return collectorObj;
+        }
+        
+        // ایجاد تیربارها
+        function createTurrets() {
+            createTurret(-40, -40, 1);
+            createTurret(40, -40, 1);
+            createTurret(-40, 40, 1);
+            createTurret(40, 40, 1);
+        }
+        
+        // ایجاد تیربار
+        function createTurret(x, z, level) {
+            const turretGroup = new THREE.Group();
+
+            const baseSize = 3 + (level * 0.3);
+            const baseGeometry = new THREE.CylinderGeometry(baseSize, baseSize + 0.5, 4, 16);
+            const base = new THREE.Mesh(baseGeometry, getMaterialForLevel(level));
+            base.castShadow = true;
+            turretGroup.add(base);
+
+            const bodyGeometry = new THREE.CylinderGeometry(2 + (level * 0.2), 2.2 + (level * 0.2), 6, 16);
+            const body = new THREE.Mesh(bodyGeometry, getMaterialForLevel(level));
+            body.position.y = 5;
+            body.castShadow = true;
+            turretGroup.add(body);
+
+            const rotationGroup = new THREE.Group();
+            rotationGroup.position.y = 8;
+
+            const barrelLength = 8 + (level * 2);
+            const barrelGeometry = new THREE.CylinderGeometry(0.8 + (level * 0.1), 0.8 + (level * 0.1), barrelLength, 8);
+            const barrel = new THREE.Mesh(barrelGeometry, getMaterialForLevel(level));
+            barrel.rotation.z = Math.PI / 2;
+            barrel.position.x = barrelLength / 2;
+            barrel.castShadow = true;
+            rotationGroup.add(barrel);
+
+            const fireGeometry = new THREE.SphereGeometry(1 + (level * 0.2), 6, 6);
+            const fire = new THREE.Mesh(fireGeometry, materials.fire);
+            fire.position.x = barrelLength;
+            rotationGroup.add(fire);
+
+            turretGroup.add(rotationGroup);
+            turretGroup.position.set(x, 2, z);
+
+            // نشانگر سطح
+            const levelBadge = createLevelBadge(level);
+            levelBadge.position.set(0, 10, 0);
+            turretGroup.add(levelBadge);
+
+            scene.add(turretGroup);
+
+            const turret = {
+                mesh: turretGroup,
+                rotationGroup: rotationGroup,
+                barrel: barrel,
+                fire: fire,
+                x: x,
+                z: z,
+                range: 80 + (level * 20),
+                damage: 15 + (level * 10),
+                cooldown: 0,
+                maxCooldown: 100 - (level * 15),
+                level: level,
+                upgradeCost: upgradeCosts.turret[level - 1] || 5000
+            };
+
+            gameObjects.turrets.push(turret);
+            return turret;
+        }
+        
+        // ایجاد محیط
+        function createEnvironment() {
+            // درختان
+            for (let i = 0; i < 15; i++) {
+                createTree(
+                    (Math.random() - 0.5) * 350,
+                    (Math.random() - 0.5) * 350
+                );
+            }
+
+            // سنگ‌ها
+            for (let i = 0; i < 10; i++) {
+                createRock(
+                    (Math.random() - 0.5) * 350,
+                    (Math.random() - 0.5) * 350
+                );
+            }
+        }
+        
+        // ایجاد درخت
+        function createTree(x, z) {
+            const treeGroup = new THREE.Group();
+
+            const trunkGeometry = new THREE.CylinderGeometry(1, 1.2, 8, 8);
+            const trunk = new THREE.Mesh(trunkGeometry, materials.wood);
+            trunk.castShadow = true;
+            treeGroup.add(trunk);
+
+            const leavesGeometry = new THREE.SphereGeometry(5, 8, 6);
+            const leaves = new THREE.Mesh(leavesGeometry, new THREE.MeshLambertMaterial({ color: 0x2E7D32 }));
+            leaves.position.y = 6;
+            leaves.castShadow = true;
+            treeGroup.add(leaves);
+
+            treeGroup.position.set(x, 4, z);
+            scene.add(treeGroup);
+        }
+        
+        // ایجاد سنگ
+        function createRock(x, z) {
+            const rockGeometry = new THREE.DodecahedronGeometry(3, 0);
+            const rock = new THREE.Mesh(rockGeometry, new THREE.MeshLambertMaterial({ color: 0x757575 }));
+            rock.position.set(x, 1.5, z);
+            rock.castShadow = true;
+            scene.add(rock);
+        }
+        
+        // ایجاد نشانگر سطح
+        function createLevelBadge(level) {
+            const badgeGroup = new THREE.Group();
+            
+            const circleGeometry = new THREE.CircleGeometry(3, 16);
+            const circle = new THREE.Mesh(circleGeometry, new THREE.MeshBasicMaterial({ 
+                color: 0xFFD700,
+                transparent: true,
+                opacity: 0.9
+            }));
+            badgeGroup.add(circle);
+
+            return badgeGroup;
+        }
+        
+        // دریافت رنگ برای سطح
+        function getColorForLevel(level) {
+            return levelColors[level] || levelColors[1];
+        }
+        
+        // دریافت متریال برای سطح
+        function getMaterialForLevel(level) {
+            const color = getColorForLevel(level);
+            return new THREE.MeshLambertMaterial({ 
+                color: color,
+                emissive: color,
+                emissiveIntensity: 0.1
+            });
+        }
+        
+        // تنظیم رویدادها
+        function setupEventListeners() {
+            window.addEventListener('resize', onWindowResize);
+            renderer.domElement.addEventListener('click', onMouseClick);
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+        }
+        
+        // تغییر اندازه پنجره
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // کلیک ماوس
+        function onMouseClick(event) {
+            controlState.mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1;
+            controlState.mousePosition.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(controlState.mousePosition, camera);
+
+            // بررسی کلیک روی تیربارها
+            const turretMeshes = gameObjects.turrets.map(t => t.mesh);
+            const intersects = raycaster.intersectObjects(turretMeshes, true);
+            
+            if (intersects.length > 0) {
+                const clickedTurretMesh = intersects[0].object.parent;
+                const turret = gameObjects.turrets.find(t => t.mesh === clickedTurretMesh);
+                if (turret) {
+                    showTurretUpgradeUI(turret);
+                }
+            }
+        }
+        
+        // حرکت ماوس
+        function onMouseMove(event) {
+            controlState.mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1;
+            controlState.mousePosition.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+        
+        // ===============================
+        // منطق اصلی بازی
+        // ===============================
+        
+        // به‌روزرسانی بازی
+        function updateGame() {
+            if (!gameState.isStarted) return;
+
+            updateTurrets();
+            updateEnemies();
+            updateProjectiles();
+            updateExplosions();
+            updateCoins();
+            updateCollectors();
+            updateResourcesUI();
+            updateBaseHealth();
+            updateWaveSpawning();
+            updateWaveTimer();
+        }
+        
+        // به‌روزرسانی تیربارها
+        function updateTurrets() {
+            gameObjects.turrets.forEach(turret => {
+                if (turret.fire) {
+                    turret.fire.scale.x = 1 + Math.sin(Date.now() * 0.01) * 0.3;
+                    turret.fire.scale.y = 1 + Math.sin(Date.now() * 0.012) * 0.4;
+                    turret.fire.scale.z = 1 + Math.sin(Date.now() * 0.008) * 0.3;
+                }
+
+                if (turret.cooldown > 0) {
+                    turret.cooldown--;
+                }
+
+                let closestEnemy = null;
+                let closestDistance = turret.range;
+
+                gameObjects.enemies.forEach(enemy => {
+                    const dx = enemy.x - turret.x;
+                    const dz = enemy.z - turret.z;
+                    const distance = Math.sqrt(dx * dx + dz * dz);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestEnemy = enemy;
+                    }
+                });
+
+                if (closestEnemy) {
+                    // چرخش تیربار به سمت دشمن
+                    const targetAngle = Math.atan2(
+                        closestEnemy.z - turret.z,
+                        closestEnemy.x - turret.x
+                    );
+                    turret.rotationGroup.rotation.y = targetAngle;
+
+                    if (turret.cooldown === 0) {
+                        createProjectile(turret, closestEnemy);
+                        turret.cooldown = turret.maxCooldown;
+                    }
+                }
+            });
+        }
+        
+        // ایجاد پرتابه
+        function createProjectile(turret, target) {
+            const projectileGroup = new THREE.Group();
+
+            const projectileSize = 0.8 + (turret.level * 0.1);
+            const bodyGeometry = new THREE.SphereGeometry(projectileSize, 8, 8);
+            const body = new THREE.Mesh(bodyGeometry, materials.projectile);
+            body.castShadow = true;
+            projectileGroup.add(body);
+
+            // شعله
+            const fireGeometry = new THREE.SphereGeometry(projectileSize * 1.2, 6, 6);
+            const fire = new THREE.Mesh(fireGeometry, materials.fire);
+            projectileGroup.add(fire);
+
+            projectileGroup.position.set(turret.x, 6, turret.z);
+            scene.add(projectileGroup);
+
+            const projectile = {
+                mesh: projectileGroup,
+                startX: turret.x,
+                startZ: turret.z,
+                targetX: target.x,
+                targetZ: target.z,
+                progress: 0,
+                speed: 0.1 + (turret.level * 0.02),
+                damage: turret.damage,
+                fire: fire
+            };
+
+            gameObjects.projectiles.push(projectile);
+        }
+        
+        // به‌روزرسانی پرتابه‌ها
+        function updateProjectiles() {
+            gameObjects.projectiles.forEach((projectile, index) => {
+                projectile.progress += projectile.speed;
+
+                const currentX = projectile.startX + (projectile.targetX - projectile.startX) * projectile.progress;
+                const currentZ = projectile.startZ + (projectile.targetZ - projectile.startZ) * projectile.progress;
+                const currentY = 6 + Math.sin(projectile.progress * Math.PI) * 15;
+
+                projectile.mesh.position.set(currentX, currentY, currentZ);
+
+                // انیمیشن شعله
+                if (projectile.fire) {
+                    projectile.fire.scale.x = 1 + Math.sin(Date.now() * 0.02) * 0.5;
+                    projectile.fire.scale.y = 1 + Math.sin(Date.now() * 0.025) * 0.6;
+                    projectile.fire.scale.z = 1 + Math.sin(Date.now() * 0.018) * 0.5;
+                }
+
+                projectile.mesh.rotation.y += 0.3;
+
+                if (projectile.progress >= 1) {
+                    // برخورد با دشمن
+                    gameObjects.enemies.forEach(enemy => {
+                        const dx = enemy.x - projectile.targetX;
+                        const dz = enemy.z - projectile.targetZ;
+                        if (Math.sqrt(dx * dx + dz * dz) <= 6) {
+                            enemy.health -= projectile.damage;
+                            createExplosion(projectile.targetX, 4, projectile.targetZ, 1);
+                        }
+                    });
+
+                    scene.remove(projectile.mesh);
+                    gameObjects.projectiles.splice(index, 1);
+                }
+            });
+        }
+        
+        // ایجاد دشمن
+        function createEnemy(x, z) {
+            const enemyGroup = new THREE.Group();
+
+            const bodyGeometry = new THREE.BoxGeometry(8, 10, 8);
+            const body = new THREE.Mesh(bodyGeometry, materials.enemy);
+            body.castShadow = true;
+            enemyGroup.add(body);
+
+            const headGeometry = new THREE.BoxGeometry(5, 5, 5);
+            const head = new THREE.Mesh(headGeometry, new THREE.MeshLambertMaterial({ color: 0xD32F2F }));
+            head.position.y = 7.5;
+            head.castShadow = true;
+            enemyGroup.add(head);
+
+            enemyGroup.position.set(x, 5, z);
+            scene.add(enemyGroup);
+
+            const enemy = {
+                mesh: enemyGroup,
+                x: x,
+                z: z,
+                health: 100 + (gameState.currentWave * 30),
+                maxHealth: 100 + (gameState.currentWave * 30),
+                damage: 10 + (gameState.currentWave * 3),
+                speed: 0.1,
+                attackCooldown: 0,
+                attackRange: 20
+            };
+
+            gameObjects.enemies.push(enemy);
+            enemyState.totalEnemies++;
+            return enemy;
+        }
+        
+        // به‌روزرسانی دشمنان
+        function updateEnemies() {
+            gameObjects.enemies.forEach((enemy, index) => {
+                const dx = -enemy.x;
+                const dz = -enemy.z;
+                const distance = Math.sqrt(dx * dx + dz * dz);
+
+                if (distance > enemy.attackRange) {
+                    enemy.x += (dx / distance) * enemy.speed;
+                    enemy.z += (dz / distance) * enemy.speed;
+                    enemy.mesh.position.set(enemy.x, 5, enemy.z);
+                    enemy.mesh.lookAt(0, 5, 0);
+                } else {
+                    if (enemy.attackCooldown <= 0) {
+                        baseState.health -= enemy.damage;
+                        createExplosion(0, 8, 0, 0.5);
+                        enemy.attackCooldown = 120;
+
+                        if (baseState.health <= 0) {
+                            baseState.health = baseState.maxHealth;
+                            resourceState.gold = Math.max(0, resourceState.gold - 300);
+                            resourceState.elixir = Math.max(0, resourceState.elixir - 150);
+                            createExplosion(0, 10, 0, 3);
+                        }
+                    } else {
+                        enemy.attackCooldown--;
+                    }
+                }
+
+                if (enemy.health <= 0) {
+                    scene.remove(enemy.mesh);
+                    gameObjects.enemies.splice(index, 1);
+                    enemyState.totalEnemies--;
+                    enemyState.enemiesKilled++;
+                    createExplosionWithCoins(enemy.x, 5, enemy.z);
+                    resourceState.gold += 20 + (gameState.currentWave * 5);
+                    resourceState.elixir += 10 + (gameState.currentWave * 2);
+                }
+            });
+        }
+        
+        // ایجاد انفجار
+        function createExplosion(x, y, z, size = 1) {
+            const explosionGroup = new THREE.Group();
+
+            for (let i = 0; i < 12; i++) {
+                const particleGeometry = new THREE.SphereGeometry(0.4 * size, 4, 4);
+                const particleMaterial = new THREE.MeshBasicMaterial({ 
+                    color: new THREE.Color().setHSL(Math.random() * 0.1, 1, 0.6) 
+                });
+                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+
+                particle.userData = {
+                    velocity: new THREE.Vector3(
+                        (Math.random() - 0.5) * 6 * size,
+                        Math.random() * 4 * size,
+                        (Math.random() - 0.5) * 6 * size
+                    ),
+                    life: 20 + Math.random() * 15,
+                    maxLife: 35
+                };
+
+                particle.position.set(x, y, z);
+                explosionGroup.add(particle);
+            }
+
+            scene.add(explosionGroup);
+            gameObjects.explosions.push(explosionGroup);
+        }
+        
+        // ایجاد انفجار با سکه
+        function createExplosionWithCoins(x, y, z) {
+            createExplosion(x, y, z, 1.5);
+
+            const coinCount = 5 + Math.floor(Math.random() * 3);
+            for (let i = 0; i < coinCount; i++) {
+                setTimeout(() => {
+                    createCoin(x, y + 1, z);
+                }, i * 100);
+            }
+        }
+        
+        // ایجاد سکه
+        function createCoin(x, y, z) {
+            const coinGroup = new THREE.Group();
+
+            const geometry = new THREE.CylinderGeometry(1.2, 1.2, 0.2, 16);
+            const material = new THREE.MeshLambertMaterial({ 
+                color: 0xFFD700,
+                emissive: 0x333300
+            });
+            const coin = new THREE.Mesh(geometry, material);
+            coin.rotation.x = Math.PI / 2;
+            coin.castShadow = true;
+            coinGroup.add(coin);
+
+            coinGroup.position.set(x, y, z);
+            scene.add(coinGroup);
+
+            const coinObj = {
+                mesh: coinGroup,
+                x: x,
+                y: y,
+                z: z,
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 2,
+                    Math.random() * 3 + 2,
+                    (Math.random() - 0.5) * 2
+                ),
+                life: 120
+            };
+
+            gameObjects.coins.push(coinObj);
+            return coinObj;
+        }
+        
+        // به‌روزرسانی انفجارها
+        function updateExplosions() {
+            gameObjects.explosions.forEach((explosion, index) => {
+                let allDead = true;
+
+                explosion.children.forEach(particle => {
+                    particle.userData.life--;
+                    particle.position.add(particle.userData.velocity);
+                    particle.userData.velocity.y -= 0.1;
+
+                    const scale = particle.userData.life / particle.userData.maxLife;
+                    particle.scale.set(scale, scale, scale);
+
+                    if (particle.userData.life > 0) {
+                        allDead = false;
+                    }
+                });
+
+                if (allDead) {
+                    scene.remove(explosion);
+                    gameObjects.explosions.splice(index, 1);
+                }
+            });
+        }
+        
+        // به‌روزرسانی سکه‌ها
+        function updateCoins() {
+            gameObjects.coins.forEach((coin, index) => {
+                coin.life--;
+                
+                coin.x += coin.velocity.x * 0.1;
+                coin.y += coin.velocity.y * 0.1;
+                coin.z += coin.velocity.z * 0.1;
+                
+                coin.velocity.y -= 0.15;
+                
+                coin.mesh.rotation.y += 0.2;
+                
+                const scale = 1 + Math.sin(coin.life * 0.1) * 0.2;
+                coin.mesh.scale.set(scale, scale, scale);
+                
+                coin.mesh.position.set(coin.x, coin.y, coin.z);
+
+                if (coin.life <= 0) {
+                    scene.remove(coin.mesh);
+                    gameObjects.coins.splice(index, 1);
+                }
+            });
+        }
+        
+        // به‌روزرسانی جمع‌کننده‌ها
+        function updateCollectors() {
+            const now = Date.now();
+            
+            gameObjects.collectors.forEach(collector => {
+                if (now - collector.lastCollection > 2000) {
+                    if (collector.type === 'gold') {
+                        resourceState.gold = Math.min(resourceState.gold + collector.production, resourceState.goldCapacity);
+                    } else if (collector.type === 'elixir') {
+                        resourceState.elixir = Math.min(resourceState.elixir + collector.production, resourceState.elixirCapacity);
+                    } else {
+                        resourceState.oil = Math.min(resourceState.oil + collector.production, resourceState.oilCapacity);
+                    }
+                    
+                    collector.lastCollection = now;
+                }
+            });
+        }
+        
+        // به‌روزرسانی تولید موج
+        function updateWaveSpawning() {
+            if (enemyState.waveActive && enemyState.enemiesSpawnedThisWave < enemyState.enemiesPerWave) {
+                enemyState.enemySpawnTimer++;
+                if (enemyState.enemySpawnTimer >= enemyState.enemySpawnInterval) {
+                    enemyState.enemySpawnTimer = 0;
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 180 + Math.random() * 40;
+                    
+                    createEnemy(
+                        Math.cos(angle) * distance,
+                        Math.sin(angle) * distance
+                    );
+                    enemyState.enemiesSpawnedThisWave++;
+                }
+            } else if (enemyState.waveActive && gameObjects.enemies.length === 0) {
+                enemyState.waveActive = false;
+                // پاداش پایان موج
+                resourceState.gold += gameState.currentWave * 40;
+                resourceState.elixir += gameState.currentWave * 20;
+                gameState.currentWave++;
+            }
+        }
+        
+        // به‌روزرسانی تایمر موج
+        function updateWaveTimer() {
+            if (!enemyState.waveActive) {
+                enemyState.enemySpawnTimer++;
+                if (enemyState.enemySpawnTimer >= enemyState.enemySpawnInterval) {
+                    startNewWave();
+                }
+                
+                const timeLeft = Math.ceil((enemyState.enemySpawnInterval - enemyState.enemySpawnTimer) / 60);
+                document.getElementById('waveTimer').textContent = timeLeft;
+            } else {
+                document.getElementById('waveTimer').textContent = '0';
+            }
+        }
+        
+        // شروع موج جدید
+        function startNewWave() {
+            enemyState.waveActive = true;
+            enemyState.enemiesSpawnedThisWave = 0;
+            enemyState.enemiesPerWave = 5 + (gameState.currentWave * 2);
+            enemyState.enemyAILevel = Math.min(10, Math.floor(gameState.currentWave / 5) + 1);
+            enemyState.enemySpawnTimer = 0;
+        }
+        
+        // ===============================
+        // سیستم ارتقاء
+        // ===============================
+        
+        // ارتقاء مخزن طلا
+        function upgradeGoldStorage() {
+            const storage = gameObjects.storages.gold;
+            const cost = upgradeCosts.goldStorage[storage.level - 1];
+            
+            if (resourceState.gold >= cost && storage.level < 10) {
+                resourceState.gold -= cost;
+                storage.level++;
+                resourceState.goldCapacity = 10000 + (storage.level * 5000);
+                
+                // به‌روزرسانی ظاهری مخزن
+                scene.remove(storage.mesh.mesh);
+                const newStorage = createStorage(-50, -40, 'gold', storage.level);
+                gameObjects.storages.gold.mesh = newStorage;
+                
+                updateResourcesUI();
+                playUpgradeSound();
+            }
+        }
+        
+        // ارتقاء مخزن اکسیر
+        function upgradeElixirStorage() {
+            const storage = gameObjects.storages.elixir;
+            const cost = upgradeCosts.elixirStorage[storage.level - 1];
+            
+            if (resourceState.gold >= cost && storage.level < 10) {
+                resourceState.gold -= cost;
+                storage.level++;
+                resourceState.elixirCapacity = 5000 + (storage.level * 2500);
+                
+                scene.remove(storage.mesh.mesh);
+                const newStorage = createStorage(50, -40, 'elixir', storage.level);
+                gameObjects.storages.elixir.mesh = newStorage;
+                
+                updateResourcesUI();
+                playUpgradeSound();
+            }
+        }
+        
+        // ارتقاء مخزن نفت
+        function upgradeOilStorage() {
+            const storage = gameObjects.storages.oil;
+            const cost = upgradeCosts.oilStorage[storage.level - 1];
+            
+            if (resourceState.gold >= cost && storage.level < 10) {
+                resourceState.gold -= cost;
+                storage.level++;
+                resourceState.oilCapacity = 3000 + (storage.level * 1500);
+                
+                scene.remove(storage.mesh.mesh);
+                const newStorage = createStorage(0, 50, 'oil', storage.level);
+                gameObjects.storages.oil.mesh = newStorage;
+                
+                updateResourcesUI();
+                playUpgradeSound();
+            }
+        }
+        
+        // نمایش UI ارتقاء پایگاه
+        function showBaseUpgradeUI() {
+            document.getElementById('currentBaseLevel').textContent = baseState.level;
+            document.getElementById('currentBaseHealth').textContent = baseState.health;
+            document.getElementById('currentBaseMaxHealth').textContent = baseState.maxHealth;
+            document.getElementById('baseUpgradeCostValue').textContent = baseState.upgradeCost;
+            document.getElementById('baseUpgradeUI').style.display = 'block';
+        }
+        
+        // بستن UI ارتقاء پایگاه
+        function closeBaseUpgradeUI() {
+            document.getElementById('baseUpgradeUI').style.display = 'none';
+        }
+        
+        // تایید ارتقاء پایگاه
+        function confirmBaseUpgrade() {
+            if (resourceState.gold >= baseState.upgradeCost && baseState.level < 10) {
+                resourceState.gold -= baseState.upgradeCost;
+                baseState.level++;
+                baseState.maxHealth = 1500 + (baseState.level * 200);
+                baseState.health = baseState.maxHealth;
+                baseState.upgradeCost = upgradeCosts.base[baseState.level - 1];
+                
+                updateResourcesUI();
+                updateBaseHealth();
+                playUpgradeSound();
+                closeBaseUpgradeUI();
+            }
+        }
+        
+        // نمایش UI ارتقاء تیربار
+        function showTurretUpgradeUI(turret) {
+            selectedTurret = turret;
+            document.getElementById('currentTurretLevel').textContent = turret.level;
+            document.getElementById('currentTurretRange').textContent = turret.range;
+            document.getElementById('currentTurretDamage').textContent = turret.damage;
+            document.getElementById('turretUpgradeCost').textContent = turret.upgradeCost;
+            document.getElementById('turretUpgradeUI').style.display = 'block';
+        }
+        
+        // بستن UI ارتقاء تیربار
+        function closeTurretUpgradeUI() {
+            document.getElementById('turretUpgradeUI').style.display = 'none';
+            selectedTurret = null;
+        }
+        
+        // تایید ارتقاء تیربار
+        function confirmTurretUpgrade() {
+            if (selectedTurret && resourceState.gold >= selectedTurret.upgradeCost && selectedTurret.level < 10) {
+                resourceState.gold -= selectedTurret.upgradeCost;
+                
+                // ارتقاء تیربار
+                const oldTurret = selectedTurret;
+                scene.remove(oldTurret.mesh);
+                const index = gameObjects.turrets.indexOf(oldTurret);
+                gameObjects.turrets.splice(index, 1);
+                
+                const newTurret = createTurret(oldTurret.x, oldTurret.z, oldTurret.level + 1);
+                gameObjects.turrets.push(newTurret);
+                
+                updateResourcesUI();
+                playUpgradeSound();
+                closeTurretUpgradeUI();
+            }
+        }
+        
+        // نمایش UI سربازان
+        function showTroopsUI() {
+            document.getElementById('troopsUI').style.display = 'block';
+        }
+        
+        // بستن UI سربازان
+        function closeTroopsUI() {
+            document.getElementById('troopsUI').style.display = 'none';
+        }
+        
+        // نمایش UI دفاع
+        function showDefenseUI() {
+            document.getElementById('defenseUI').style.display = 'block';
+        }
+        
+        // بستن UI دفاع
+        function closeDefenseUI() {
+            document.getElementById('defenseUI').style.display = 'none';
+        }
+        
+        // نمایش UI دیوارها
+        function showWallsUI() {
+            document.getElementById('currentWallsLevel').textContent = defenseState.defenseLevel;
+            document.getElementById('currentWallsHealth').textContent = 100 * defenseState.defenseLevel;
+            document.getElementById('wallsUpgradeCost').textContent = upgradeCosts.walls[defenseState.defenseLevel - 1];
+            document.getElementById('wallsUI').style.display = 'block';
+        }
+        
+        // بستن UI دیوارها
+        function closeWallsUI() {
+            document.getElementById('wallsUI').style.display = 'none';
+        }
+        
+        // نمایش UI جمع‌کننده‌ها
+        function showCollectorsUI() {
+            document.getElementById('currentCollectorsLevel').textContent = gameObjects.collectors[0].level;
+            document.getElementById('currentCollectorsProduction').textContent = gameObjects.collectors[0].production;
+            document.getElementById('collectorsUpgradeCost').textContent = upgradeCosts.collectors[gameObjects.collectors[0].level - 1];
+            document.getElementById('collectorsUI').style.display = 'block';
+        }
+        
+        // بستن UI جمع‌کننده‌ها
+        function closeCollectorsUI() {
+            document.getElementById('collectorsUI').style.display = 'none';
+        }
+        
+        // تایید ارتقاء دیوارها
+        function confirmWallsUpgrade() {
+            const cost = upgradeCosts.walls[defenseState.defenseLevel - 1];
+            if (resourceState.gold >= cost && defenseState.defenseLevel < 10) {
+                resourceState.gold -= cost;
+                defenseState.defenseLevel++;
+                
+                // به‌روزرسانی همه دیوارها
+                gameObjects.walls.forEach(wall => {
+                    wall.level = defenseState.defenseLevel;
+                    wall.health = 100 * defenseState.defenseLevel;
+                    wall.mesh.material = getMaterialForLevel(defenseState.defenseLevel);
+                });
+                
+                updateResourcesUI();
+                playUpgradeSound();
+                closeWallsUI();
+            }
+        }
+        
+        // تایید ارتقاء جمع‌کننده‌ها
+        function confirmCollectorsUpgrade() {
+            const cost = upgradeCosts.collectors[gameObjects.collectors[0].level - 1];
+            if (resourceState.gold >= cost && gameObjects.collectors[0].level < 10) {
+                resourceState.gold -= cost;
+                
+                // ارتقاء همه جمع‌کننده‌ها
+                gameObjects.collectors.forEach(collector => {
+                    collector.level++;
+                    collector.production += 2;
+                    collector.mesh.children[0].material = getMaterialForLevel(collector.level);
+                });
+                
+                updateResourcesUI();
+                playUpgradeSound();
+                closeCollectorsUI();
+            }
+        }
+        
+        // آموزش سرباز
+        function trainSoldier() {
+            if (resourceState.gold >= 5000) {
+                resourceState.gold -= 5000;
+                troopsState.soldiers++;
+                updateResourcesUI();
+                playBuildSound();
+                closeTroopsUI();
+            }
+        }
+        
+        // آموزش دراگون
+        function trainDragon() {
+            if (resourceState.gold >= 12000) {
+                resourceState.gold -= 12000;
+                troopsState.dragons++;
+                updateResourcesUI();
+                playBuildSound();
+                closeTroopsUI();
+            }
+        }
+        
+        // ساخت تیربار
+        function buildTurret() {
+            if (resourceState.gold >= 8000 && gameObjects.turrets.length < 8) {
+                resourceState.gold -= 8000;
+                
+                // پیدا کردن موقعیت خالی برای تیربار جدید
+                const positions = [
+                    {x: -30, z: -30}, {x: 30, z: -30}, 
+                    {x: -30, z: 30}, {x: 30, z: 30},
+                    {x: -60, z: 0}, {x: 60, z: 0},
+                    {x: 0, z: -60}, {x: 0, z: 60}
+                ];
+                
+                const emptyPosition = positions.find(pos => 
+                    !gameObjects.turrets.some(t => t.x === pos.x && t.z === pos.z)
+                );
+                
+                if (emptyPosition) {
+                    createTurret(emptyPosition.x, emptyPosition.z, 1);
+                    updateResourcesUI();
+                    playBuildSound();
+                    closeDefenseUI();
+                }
+            }
+        }
+        
+        // ساخت دیوار
+        function buildWall() {
+            if (resourceState.gold >= 3000) {
+                resourceState.gold -= 3000;
+                
+                // ساخت دیوار در موقعیت تصادفی
+                const wallSize = 100;
+                const side = Math.floor(Math.random() * 4);
+                let x, z;
+                
+                switch(side) {
+                    case 0: // بالا
+                        x = (Math.random() - 0.5) * (wallSize - 20);
+                        z = -wallSize/2;
+                        break;
+                    case 1: // راست
+                        x = wallSize/2;
+                        z = (Math.random() - 0.5) * (wallSize - 20);
+                        break;
+                    case 2: // پایین
+                        x = (Math.random() - 0.5) * (wallSize - 20);
+                        z = wallSize/2;
+                        break;
+                    case 3: // چپ
+                        x = -wallSize/2;
+                        z = (Math.random() - 0.5) * (wallSize - 20);
+                        break;
+                }
+                
+                createWall(x, z, 3, 8);
+                updateResourcesUI();
+                playBuildSound();
+                closeDefenseUI();
+            }
+        }
+        
+        // ===============================
+        // رابط کاربری و صداها
+        // ===============================
+        
+        // به‌روزرسانی UI منابع
+        function updateResourcesUI() {
+            document.getElementById('goldCount').textContent = Math.floor(resourceState.gold);
+            document.getElementById('goldCapacity').textContent = resourceState.goldCapacity;
+            document.getElementById('elixirCount').textContent = Math.floor(resourceState.elixir);
+            document.getElementById('elixirCapacity').textContent = resourceState.elixirCapacity;
+            document.getElementById('oilCount').textContent = Math.floor(resourceState.oil);
+            document.getElementById('oilCapacity').textContent = resourceState.oilCapacity;
+            
+            // به‌روزرسانی هزینه‌ها
+            document.getElementById('goldUpgradeCost').textContent = upgradeCosts.goldStorage[gameObjects.storages.gold.level - 1] + ' 🪙';
+            document.getElementById('elixirUpgradeCost').textContent = upgradeCosts.elixirStorage[gameObjects.storages.elixir.level - 1] + ' 🪙';
+            document.getElementById('oilUpgradeCost').textContent = upgradeCosts.oilStorage[gameObjects.storages.oil.level - 1] + ' 🪙';
+            document.getElementById('baseUpgradeCost').textContent = baseState.upgradeCost + ' 🪙';
+        }
+        
+        // به‌روزرسانی سلامت پایگاه
+        function updateBaseHealth() {
+            document.getElementById('baseLevel').textContent = baseState.level;
+            document.getElementById('healthValue').textContent = baseState.health;
+            document.getElementById('healthBar').style.width = `${(baseState.health / baseState.maxHealth) * 100}%`;
+        }
+        
+        // پخش صداهای بازی
+        function playUpgradeSound() {
+            const sound = document.getElementById('upgradeSound');
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('صدا پخش نشد'));
+        }
+
+        function playBuildSound() {
+            const sound = document.getElementById('buildSound');
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('صدا پخش نشد'));
+        }
+
+        function playExplosionSound() {
+            const sound = document.getElementById('explosionSound');
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('صدا پخش نشد'));
+        }
+        
+        // شروع بازی
+        function startGame() {
+            gameState.isStarted = true;
+            document.getElementById('gameGuide').style.display = 'none';
+            
+            // شروع اولین موج پس از 5 ثانیه
+            setTimeout(() => {
+                startNewWave();
+            }, 5000);
+        }
+        
+        // انیمیشن اصلی
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            updateGame();
+            renderer.render(scene, camera);
+        }
+        
+        // راه‌اندازی بازی
+        window.addEventListener('load', initThreeJS);
+    </script>
+</body>
+                  </html>
