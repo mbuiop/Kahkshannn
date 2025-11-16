@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازی قارچ جمع‌کن | Mushroom Collector</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #8B4513;
+            --secondary: #228B22;
+            --accent: #FF6B6B;
+            --background: #1A535C;
+            --text: #F7FFF7;
+            --mushroom-red: #FF5252;
+            --mushroom-white: #F8F9FA;
+            --mushroom-brown: #8D6E63;
+            --forest-dark: #2E7D32;
+            --forest-light: #4CAF50;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--forest-dark), var(--forest-light));
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(42, 157, 143, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(26, 83, 92, 0.7);
+            border-radius: 15px;
+            border: 2px solid var(--primary);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--mushroom-white);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--mushroom-white);
+            opacity: 0.9;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: rgba(139, 69, 19, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--mushroom-white);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--mushroom-white);
+            opacity: 0.8;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232E7D32"/><path d="M0 50 Q 25 30, 50 50 T 100 50" stroke="%234CAF50" stroke-width="5" fill="none"/></svg>');
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid var(--primary);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .player {
+            position: absolute;
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(to bottom, #4A90E2, #357ABD);
+            border-radius: 50% 50% 40% 40%;
+            z-index: 10;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .player::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 30px;
+            background: #4A90E2;
+            border-radius: 50%;
+        }
+
+        .player::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 5px white;
+        }
+
+        .mushroom {
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            z-index: 5;
+            cursor: pointer;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .mushroom-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 25px;
+            background: var(--mushroom-red);
+            border-radius: 50% 50% 40% 40%;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .mushroom-top::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            width: 8px;
+            height: 8px;
+            background: var(--mushroom-white);
+            border-radius: 50%;
+            box-shadow: 15px 0 0 var(--mushroom-white), 30px 0 0 var(--mushroom-white);
+        }
+
+        .mushroom-stem {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 30px;
+            background: var(--mushroom-white);
+            border-radius: 5px;
+        }
+
+        .mushroom.poison {
+            filter: hue-rotate(120deg);
+        }
+
+        .mushroom.special .mushroom-top {
+            background: gold;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px gold; }
+            to { box-shadow: 0 0 20px gold, 0 0 30px orange; }
+        }
+
+        .obstacle {
+            position: absolute;
+            background: var(--mushroom-brown);
+            border-radius: 5px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .rock {
+            background: #795548;
+            border-radius: 10px;
+        }
+
+        .tree {
+            background: #5D4037;
+            width: 30px;
+            height: 100px;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .tree::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 50px;
+            background: #2E7D32;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(to bottom, var(--primary), #6D4C41);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .control-btn:active {
+            transform: translateY(1px);
+        }
+
+        .instructions {
+            background: rgba(26, 83, 92, 0.7);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: var(--mushroom-white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions ul {
+            list-style-type: none;
+            padding-right: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .instructions li::before {
+            content: '🍄';
+            position: absolute;
+            right: -20px;
+        }
+
+        .power-ups {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+
+        .power-up {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            width: 80px;
+        }
+
+        .power-up-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .power-up.active {
+            background: rgba(255, 215, 0, 0.3);
+            border: 1px solid gold;
+        }
+
+        .game-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px 50px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.7);
+            border: 2px solid gold;
+            z-index: 100;
+            text-align: center;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .game-message h2 {
+            color: gold;
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .game-message p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        /* انیمیشن‌ها */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .bounce {
+            animation: bounce 0.5s ease infinite;
+        }
+
+        .shake {
+            animation: shake 0.5s ease infinite;
+        }
+
+        .collect-animation {
+            animation: collect 0.5s forwards;
+        }
+
+        @keyframes collect {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0) translateY(-20px); opacity: 0; }
+        }
+
+        /* رسپانسیو */
+        @media (max-width: 768px) {
+            .game-area {
+                height: 400px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .control-btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-area {
+                height: 300px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+            }
+            
+            .power-ups {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>بازی قارچ جمع‌کن</h1>
+            <p class="subtitle">تا می‌تونی قارچ جمع کن، از قارچ‌های سمی دوری کن!</p>
+        </header>
+        
+        <div class="game-stats">
+            <div class="stat">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">امتیاز</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="mushrooms">0</div>
+                <div class="stat-label">قارچ‌ها</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="time">60</div>
+                <div class="stat-label">زمان</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="lives">3</div>
+                <div class="stat-label">جان</div>
+            </div>
+        </div>
+        
+        <div class="game-area" id="gameArea">
+            <!-- بازیکن و قارچ‌ها و موانع توسط جاوااسکریپت ایجاد می‌شوند -->
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="startBtn">
+                <i class="fas fa-play"></i>
+                شروع بازی
+            </button>
+            <button class="control-btn" id="resetBtn">
+                <i class="fas fa-redo"></i>
+                شروع مجدد
+            </button>
+            <button class="control-btn" id="helpBtn">
+                <i class="fas fa-question-circle"></i>
+                راهنما
+            </button>
+        </div>
+        
+        <div class="power-ups">
+            <div class="power-up" id="speedPower">
+                <div class="power-up-icon">⚡</div>
+                <div>سریع‌تر</div>
+            </div>
+            <div class="power-up" id="magnetPower">
+                <div class="power-up-icon">🧲</div>
+                <div>آهنربا</div>
+            </div>
+            <div class="power-up" id="shieldPower">
+                <div class="power-up-icon">🛡️</div>
+                <div>محافظ</div>
+            </div>
+            <div class="power-up" id="doublePower">
+                <div class="power-up-icon">✌️</div>
+                <div>دو برابر</div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> راهنمای بازی</h3>
+            <ul>
+                <li>با کلیدهای جهت‌دار حرکت کنید یا روی صفحه ضربه بزنید</li>
+                <li>قارچ‌های قرمز را جمع کنید تا امتیاز بگیرید</li>
+                <li>از قارچ‌های سمی (سبز) دوری کنید</li>
+                <li>قارچ‌های طلایی ویژه امتیاز بیشتری می‌دهند</li>
+                <li>قبل از اتمام زمان، تا می‌توانید قارچ جمع کنید</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="game-message" id="gameMessage">
+        <h2 id="messageTitle">تبریک!</h2>
+        <p id="messageText">شما برنده شدید!</p>
+        <button class="control-btn" id="messageBtn">
+            <i class="fas fa-play"></i>
+            بازی مجدد
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر DOM
+            const gameArea = document.getElementById('gameArea');
+            const scoreElement = document.getElementById('score');
+            const mushroomsElement = document.getElementById('mushrooms');
+            const timeElement = document.getElementById('time');
+            const livesElement = document.getElementById('lives');
+            const startBtn = document.getElementById('startBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const helpBtn = document.getElementById('helpBtn');
+            const gameMessage = document.getElementById('gameMessage');
+            const messageTitle = document.getElementById('messageTitle');
+            const messageText = document.getElementById('messageText');
+            const messageBtn = document.getElementById('messageBtn');
+            
+            // متغیرهای بازی
+            let gameActive = false;
+            let score = 0;
+            let mushroomsCollected = 0;
+            let timeLeft = 60;
+            let lives = 3;
+            let player;
+            let mushrooms = [];
+            let obstacles = [];
+            let gameInterval;
+            let countdownInterval;
+            let keys = {};
+            let playerSpeed = 5;
+            let activePowerUps = {};
+            
+            // اندازه‌های بازی
+            const gameWidth = gameArea.offsetWidth;
+            const gameHeight = gameArea.offsetHeight;
+            
+            // ایجاد بازیکن
+            function createPlayer() {
+                player = document.createElement('div');
+                player.className = 'player';
+                player.id = 'player';
+                player.style.left = (gameWidth / 2 - 30) + 'px';
+                player.style.top = (gameHeight / 2 - 40) + 'px';
+                gameArea.appendChild(player);
+            }
+            
+            // ایجاد قارچ
+            function createMushroom(isPoison = false, isSpecial = false) {
+                const mushroom = document.createElement('div');
+                mushroom.className = 'mushroom';
+                if (isPoison) mushroom.classList.add('poison');
+                if (isSpecial) mushroom.classList.add('special');
+                
+                // موقعیت تصادفی
+                const x = Math.random() * (gameWidth - 40);
+                const y = Math.random() * (gameHeight - 50);
+                
+                mushroom.style.left = x + 'px';
+                mushroom.style.top = y + 'px';
+                
+                // ایجاد قسمت‌های قارچ
+                const top = document.createElement('div');
+                top.className = 'mushroom-top';
+                
+                const stem = document.createElement('div');
+                stem.className = 'mushroom-stem';
+                
+                mushroom.appendChild(top);
+                mushroom.appendChild(stem);
+                
+                // اضافه کردن به بازی
+                gameArea.appendChild(mushroom);
+                mushrooms.push(mushroom);
+                
+                // کلیک روی قارچ
+                mushroom.addEventListener('click', function() {
+                    if (!gameActive) return;
+                    
+                    collectMushroom(mushroom, isPoison, isSpecial);
+                });
+            }
+            
+            // ایجاد موانع
+            function createObstacle(type) {
+                const obstacle = document.createElement('div');
+                obstacle.className = `obstacle ${type}`;
+                
+                // موقعیت تصادفی
+                const x = Math.random() * (gameWidth - 50);
+                const y = Math.random() * (gameHeight - 50);
+                
+                obstacle.style.left = x + 'px';
+                obstacle.style.top = y + 'px';
+                
+                // تنظیم اندازه بر اساس نوع مانع
+                if (type === 'rock') {
+                    obstacle.style.width = '40px';
+                    obstacle.style.height = '30px';
+                } else if (type === 'tree') {
+                    obstacle.style.width = '30px';
+                    obstacle.style.height = '100px';
+                }
+                
+                // اضافه کردن به بازی
+                gameArea.appendChild(obstacle);
+                obstacles.push(obstacle);
+            }
+            
+            // جمع‌آوری قارچ
+            function collectMushroom(mushroom, isPoison, isSpecial) {
+                // انیمیشن جمع‌آوری
+                mushroom.classList.add('collect-animation');
+                
+                // به روزرسانی امتیاز
+                if (isPoison) {
+                    // قارچ سمی
+                    lives--;
+                    livesElement.textContent = lives;
+                    player.classList.add('shake');
+                    setTimeout(() => player.classList.remove('shake'), 500);
+                    
+                    if (lives <= 0) {
+                        endGame(false);
+                    }
+                } else {
+                    // قارچ معمولی
+                    mushroomsCollected++;
+                    mushroomsElement.textContent = mushroomsCollected;
+                    
+                    if (isSpecial) {
+                        score += 50;
+                        // فعال کردن قدرت تصادفی
+                        activateRandomPowerUp();
+                    } else {
+                        score += 10;
+                    }
+                    
+                    scoreElement.textContent = score;
+                }
+                
+                // حذف قارچ از آرایه و DOM
+                setTimeout(() => {
+                    const index = mushrooms.indexOf(mushroom);
+                    if (index > -1) {
+                        mushrooms.splice(index, 1);
+                    }
+                    gameArea.removeChild(mushroom);
+                }, 500);
+            }
+            
+            // فعال کردن قدرت تصادفی
+            function activateRandomPowerUp() {
+                const powerUps = ['speed', 'magnet', 'shield', 'double'];
+                const randomPower = powerUps[Math.floor(Math.random() * powerUps.length)];
+                
+                activePowerUps[randomPower] = true;
+                
+                // نمایش فعال شدن قدرت
+                const powerElement = document.getElementById(`${randomPower}Power`);
+                powerElement.classList.add('active');
+                
+                // اثر قدرت
+                switch(randomPower) {
+                    case 'speed':
+                        playerSpeed = 8;
+                        break;
+                    case 'magnet':
+                        // قارچ‌ها به سمت بازیکن جذب می‌شوند
+                        break;
+                    case 'shield':
+                        // محافظ در برابر قارچ سمی برای مدت محدود
+                        break;
+                    case 'double':
+                        // امتیاز دو برابر برای مدت محدود
+                        break;
+                }
+                
+                // غیرفعال کردن قدرت بعد از 10 ثانیه
+                setTimeout(() => {
+                    activePowerUps[randomPower] = false;
+                    powerElement.classList.remove('active');
+                    
+                    if (randomPower === 'speed') {
+                        playerSpeed = 5;
+                    }
+                }, 10000);
+            }
+            
+            // حرکت بازیکن
+            function movePlayer() {
+                if (!player || !gameActive) return;
+                
+                let newX = parseInt(player.style.left);
+                let newY = parseInt(player.style.top);
+                
+                if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+                    newX += playerSpeed;
+                }
+                if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+                    newX -= playerSpeed;
+                }
+                if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+                    newY += playerSpeed;
+                }
+                if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+                    newY -= playerSpeed;
+                }
+                
+                // محدود کردن حرکت به داخل بازی
+                newX = Math.max(0, Math.min(gameWidth - 60, newX));
+                newY = Math.max(0, Math.min(gameHeight - 80, newY));
+                
+                player.style.left = newX + 'px';
+                player.style.top = newY + 'px';
+                
+                // بررسی برخورد با قارچ‌ها (برای نسخه موبایل)
+                checkMushroomCollisions();
+            }
+            
+            // بررسی برخورد با قارچ‌ها
+            function checkMushroomCollisions() {
+                const playerRect = player.getBoundingClientRect();
+                
+                mushrooms.forEach(mushroom => {
+                    const mushroomRect = mushroom.getBoundingClientRect();
+                    
+                    if (isColliding(playerRect, mushroomRect)) {
+                        const isPoison = mushroom.classList.contains('poison');
+                        const isSpecial = mushroom.classList.contains('special');
+                        collectMushroom(mushroom, isPoison, isSpecial);
+                    }
+                });
+            }
+            
+            // بررسی تصادم
+            function isColliding(rect1, rect2) {
+                return !(
+                    rect1.right < rect2.left ||
+                    rect1.left > rect2.right ||
+                    rect1.bottom < rect2.top ||
+                    rect1.top > rect2.bottom
+                );
+            }
+            
+            // شروع بازی
+            function startGame() {
+                if (gameActive) return;
+                
+                gameActive = true;
+                score = 0;
+                mushroomsCollected = 0;
+                timeLeft = 60;
+                lives = 3;
+                
+                scoreElement.textContent = score;
+                mushroomsElement.textContent = mushroomsCollected;
+                timeElement.textContent = timeLeft;
+                livesElement.textContent = lives;
+                
+                // پاک کردن بازی قبلی
+                gameArea.innerHTML = '';
+                mushrooms = [];
+                obstacles = [];
+                activePowerUps = {};
+                
+                // ایجاد عناصر بازی
+                createPlayer();
+                
+                // ایجاد قارچ‌ها
+                for (let i = 0; i < 15; i++) {
+                    createMushroom();
+                }
+                
+                // ایجاد قارچ‌های سمی
+                for (let i = 0; i < 5; i++) {
+                    createMushroom(true);
+                }
+                
+                // ایجاد قارچ‌های ویژه
+                for (let i = 0; i < 2; i++) {
+                    createMushroom(false, true);
+                }
+                
+                // ایجاد موانع
+                for (let i = 0; i < 8; i++) {
+                    createObstacle('rock');
+                }
+                
+                for (let i = 0; i < 3; i++) {
+                    createObstacle('tree');
+                }
+                
+                // شروع تایمر
+                countdownInterval = setInterval(function() {
+                    timeLeft--;
+                    timeElement.textContent = timeLeft;
+                    
+                    if (timeLeft <= 0) {
+                        endGame(true);
+                    }
+                    
+                    // اضافه کردن قارچ جدید هر 5 ثانیه
+                    if (timeLeft % 5 === 0) {
+                        createMushroom(Math.random() < 0.3); // 30% احتمال سمی بودن
+                    }
+                }, 1000);
+                
+                // حلقه بازی
+                gameInterval = setInterval(movePlayer, 30);
+            }
+            
+            // پایان بازی
+            function endGame(isTimeUp) {
+                gameActive = false;
+                clearInterval(gameInterval);
+                clearInterval(countdownInterval);
+                
+                if (isTimeUp) {
+                    messageTitle.textContent = 'زمان تمام شد!';
+                    messageText.textContent = `شما ${score} امتیاز کسب کردید و ${mushroomsCollected} قارچ جمع آوری کردید.`;
+                } else {
+                    messageTitle.textContent = 'بازی تمام شد!';
+                    messageText.textContent = 'جان‌های شما تمام شد!';
+                }
+                
+                gameMessage.style.display = 'block';
+            }
+            
+            // راهنمای بازی
+            function showHelp() {
+                messageTitle.textContent = 'راهنمای بازی';
+                messageText.innerHTML = `
+                    <ul style="text-align: right; list-style-type: none; padding-right: 20px;">
+                        <li>→ با کلیدهای جهت‌دار حرکت کنید</li>
+                        <li>→ روی قارچ‌ها کلیک کنید یا با بازیکن برخورد کنید</li>
+                        <li>→ قارچ قرمز: 10 امتیاز</li>
+                        <li>→ قارچ سمی (سبز): از دست دادن یک جان</li>
+                        <li>→ قارچ طلایی: 50 امتیاز + قدرت ویژه</li>
+                        <li>→ قبل از اتمام زمان، تا می‌توانید قارچ جمع کنید</li>
+                    </ul>
+                `;
+                messageBtn.innerHTML = '<i class="fas fa-check"></i> فهمیدم';
+                gameMessage.style.display = 'block';
+            }
+            
+            // رویدادهای صفحه کلید
+            document.addEventListener('keydown', function(e) {
+                keys[e.key] = true;
+            });
+            
+            document.addEventListener('keyup', function(e) {
+                keys[e.key] = false;
+            });
+            
+            // رویدادهای لمسی برای موبایل
+            gameArea.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const touchX = touch.clientX - gameArea.getBoundingClientRect().left;
+                const touchY = touch.clientY - gameArea.getBoundingClientRect().top;
+                
+                // حرکت بازیکن به محل لمس
+                if (player && gameActive) {
+                    player.style.left = (touchX - 30) + 'px';
+                    player.style.top = (touchY - 40) + 'px';
+                    
+                    // بررسی برخورد با قارچ‌ها
+                    checkMushroomCollisions();
+                }
+            });
+            
+            // دکمه‌های کنترل
+            startBtn.addEventListener('click', startGame);
+            resetBtn.addEventListener('click', startGame);
+            helpBtn.addEventListener('click', showHelp);
+            messageBtn.addEventListener('click', function() {
+                gameMessage.style.display = 'none';
+                if (messageTitle.textContent === 'راهنمای بازی') {
+                    return;
+                }
+                startGame();
+            });
+            
+            // راهنمای اولیه
+            setTimeout(showHelp, 1000);
+        });
+    </script>
+</body>
+  </html>
