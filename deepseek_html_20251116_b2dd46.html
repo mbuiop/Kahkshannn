@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS: Quantum Legacy</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+        }
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        #uiContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        /* UI Elements */
+        .health-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .health-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #00ff00);
+            transition: width 0.3s ease;
+        }
+        .dimension-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 18px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="renderCanvas"></canvas>
+        <div id="uiContainer">
+            <div class="health-bar">
+                <div class="health-fill" id="healthFill"></div>
+            </div>
+            <div class="dimension-indicator" id="dimensionIndicator">
+                بعد: اصلی
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/materials/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/proceduralTextures/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://cdn.babylonjs.com/postProcesses/babylonjs.postProcesses.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+
+    <script>
+        // ==================== CONFIGURATION & CONSTANTS ====================
+        class GameConfig {
+            static get PLAYER() {
+                return {
+                    SPEED: 0.2,
+                    JUMP_FORCE: 0.8,
+                    HEALTH: 100,
+                    INVULNERABILITY_TIME: 1000
+                };
+            }
+            
+            static get DIMENSIONS() {
+                return {
+                    PRIME: 0,
+                    CHRONO: 1,
+                    AETHER: 2,
+                    VOID: 3
+                };
+            }
+            
+            static get ENEMY_TYPES() {
+                return {
+                    DRONE: 0,
+                    TANK: 1,
+                    RANGED: 2,
+                    BOSS: 3
+                };
+            }
+        }
+
+        // ==================== CORE GAME ENGINE ====================
+        class QuantumLegacyGame {
+            constructor() {
+                this.engine = null;
+                this.scene = null;
+                this.player = null;
+                this.currentDimension = GameConfig.DIMENSIONS.PRIME;
+                this.isPaused = false;
+                this.gameTime = 0;
+                this.score = 0;
+                this.enemies = [];
+                this.particles = [];
+                this.audioManager = new AudioManager();
+                this.eventManager = new EventManager();
+                this.saveSystem = new SaveSystem();
+                this.achievementSystem = new AchievementSystem();
+                
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.initializeEngine();
+                    await this.createScene();
+                    await this.setupPlayer();
+                    await this.createEnvironment();
+                    await this.setupEnemies();
+                    await this.setupUI();
+                    await this.setupAudio();
+                    await this.startGameLoop();
+                    
+                    this.eventManager.emit('gameReady');
+                } catch (error) {
+                    console.error('Failed to initialize game:', error);
+                }
+            }
+
+            async initializeEngine() {
+                const canvas = document.getElementById('renderCanvas');
+                this.engine = new BABYLON.Engine(canvas, true, {
+                    preserveDrawingBuffer: true,
+                    stencil: true
+                });
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    this.engine.resize();
+                });
+
+                // Add error handling
+                this.engine.onDisposeObservable.add(() => {
+                    console.log('Engine disposed');
+                });
+            }
+
+            async createScene() {
+                this.scene = new BABYLON.Scene(this.engine);
+                this.scene.clearColor = new BABYLON.Color4(0.05, 0.05, 0.1, 1.0);
+                
+                // Setup advanced lighting
+                this.setupAdvancedLighting();
+                
+                // Setup advanced rendering pipeline
+                this.setupRenderingPipeline();
+                
+                // Setup physics
+                await this.setupPhysics();
+                
+                // Setup input handling
+                this.setupInput();
+                
+                // Setup post-processing
+                this.setupPostProcessing();
+            }
+
+            setupAdvancedLighting() {
+                // Main directional light (sun)
+                this.sunLight = new BABYLON.DirectionalLight("sunLight", 
+                    new BABYLON.Vector3(-1, -2, -1), this.scene);
+                this.sunLight.intensity = 1.0;
+                this.sunLight.shadowEnabled = true;
+                
+                // Shadow generator
+                const shadowGenerator = new BABYLON.ShadowGenerator(2048, this.sunLight);
+                shadowGenerator.useBlurExponentialShadowMap = true;
+                shadowGenerator.blurScale = 2;
+                this.shadowGenerator = shadowGenerator;
+                
+                // Ambient light
+                this.ambientLight = new BABYLON.HemisphericLight("ambientLight",
+                    new BABYLON.Vector3(0, 1, 0), this.scene);
+                this.ambientLight.intensity = 0.3;
+                
+                // Point lights for dynamic lighting
+                this.setupDynamicLights();
+            }
+
+            setupDynamicLights() {
+                this.pointLights = [];
+                
+                // Create multiple point lights for dynamic environments
+                for (let i = 0; i < 4; i++) {
+                    const light = new BABYLON.PointLight(`pointLight${i}`, 
+                        new BABYLON.Vector3(i * 10 - 15, 3, 0), this.scene);
+                    light.intensity = 0.5;
+                    light.range = 15;
+                    light.diffuse = new BABYLON.Color3(1, 0.9, 0.8);
+                    this.pointLights.push(light);
+                }
+            }
+
+            async setupPhysics() {
+                // Enable physics engine
+                const gravity = new BABYLON.Vector3(0, -9.81, 0);
+                this.scene.enablePhysics(gravity, new BABYLON.AmmoJSPlugin());
+                
+                // Wait for physics to be ready
+                return new Promise((resolve) => {
+                    const checkPhysics = () => {
+                        if (this.scene.physicsEnabled) {
+                            resolve();
+                        } else {
+                            setTimeout(checkPhysics, 100);
+                        }
+                    };
+                    checkPhysics();
+                });
+            }
+
+            setupInput() {
+                this.inputManager = new InputManager(this.scene);
+                this.setupGameControls();
+            }
+
+            setupGameControls() {
+                // Movement controls
+                this.inputManager.onKeyPress('w', () => {
+                    if (this.player) this.player.moveForward();
+                });
+                
+                this.inputManager.onKeyPress('s', () => {
+                    if (this.player) this.player.moveBackward();
+                });
+                
+                this.inputManager.onKeyPress('a', () => {
+                    if (this.player) this.player.moveLeft();
+                });
+                
+                this.inputManager.onKeyPress('d', () => {
+                    if (this.player) this.player.moveRight();
+                });
+                
+                this.inputManager.onKeyPress(' ', () => {
+                    if (this.player) this.player.jump();
+                });
+                
+                // Dimension shift
+                this.inputManager.onKeyPress('q', () => {
+                    this.shiftDimension(-1);
+                });
+                
+                this.inputManager.onKeyPress('e', () => {
+                    this.shiftDimension(1);
+                });
+                
+                // Combat
+                this.inputManager.onMouseClick(0, () => { // Left click
+                    if (this.player) this.player.attack();
+                });
+            }
+
+            setupPostProcessing() {
+                // Add bloom effect for glowing objects
+                const bloom = new BABYLON.BloomEffect("bloom", 2, 2);
+                bloom.threshold = 0.8;
+                
+                // Add depth of field
+                const dof = new BABYLON.DepthOfFieldEffect(this.scene, {
+                    blendMode: BABYLON.DepthOfFieldEffect.BLENDMODE_STANDARD
+                });
+                
+                // Create pipeline
+                this.postProcessPipeline = new BABYLON.DefaultRenderingPipeline(
+                    "defaultPipeline", true, this.scene, [this.scene.activeCamera]
+                );
+                this.postProcessPipeline.bloomEnabled = true;
+                this.postProcessPipeline.depthOfFieldEnabled = true;
+            }
+
+            async setupPlayer() {
+                this.player = new PlayerController(this.scene, this.inputManager);
+                await this.player.initialize();
+                
+                // Add player to shadow caster
+                this.shadowGenerator.addShadowCaster(this.player.mesh);
+                
+                // Setup camera to follow player
+                this.setupCamera();
+            }
+
+            setupCamera() {
+                // Third person camera
+                this.camera = new BABYLON.FollowCamera("followCam", 
+                    new BABYLON.Vector3(0, 5, -10), this.scene);
+                this.camera.lockedTarget = this.player.mesh;
+                this.camera.radius = 10;
+                this.camera.heightOffset = 4;
+                this.camera.rotationOffset = 180;
+                this.camera.cameraAcceleration = 0.05;
+                this.camera.maxCameraSpeed = 10;
+                
+                this.scene.activeCamera = this.camera;
+            }
+
+            async createEnvironment() {
+                this.environmentManager = new EnvironmentManager(this.scene);
+                await this.environmentManager.createMainScene();
+                
+                // Create dimension-specific environments
+                await this.createDimensionEnvironments();
+            }
+
+            async createDimensionEnvironments() {
+                this.dimensionEnvironments = new Map();
+                
+                for (let dim in GameConfig.DIMENSIONS) {
+                    const dimension = GameConfig.DIMENSIONS[dim];
+                    const env = new DimensionEnvironment(this.scene, dimension);
+                    await env.create();
+                    this.dimensionEnvironments.set(dimension, env);
+                }
+            }
+
+            async setupEnemies() {
+                this.enemyManager = new EnemyManager(this.scene, this.player);
+                await this.enemyManager.spawnInitialEnemies();
+            }
+
+            setupUI() {
+                this.uiManager = new UIManager();
+                this.uiManager.createMainHUD();
+                
+                // Connect UI events
+                this.eventManager.on('healthChanged', (health) => {
+                    this.uiManager.updateHealth(health);
+                });
+                
+                this.eventManager.on('dimensionChanged', (dimension) => {
+                    this.uiManager.updateDimension(dimension);
+                });
+            }
+
+            setupAudio() {
+                this.audioManager.initialize();
+                this.audioManager.playAmbient('main_theme', true);
+            }
+
+            async startGameLoop() {
+                this.engine.runRenderLoop(() => {
+                    if (!this.isPaused) {
+                        const deltaTime = this.engine.getDeltaTime() / 1000;
+                        this.gameTime += deltaTime;
+                        
+                        this.update(deltaTime);
+                        this.scene.render();
+                    }
+                });
+            }
+
+            update(deltaTime) {
+                // Update player
+                if (this.player) {
+                    this.player.update(deltaTime);
+                }
+                
+                // Update enemies
+                if (this.enemyManager) {
+                    this.enemyManager.update(deltaTime);
+                }
+                
+                // Update environment
+                if (this.environmentManager) {
+                    this.environmentManager.update(deltaTime);
+                }
+                
+                // Update particles
+                this.updateParticles(deltaTime);
+                
+                // Check game state
+                this.checkGameState();
+            }
+
+            updateParticles(deltaTime) {
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    this.particles[i].update(deltaTime);
+                    if (this.particles[i].isDead) {
+                        this.particles.splice(i, 1);
+                    }
+                }
+            }
+
+            checkGameState() {
+                if (this.player && this.player.health <= 0) {
+                    this.gameOver();
+                }
+            }
+
+            shiftDimension(direction) {
+                const dimensions = Object.values(GameConfig.DIMENSIONS);
+                let newDimension = this.currentDimension + direction;
+                
+                if (newDimension >= dimensions.length) newDimension = 0;
+                if (newDimension < 0) newDimension = dimensions.length - 1;
+                
+                this.currentDimension = newDimension;
+                this.applyDimensionEffects();
+                
+                this.eventManager.emit('dimensionChanged', this.currentDimension);
+                this.audioManager.playSound('dimension_shift');
+            }
+
+            applyDimensionEffects() {
+                const dimension = this.currentDimension;
+                
+                // Update lighting
+                this.updateDimensionLighting(dimension);
+                
+                // Update environment
+                this.environmentManager.switchDimension(dimension);
+                
+                // Update physics
+                this.updateDimensionPhysics(dimension);
+                
+                // Update post-processing
+                this.updateDimensionPostProcessing(dimension);
+            }
+
+            updateDimensionLighting(dimension) {
+                switch (dimension) {
+                    case GameConfig.DIMENSIONS.PRIME:
+                        this.sunLight.intensity = 1.0;
+                        this.ambientLight.intensity = 0.3;
+                        break;
+                    case GameConfig.DIMENSIONS.CHRONO:
+                        this.sunLight.intensity = 0.6;
+                        this.ambientLight.intensity = 0.5;
+                        break;
+                    case GameConfig.DIMENSIONS.AETHER:
+                        this.sunLight.intensity = 0.8;
+                        this.ambientLight.intensity = 0.7;
+                        break;
+                    case GameConfig.DIMENSIONS.VOID:
+                        this.sunLight.intensity = 0.2;
+                        this.ambientLight.intensity = 0.1;
+                        break;
+                }
+            }
+
+            updateDimensionPhysics(dimension) {
+                let gravity;
+                switch (dimension) {
+                    case GameConfig.DIMENSIONS.PRIME:
+                        gravity = new BABYLON.Vector3(0, -9.81, 0);
+                        break;
+                    case GameConfig.DIMENSIONS.CHRONO:
+                        gravity = new BABYLON.Vector3(0, -4.90, 0);
+                        break;
+                    case GameConfig.DIMENSIONS.AETHER:
+                        gravity = new BABYLON.Vector3(0, -2.45, 0);
+                        break;
+                    case GameConfig.DIMENSIONS.VOID:
+                        gravity = new BABYLON.Vector3(0, -14.71, 0);
+                        break;
+                }
+                
+                if (this.scene.physicsEnabled) {
+                    this.scene.getPhysicsEngine().setGravity(gravity);
+                }
+            }
+
+            updateDimensionPostProcessing(dimension) {
+                if (!this.postProcessPipeline) return;
+                
+                switch (dimension) {
+                    case GameConfig.DIMENSIONS.CHRONO:
+                        this.postProcessPipeline.bloomEnabled = true;
+                        break;
+                    case GameConfig.DIMENSIONS.VOID:
+                        this.postProcessPipeline.bloomEnabled = false;
+                        break;
+                    default:
+                        this.postProcessPipeline.bloomEnabled = true;
+                }
+            }
+
+            gameOver() {
+                this.isPaused = true;
+                this.uiManager.showGameOverScreen(this.score);
+                this.audioManager.playSound('game_over');
+            }
+
+            pauseGame() {
+                this.isPaused = true;
+                this.uiManager.showPauseMenu();
+            }
+
+            resumeGame() {
+                this.isPaused = false;
+                this.uiManager.hidePauseMenu();
+            }
+
+            dispose() {
+                this.engine.dispose();
+                this.audioManager.dispose();
+                this.eventManager.dispose();
+            }
+        }
+
+        // ==================== PLAYER CONTROLLER ====================
+        class PlayerController {
+            constructor(scene, inputManager) {
+                this.scene = scene;
+                this.inputManager = inputManager;
+                this.mesh = null;
+                this.health = GameConfig.PLAYER.HEALTH;
+                this.isInvulnerable = false;
+                this.lastDamageTime = 0;
+                this.animations = new Map();
+                this.weapons = [];
+                this.currentWeapon = 0;
+                
+                this.velocity = new BABYLON.Vector3(0, 0, 0);
+                this.isGrounded = false;
+            }
+
+            async initialize() {
+                await this.createModel();
+                this.setupAnimations();
+                this.setupPhysics();
+                this.setupWeapons();
+                this.setupInput();
+            }
+
+            async createModel() {
+                // Create player capsule
+                this.mesh = BABYLON.MeshBuilder.CreateCapsule("player", {
+                    height: 2,
+                    radius: 0.5
+                }, this.scene);
+                
+                this.mesh.position = new BABYLON.Vector3(0, 3, 0);
+                
+                // Create player material
+                const material = new BABYLON.StandardMaterial("playerMat", this.scene);
+                material.diffuseColor = new BABYLON.Color3(0.2, 0.6, 1.0);
+                material.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+                this.mesh.material = material;
+            }
+
+            setupAnimations() {
+                // Create animation groups for different states
+                this.animations.set('idle', this.createIdleAnimation());
+                this.animations.set('run', this.createRunAnimation());
+                this.animations.set('jump', this.createJumpAnimation());
+                this.animations.set('attack', this.createAttackAnimation());
+                
+                // Start with idle animation
+                this.playAnimation('idle');
+            }
+
+            createIdleAnimation() {
+                const animation = new BABYLON.AnimationGroup("idleAnim", this.scene);
+                // Animation logic would be implemented here
+                return animation;
+            }
+
+            createRunAnimation() {
+                const animation = new BABYLON.AnimationGroup("runAnim", this.scene);
+                // Animation logic would be implemented here
+                return animation;
+            }
+
+            createJumpAnimation() {
+                const animation = new BABYLON.AnimationGroup("jumpAnim", this.scene);
+                // Animation logic would be implemented here
+                return animation;
+            }
+
+            createAttackAnimation() {
+                const animation = new BABYLON.AnimationGroup("attackAnim", this.scene);
+                // Animation logic would be implemented here
+                return animation;
+            }
+
+            playAnimation(name) {
+                // Stop all animations
+                this.animations.forEach(anim => anim.stop());
+                
+                // Play requested animation
+                const animation = this.animations.get(name);
+                if (animation) {
+                    animation.play(true);
+                }
+            }
+
+            setupPhysics() {
+                // Add physics body
+                this.physicsBody = new BABYLON.PhysicsBody(this.mesh, BABYLON.PhysicsShapeType.CAPSULE, this.scene);
+                this.physicsBody.setMassProperties({ mass: 1 });
+                this.physicsBody.setCollisionCallbackEnabled(true);
+                
+                // Setup collision events
+                this.physicsBody.getCollisionObservable().add((event) => {
+                    this.handleCollision(event);
+                });
+            }
+
+            handleCollision(event) {
+                // Handle collisions with enemies, items, etc.
+                if (event.type === BABYLON.PhysicsEventType.COLLISION_STARTED) {
+                    const collidedMesh = event.collider.transformNode;
+                    
+                    if (collidedMesh.name.includes('enemy')) {
+                        this.takeDamage(10);
+                    }
+                }
+            }
+
+            setupWeapons() {
+                // Create different weapon types
+                this.weapons.push(new EnergyBlaster(this.scene, this.mesh));
+                this.weapons.push(new QuantumRifle(this.scene, this.mesh));
+                this.weapons.push(new VoidCannon(this.scene, this.mesh));
+            }
+
+            setupInput() {
+                // Input handling is managed by the main game class
+            }
+
+            update(deltaTime) {
+                this.updateMovement(deltaTime);
+                this.updateAnimations();
+                this.updateWeapons(deltaTime);
+                this.updateInvulnerability(deltaTime);
+            }
+
+            updateMovement(deltaTime) {
+                // Movement is handled by input manager callbacks
+                // This would include complex movement logic
+            }
+
+            updateAnimations() {
+                // Update animation states based on player state
+                if (!this.isGrounded) {
+                    this.playAnimation('jump');
+                } else if (this.velocity.length() > 0.1) {
+                    this.playAnimation('run');
+                } else {
+                    this.playAnimation('idle');
+                }
+            }
+
+            updateWeapons(deltaTime) {
+                if (this.weapons[this.currentWeapon]) {
+                    this.weapons[this.currentWeapon].update(deltaTime);
+                }
+            }
+
+            updateInvulnerability(deltaTime) {
+                if (this.isInvulnerable) {
+                    this.lastDamageTime += deltaTime * 1000;
+                    if (this.lastDamageTime >= GameConfig.PLAYER.INVULNERABILITY_TIME) {
+                        this.isInvulnerable = false;
+                    }
+                }
+            }
+
+            moveForward() {
+                this.velocity.z = -GameConfig.PLAYER.SPEED;
+            }
+
+            moveBackward() {
+                this.velocity.z = GameConfig.PLAYER.SPEED;
+            }
+
+            moveLeft() {
+                this.velocity.x = -GameConfig.PLAYER.SPEED;
+            }
+
+            moveRight() {
+                this.velocity.x = GameConfig.PLAYER.SPEED;
+            }
+
+            jump() {
+                if (this.isGrounded) {
+                    this.velocity.y = GameConfig.PLAYER.JUMP_FORCE;
+                    this.isGrounded = false;
+                }
+            }
+
+            attack() {
+                if (this.weapons[this.currentWeapon]) {
+                    this.weapons[this.currentWeapon].fire();
+                    this.playAnimation('attack');
+                }
+            }
+
+            takeDamage(amount) {
+                if (this.isInvulnerable) return;
+                
+                this.health -= amount;
+                this.isInvulnerable = true;
+                this.lastDamageTime = 0;
+                
+                // Visual feedback
+                this.flashDamage();
+                
+                // Audio feedback
+                game.audioManager.playSound('player_hurt');
+                
+                // Event
+                game.eventManager.emit('healthChanged', this.health);
+                
+                if (this.health <= 0) {
+                    this.die();
+                }
+            }
+
+            flashDamage() {
+                // Make player flash red when damaged
+                const originalColor = this.mesh.material.diffuseColor.clone();
+                this.mesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                
+                setTimeout(() => {
+                    this.mesh.material.diffuseColor = originalColor;
+                }, 100);
+            }
+
+            die() {
+                this.playAnimation('death');
+                game.eventManager.emit('playerDied');
+            }
+
+            heal(amount) {
+                this.health = Math.min(this.health + amount, GameConfig.PLAYER.HEALTH);
+                game.eventManager.emit('healthChanged', this.health);
+            }
+        }
+
+        // ==================== WEAPON SYSTEM ====================
+        class Weapon {
+            constructor(scene, owner, config) {
+                this.scene = scene;
+                this.owner = owner;
+                this.config = config;
+                this.cooldown = 0;
+                this.ammo = config.maxAmmo;
+            }
+
+            update(deltaTime) {
+                if (this.cooldown > 0) {
+                    this.cooldown -= deltaTime;
+                }
+            }
+
+            fire() {
+                if (this.cooldown > 0 || this.ammo <= 0) return;
+                
+                this.cooldown = this.config.fireRate;
+                this.ammo--;
+                
+                this.createProjectile();
+                this.playFireEffects();
+            }
+
+            createProjectile() {
+                // Base projectile creation - to be overridden
+            }
+
+            playFireEffects() {
+                // Visual and audio effects
+            }
+
+            reload() {
+                this.ammo = this.config.maxAmmo;
+            }
+        }
+
+        class EnergyBlaster extends Weapon {
+            constructor(scene, owner) {
+                super(scene, owner, {
+                    damage: 25,
+                    fireRate: 0.3,
+                    maxAmmo: 30,
+                    projectileSpeed: 50
+                });
+            }
+
+            createProjectile() {
+                const projectile = new EnergyProjectile(this.scene, this.owner, this.config);
+                projectile.fire();
+            }
+        }
+
+        class QuantumRifle extends Weapon {
+            constructor(scene, owner) {
+                super(scene, owner, {
+                    damage: 50,
+                    fireRate: 1.0,
+                    maxAmmo: 10,
+                    projectileSpeed: 40
+                });
+            }
+
+            createProjectile() {
+                const projectile = new QuantumProjectile(this.scene, this.owner, this.config);
+                projectile.fire();
+            }
+        }
+
+        // ==================== PROJECTILE SYSTEM ====================
+        class Projectile {
+            constructor(scene, owner, config) {
+                this.scene = scene;
+                this.owner = owner;
+                this.config = config;
+                this.mesh = null;
+                this.direction = new BABYLON.Vector3(0, 0, 0);
+                this.speed = config.projectileSpeed;
+                this.isActive = false;
+            }
+
+            fire() {
+                this.createMesh();
+                this.setupPhysics();
+                this.setInitialPosition();
+                this.isActive = true;
+                
+                // Auto-destroy after 5 seconds
+                setTimeout(() => {
+                    this.destroy();
+                }, 5000);
+            }
+
+            createMesh() {
+                // Create projectile mesh
+                this.mesh = BABYLON.MeshBuilder.CreateSphere("projectile", {
+                    diameter: 0.2
+                }, this.scene);
+                
+                const material = new BABYLON.StandardMaterial("projectileMat", this.scene);
+                material.emissiveColor = new BABYLON.Color3(1, 0.5, 0);
+                this.mesh.material = material;
+            }
+
+            setupPhysics() {
+                this.physicsBody = new BABYLON.PhysicsBody(this.mesh, BABYLON.PhysicsShapeType.SPHERE, this.scene);
+                this.physicsBody.setMassProperties({ mass: 0.1 });
+            }
+
+            setInitialPosition() {
+                const ownerPos = this.owner.position.clone();
+                this.mesh.position = ownerPos.add(new BABYLON.Vector3(0, 1, 0));
+                
+                // Set direction based on camera forward vector
+                this.direction = game.camera.getForwardRay().direction;
+                this.physicsBody.applyForce(this.direction.scale(this.speed), this.mesh.getAbsolutePosition());
+            }
+
+            update() {
+                if (!this.isActive) return;
+                
+                // Check collisions
+                this.checkCollisions();
+            }
+
+            checkCollisions() {
+                // Collision detection logic
+            }
+
+            onHit(target) {
+                // Apply damage to target
+                this.playImpactEffects();
+                this.destroy();
+            }
+
+            playImpactEffects() {
+                // Create impact particle effects
+                const impactParticles = new ParticleSystem(this.scene, 10);
+                impactParticles.emit(this.mesh.position);
+            }
+
+            destroy() {
+                this.isActive = false;
+                this.mesh.dispose();
+            }
+        }
+
+        class EnergyProjectile extends Projectile {
+            // Energy-specific projectile behavior
+        }
+
+        // ==================== ENEMY SYSTEM ====================
+        class EnemyManager {
+            constructor(scene, player) {
+                this.scene = scene;
+                this.player = player;
+                this.enemies = [];
+                this.spawnPoints = [];
+                this.waveNumber = 0;
+            }
+
+            async spawnInitialEnemies() {
+                // Create spawn points around the map
+                this.createSpawnPoints();
+                
+                // Spawn first wave
+                await this.spawnWave(1);
+            }
+
+            createSpawnPoints() {
+                for (let i = 0; i < 10; i++) {
+                    const angle = (i / 10) * Math.PI * 2;
+                    const radius = 20 + Math.random() * 10;
+                    const x = Math.cos(angle) * radius;
+                    const z = Math.sin(angle) * radius;
+                    
+                    this.spawnPoints.push(new BABYLON.Vector3(x, 0, z));
+                }
+            }
+
+            async spawnWave(waveNumber) {
+                this.waveNumber = waveNumber;
+                const enemyCount = 5 + waveNumber * 2;
+                
+                for (let i = 0; i < enemyCount; i++) {
+                    const spawnPoint = this.spawnPoints[Math.floor(Math.random() * this.spawnPoints.length)];
+                    const enemyType = this.getEnemyTypeForWave(waveNumber);
+                    
+                    const enemy = await this.createEnemy(enemyType, spawnPoint);
+                    this.enemies.push(enemy);
+                    
+                    // Stagger spawning
+                    await this.delay(500);
+                }
+            }
+
+            getEnemyTypeForWave(waveNumber) {
+                if (waveNumber < 3) return GameConfig.ENEMY_TYPES.DRONE;
+                if (waveNumber < 6) return GameConfig.ENEMY_TYPES.RANGED;
+                if (waveNumber < 10) return GameConfig.ENEMY_TYPES.TANK;
+                return GameConfig.ENEMY_TYPES.BOSS;
+            }
+
+            async createEnemy(type, position) {
+                switch (type) {
+                    case GameConfig.ENEMY_TYPES.DRONE:
+                        return new DroneEnemy(this.scene, position, this.player);
+                    case GameConfig.ENEMY_TYPES.TANK:
+                        return new TankEnemy(this.scene, position, this.player);
+                    case GameConfig.ENEMY_TYPES.RANGED:
+                        return new RangedEnemy(this.scene, position, this.player);
+                    case GameConfig.ENEMY_TYPES.BOSS:
+                        return new BossEnemy(this.scene, position, this.player);
+                }
+            }
+
+            update(deltaTime) {
+                for (let enemy of this.enemies) {
+                    if (enemy.isActive) {
+                        enemy.update(deltaTime);
+                    }
+                }
+                
+                // Remove dead enemies
+                this.enemies = this.enemies.filter(enemy => enemy.isActive);
+                
+                // Check if wave is cleared
+                if (this.enemies.length === 0) {
+                    this.spawnWave(this.waveNumber + 1);
+                }
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        class BaseEnemy {
+            constructor(scene, position, player, config) {
+                this.scene = scene;
+                this.position = position;
+                this.player = player;
+                this.config = config;
+                this.mesh = null;
+                this.health = config.health;
+                this.isActive = true;
+            }
+
+            async initialize() {
+                await this.createModel();
+                this.setupAI();
+            }
+
+            update(deltaTime) {
+                this.updateAI(deltaTime);
+                this.updateMovement(deltaTime);
+                this.checkPlayerDistance();
+            }
+
+            takeDamage(amount) {
+                this.health -= amount;
+                if (this.health <= 0) {
+                    this.die();
+                }
+            }
+
+            die() {
+                this.isActive = false;
+                this.playDeathEffects();
+                game.score += this.config.scoreValue;
+            }
+
+            playDeathEffects() {
+                // Death animation and particles
+            }
+        }
+
+        class DroneEnemy extends BaseEnemy {
+            constructor(scene, position, player) {
+                super(scene, position, player, {
+                    health: 50,
+                    speed: 0.1,
+                    damage: 10,
+                    scoreValue: 100
+                });
+                this.initialize();
+            }
+        }
+
+        // ==================== ENVIRONMENT MANAGEMENT ====================
+        class EnvironmentManager {
+            constructor(scene) {
+                this.scene = scene;
+                this.ground = null;
+                this.obstacles = [];
+                this.items = [];
+            }
+
+            async createMainScene() {
+                await this.createGround();
+                await this.createObstacles();
+                await this.createSkybox();
+                await this.createLightProbes();
+            }
+
+            async createGround() {
+                // Create large ground plane
+                this.ground = BABYLON.MeshBuilder.CreateGround("ground", {
+                    width: 100,
+                    height: 100
+                }, this.scene);
+                
+                const groundMaterial = new BABYLON.StandardMaterial("groundMat", this.scene);
+                groundMaterial.diffuseTexture = new BABYLON.Texture("https://assets.babylonjs.com/environments/ground.jpg", this.scene);
+                groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+                this.ground.material = groundMaterial;
+                
+                // Add physics to ground
+                const groundBody = new BABYLON.PhysicsBody(this.ground, BABYLON.PhysicsShapeType.BOX, this.scene);
+                groundBody.setMassProperties({ mass: 0 }); // Static
+            }
+
+            async createObstacles() {
+                // Create various obstacles around the map
+                const obstacleCount = 20;
+                
+                for (let i = 0; i < obstacleCount; i++) {
+                    const obstacle = await this.createRandomObstacle();
+                    this.obstacles.push(obstacle);
+                }
+            }
+
+            async createRandomObstacle() {
+                // Create different types of obstacles
+                const types = ['cube', 'cylinder', 'pyramid'];
+                const type = types[Math.floor(Math.random() * types.length)];
+                
+                let mesh;
+                switch (type) {
+                    case 'cube':
+                        mesh = BABYLON.MeshBuilder.CreateBox(`obstacle_${Date.now()}`, {
+                            size: 2 + Math.random() * 3
+                        }, this.scene);
+                        break;
+                    case 'cylinder':
+                        mesh = BABYLON.MeshBuilder.CreateCylinder(`obstacle_${Date.now()}`, {
+                            height: 3 + Math.random() * 4,
+                            diameter: 1 + Math.random() * 2
+                        }, this.scene);
+                        break;
+                    case 'pyramid':
+                        mesh = BABYLON.MeshBuilder.CreatePolyhedron(`obstacle_${Date.now()}`, {
+                            type: 1,
+                            size: 1 + Math.random() * 2
+                        }, this.scene);
+                        break;
+                }
+                
+                // Random position
+                mesh.position = new BABYLON.Vector3(
+                    (Math.random() - 0.5) * 80,
+                    0,
+                    (Math.random() - 0.5) * 80
+                );
+                
+                // Add physics
+                const body = new BABYLON.PhysicsBody(mesh, BABYLON.PhysicsShapeType.BOX, this.scene);
+                body.setMassProperties({ mass: 0 }); // Static
+                
+                return mesh;
+            }
+
+            async createSkybox() {
+                // Create skybox for immersive environment
+                const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 1000 }, this.scene);
+                const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
+                skyboxMaterial.backFaceCulling = false;
+                skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://assets.babylonjs.com/textures/skybox", this.scene);
+                skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+                skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+                skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+                skybox.material = skyboxMaterial;
+            }
+
+            switchDimension(dimension) {
+                // Update environment based on dimension
+                this.updateDimensionColors(dimension);
+                this.updateDimensionGeometry(dimension);
+            }
+
+            update(deltaTime) {
+                // Animate environment elements
+                this.animateObstacles(deltaTime);
+            }
+
+            animateObstacles(deltaTime) {
+                // Add subtle animation to obstacles
+                for (let obstacle of this.obstacles) {
+                    obstacle.rotation.y += deltaTime * 0.1;
+                }
+            }
+        }
+
+        // ==================== AUDIO MANAGEMENT ====================
+        class AudioManager {
+            constructor() {
+                this.sounds = new Map();
+                this.audioContext = null;
+                this.masterVolume = 0.7;
+            }
+
+            initialize() {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.loadSounds();
+            }
+
+            async loadSounds() {
+                const soundList = [
+                    'main_theme', 'dimension_shift', 'player_hurt', 
+                    'weapon_fire', 'enemy_death', 'game_over'
+                ];
+                
+                for (let soundName of soundList) {
+                    await this.loadSound(soundName);
+                }
+            }
+
+            async loadSound(name) {
+                // In a real game, you would load actual audio files
+                // This is a placeholder implementation
+                this.sounds.set(name, {
+                    play: () => console.log(`Playing sound: ${name}`)
+                });
+            }
+
+            playSound(name, loop = false) {
+                const sound = this.sounds.get(name);
+                if (sound) {
+                    sound.play();
+                }
+            }
+
+            playAmbient(name, loop = true) {
+                this.playSound(name, loop);
+            }
+
+            setVolume(volume) {
+                this.masterVolume = Math.max(0, Math.min(1, volume));
+            }
+
+            dispose() {
+                if (this.audioContext) {
+                    this.audioContext.close();
+                }
+            }
+        }
+
+        // ==================== INPUT MANAGEMENT ====================
+        class InputManager {
+            constructor(scene) {
+                this.scene = scene;
+                this.keys = {};
+                this.mouse = { x: 0, y: 0, buttons: {} };
+                this.callbacks = new Map();
+                
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Keyboard events
+                window.addEventListener('keydown', (event) => {
+                    this.keys[event.key.toLowerCase()] = true;
+                    this.triggerCallbacks(`key_${event.key.toLowerCase()}`);
+                });
+                
+                window.addEventListener('keyup', (event) => {
+                    this.keys[event.key.toLowerCase()] = false;
+                });
+                
+                // Mouse events
+                this.scene.getEngine().getRenderingCanvas().addEventListener('mousedown', (event) => {
+                    this.mouse.buttons[event.button] = true;
+                    this.triggerCallbacks(`mouse_${event.button}`);
+                });
+                
+                this.scene.getEngine().getRenderingCanvas().addEventListener('mouseup', (event) => {
+                    this.mouse.buttons[event.button] = false;
+                });
+                
+                this.scene.getEngine().getRenderingCanvas().addEventListener('mousemove', (event) => {
+                    this.mouse.x = event.clientX;
+                    this.mouse.y = event.clientY;
+                });
+            }
+
+            onKeyPress(key, callback) {
+                const eventName = `key_${key.toLowerCase()}`;
+                if (!this.callbacks.has(eventName)) {
+                    this.callbacks.set(eventName, []);
+                }
+                this.callbacks.get(eventName).push(callback);
+            }
+
+            onMouseClick(button, callback) {
+                const eventName = `mouse_${button}`;
+                if (!this.callbacks.has(eventName)) {
+                    this.callbacks.set(eventName, []);
+                }
+                this.callbacks.get(eventName).push(callback);
+            }
+
+            triggerCallbacks(eventName) {
+                const callbacks = this.callbacks.get(eventName);
+                if (callbacks) {
+                    callbacks.forEach(callback => callback());
+                }
+            }
+
+            isKeyPressed(key) {
+                return this.keys[key.toLowerCase()] || false;
+            }
+
+            isMousePressed(button) {
+                return this.mouse.buttons[button] || false;
+            }
+
+            getMousePosition() {
+                return { x: this.mouse.x, y: this.mouse.y };
+            }
+        }
+
+        // ==================== EVENT MANAGEMENT ====================
+        class EventManager {
+            constructor() {
+                this.events = new Map();
+            }
+
+            on(event, callback) {
+                if (!this.events.has(event)) {
+                    this.events.set(event, []);
+                }
+                this.events.get(event).push(callback);
+            }
+
+            emit(event, data = null) {
+                const callbacks = this.events.get(event);
+                if (callbacks) {
+                    callbacks.forEach(callback => callback(data));
+                }
+            }
+
+            off(event, callback) {
+                const callbacks = this.events.get(event);
+                if (callbacks) {
+                    const index = callbacks.indexOf(callback);
+                    if (index > -1) {
+                        callbacks.splice(index, 1);
+                    }
+                }
+            }
+
+            dispose() {
+                this.events.clear();
+            }
+        }
+
+        // ==================== UI MANAGEMENT ====================
+        class UIManager {
+            constructor() {
+                this.healthElement = document.getElementById('healthFill');
+                this.dimensionElement = document.getElementById('dimensionIndicator');
+            }
+
+            createMainHUD() {
+                // Additional UI elements would be created here
+                this.createMinimap();
+                this.createWeaponDisplay();
+                this.createScoreDisplay();
+            }
+
+            updateHealth(health) {
+                if (this.healthElement) {
+                    const percentage = Math.max(0, health) / 100;
+                    this.healthElement.style.width = `${percentage * 100}%`;
+                }
+            }
+
+            updateDimension(dimension) {
+                if (this.dimensionElement) {
+                    const names = ['اصلی', 'زمانی', 'اثیری', 'خالی'];
+                    this.dimensionElement.textContent = `بعد: ${names[dimension]}`;
+                }
+            }
+
+            showGameOverScreen(score) {
+                // Create game over overlay
+                const gameOverDiv = document.createElement('div');
+                gameOverDiv.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0,0,0,0.8);
+                    color: white;
+                    padding: 2rem;
+                    border-radius: 10px;
+                    text-align: center;
+                    z-index: 1000;
+                `;
+                gameOverDiv.innerHTML = `
+                    <h2>پایان بازی</h2>
+                    <p>امتیاز نهایی: ${score}</p>
+                    <button onclick="location.reload()">دوباره شروع کن</button>
+                `;
+                document.getElementById('uiContainer').appendChild(gameOverDiv);
+            }
+
+            showPauseMenu() {
+                // Similar to game over screen but for pausing
+            }
+
+            hidePauseMenu() {
+                // Hide pause menu
+            }
+        }
+
+        // ==================== PARTICLE SYSTEM ====================
+        class ParticleSystem {
+            constructor(scene, count) {
+                this.scene = scene;
+                this.particles = [];
+                this.isActive = false;
+            }
+
+            emit(position) {
+                this.isActive = true;
+                // Create multiple particles
+                for (let i = 0; i < 10; i++) {
+                    this.createParticle(position);
+                }
+            }
+
+            createParticle(position) {
+                const particle = {
+                    mesh: BABYLON.MeshBuilder.CreateSphere("particle", { diameter: 0.1 }, this.scene),
+                    velocity: new BABYLON.Vector3(
+                        (Math.random() - 0.5) * 2,
+                        Math.random() * 3,
+                        (Math.random() - 0.5) * 2
+                    ),
+                    lifetime: 1.0,
+                    maxLifetime: 1.0
+                };
+                
+                particle.mesh.position = position.clone();
+                particle.mesh.material = new BABYLON.StandardMaterial("particleMat", this.scene);
+                particle.mesh.material.emissiveColor = new BABYLON.Color3(1, 0.5, 0);
+                
+                this.particles.push(particle);
+            }
+
+            update(deltaTime) {
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const particle = this.particles[i];
+                    particle.lifetime -= deltaTime;
+                    
+                    if (particle.lifetime <= 0) {
+                        particle.mesh.dispose();
+                        this.particles.splice(i, 1);
+                        continue;
+                    }
+                    
+                    // Update position
+                    particle.mesh.position.addInPlace(particle.velocity.scale(deltaTime));
+                    
+                    // Update scale
+                    const scale = particle.lifetime / particle.maxLifetime;
+                    particle.mesh.scaling.set(scale, scale, scale);
+                }
+                
+                if (this.particles.length === 0) {
+                    this.isActive = false;
+                }
+            }
+        }
+
+        // ==================== SAVE SYSTEM ====================
+        class SaveSystem {
+            constructor() {
+                this.saveKey = 'quantum_legacy_save';
+            }
+
+            saveGame(data) {
+                try {
+                    localStorage.setItem(this.saveKey, JSON.stringify(data));
+                    return true;
+                } catch (error) {
+                    console.error('Save failed:', error);
+                    return false;
+                }
+            }
+
+            loadGame() {
+                try {
+                    const data = localStorage.getItem(this.saveKey);
+                    return data ? JSON.parse(data) : null;
+                } catch (error) {
+                    console.error('Load failed:', error);
+                    return null;
+                }
+            }
+
+            deleteSave() {
+                localStorage.removeItem(this.saveKey);
+            }
+        }
+
+        // ==================== ACHIEVEMENT SYSTEM ====================
+        class AchievementSystem {
+            constructor() {
+                this.achievements = new Map();
+                this.unlocked = new Set();
+                this.setupAchievements();
+            }
+
+            setupAchievements() {
+                this.achievements.set('first_blood', {
+                    name: 'نخستین خون',
+                    description: 'اولین دشمن را شکست دهید',
+                    icon: '🔴'
+                });
+                
+                this.achievements.set('dimension_master', {
+                    name: 'استاد ابعاد',
+                    description: 'از همه ابعاد بازدید کنید',
+                    icon: '🌀'
+                });
+                
+                // More achievements...
+            }
+
+            unlock(achievementId) {
+                if (!this.unlocked.has(achievementId) {
+                    this.unlocked.add(achievementId);
+                    this.showNotification(achievementId);
+                }
+            }
+
+            showNotification(achievementId) {
+                const achievement = this.achievements.get(achievementId);
+                if (achievement) {
+                    console.log(`Achievement Unlocked: ${achievement.name} - ${achievement.description}`);
+                    // In a real game, show a UI notification
+                }
+            }
+        }
+
+        // ==================== DIMENSION ENVIRONMENTS ====================
+        class DimensionEnvironment {
+            constructor(scene, dimension) {
+                this.scene = scene;
+                this.dimension = dimension;
+                this.elements = [];
+            }
+
+            async create() {
+                switch (this.dimension) {
+                    case GameConfig.DIMENSIONS.PRIME:
+                        await this.createPrimeEnvironment();
+                        break;
+                    case GameConfig.DIMENSIONS.CHRONO:
+                        await this.createChronoEnvironment();
+                        break;
+                    case GameConfig.DIMENSIONS.AETHER:
+                        await this.createAetherEnvironment();
+                        break;
+                    case GameConfig.DIMENSIONS.VOID:
+                        await this.createVoidEnvironment();
+                        break;
+                }
+            }
+
+            async createPrimeEnvironment() {
+                // Normal environment - already created by EnvironmentManager
+            }
+
+            async createChronoEnvironment() {
+                // Time-themed environment with floating clocks and hourglasses
+                this.createFloatingClocks();
+            }
+
+            createFloatingClocks() {
+                // Create decorative floating clock objects
+                for (let i = 0; i < 5; i++) {
+                    const clock = BABYLON.MeshBuilder.CreateCylinder("clock", {
+                        height: 0.2,
+                        diameter: 2
+                    }, this.scene);
+                    
+                    clock.position = new BABYLON.Vector3(
+                        (Math.random() - 0.5) * 40,
+                        5 + Math.random() * 10,
+                        (Math.random() - 0.5) * 40
+                    );
+                    
+                    this.elements.push(clock);
+                }
+            }
+
+            async createAetherEnvironment() {
+                // Ether-themed with floating crystals and energy fields
+                this.createFloatingCrystals();
+            }
+
+            createFloatingCrystals() {
+                for (let i = 0; i < 8; i++) {
+                    const crystal = BABYLON.MeshBuilder.CreatePolyhedron("crystal", {
+                        type: 2, // Crystal type
+                        size: 1 + Math.random() * 2
+                    }, this.scene);
+                    
+                    crystal.position = new BABYLON.Vector3(
+                        (Math.random() - 0.5) * 50,
+                        3 + Math.random() * 8,
+                        (Math.random() - 0.5) * 50
+                    );
+                    
+                    const material = new BABYLON.StandardMaterial("crystalMat", this.scene);
+                    material.emissiveColor = new BABYLON.Color3(0, 0.5, 1);
+                    material.alpha = 0.7;
+                    crystal.material = material;
+                    
+                    this.elements.push(crystal);
+                }
+            }
+
+            async createVoidEnvironment() {
+                // Void-themed with dark matter and gravitational anomalies
+                this.createDarkMatterClouds();
+            }
+
+            createDarkMatterClouds() {
+                // Create dark, swirling cloud formations
+                for (let i = 0; i < 6; i++) {
+                    const cloud = BABYLON.MeshBuilder.CreateSphere("cloud", {
+                        diameter: 3 + Math.random() * 4
+                    }, this.scene);
+                    
+                    cloud.position = new BABYLON.Vector3(
+                        (Math.random() - 0.5) * 60,
+                        8 + Math.random() * 6,
+                        (Math.random() - 0.5) * 60
+                    );
+                    
+                    const material = new BABYLON.StandardMaterial("cloudMat", this.scene);
+                    material.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.2);
+                    material.emissiveColor = new BABYLON.Color3(0.05, 0.05, 0.1);
+                    material.alpha = 0.4;
+                    cloud.material = material;
+                    
+                    this.elements.push(cloud);
+                }
+            }
+
+            setVisible(visible) {
+                for (let element of this.elements) {
+                    element.setEnabled(visible);
+                }
+            }
+        }
+
+        // ==================== ADDITIONAL ENEMY TYPES ====================
+        class TankEnemy extends BaseEnemy {
+            constructor(scene, position, player) {
+                super(scene, position, player, {
+                    health: 200,
+                    speed: 0.05,
+                    damage: 25,
+                    scoreValue: 300
+                });
+                this.initialize();
+            }
+
+            async createModel() {
+                this.mesh = BABYLON.MeshBuilder.CreateCylinder("tankEnemy", {
+                    height: 2,
+                    diameterTop: 1.5,
+                    diameterBottom: 1.5
+                }, this.scene);
+                
+                this.mesh.position = this.position;
+                
+                const material = new BABYLON.StandardMaterial("tankMat", this.scene);
+                material.diffuseColor = new BABYLON.Color3(0.8, 0.2, 0.2);
+                this.mesh.material = material;
+            }
+        }
+
+        class RangedEnemy extends BaseEnemy {
+            constructor(scene, position, player) {
+                super(scene, position, player, {
+                    health: 80,
+                    speed: 0.08,
+                    damage: 15,
+                    scoreValue: 150
+                });
+                this.initialize();
+            }
+        }
+
+        class BossEnemy extends BaseEnemy {
+            constructor(scene, position, player) {
+                super(scene, position, player, {
+                    health: 1000,
+                    speed: 0.03,
+                    damage: 50,
+                    scoreValue: 1000
+                });
+                this.initialize();
+            }
+        }
+
+        // ==================== RENDERING PIPELINE SETUP ====================
+        QuantumLegacyGame.prototype.setupRenderingPipeline = function() {
+            // Advanced rendering features
+            this.scene.imageProcessingConfiguration.contrast = 1.2;
+            this.scene.imageProcessingConfiguration.exposure = 1.0;
+            this.scene.imageProcessingConfiguration.toneMappingEnabled = true;
+            
+            // Enable advanced textures
+            this.scene.prePassRenderer.enabled = true;
+        };
+
+        // ==================== MAIN INITIALIZATION ====================
+        let game;
+
+        // Start the game when the page loads
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                game = new QuantumLegacyGame();
+                
+                // Handle page visibility changes
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        game.pauseGame();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Failed to start game:', error);
+                alert('خطا در راه‌اندازی بازی. لطفاً کنسول را بررسی کنید.');
+            }
+        });
+
+        // Global error handling
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+        });
+
+    </script>
+</body>
+</html>
