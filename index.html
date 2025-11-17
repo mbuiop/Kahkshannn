@@ -200,7 +200,28 @@
         @keyframes celestialFloat {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-10px) rotate(5deg); }
+        /* استایل اجرام آسمانی */
+                .celestial-body {
+                position: absolute;
+                z-index: 1;
+                pointer-events: none;
         }
+
+/* انیمیشن شناور برای اجرام */
+       @keyframes celestialFloat {
+      0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+    }
+    25% { 
+        transform: translateY(-5px) rotate(2deg); 
+    }
+    50% { 
+        transform: translateY(3px) rotate(-1deg); 
+    }
+    75% { 
+        transform: translateY(-3px) rotate(1deg); 
+    }
+
         /* تمام شد استایل کهکشان و ستاره‌های متحرک */
 
 
@@ -1813,53 +1834,54 @@
             }
             
             // ایجاد سیارات دوردست
-            const planet1 = document.createElement('div');
-            planet1.className = 'planet orange';
-            planet1.style.left = '10%';
-            planet1.style.top = '15%';
-            galaxy.appendChild(planet1);
-            
-            const planet2 = document.createElement('div');
-            planet2.className = 'planet blue';
-            planet2.style.left = '85%';
-            planet2.style.top = '75%';
-            galaxy.appendChild(planet2);
-            
-            // ایجاد اجرام آسمانی کوچک در سراسر کهکشان
-            const celestialBodies = ['🪐', '🌙', '🌘', '☀️', '🌗'];
-            for (let i = 0; i < 200; i++) {
-                const body = document.createElement('div');
-                body.className = 'celestial-body';
-                body.innerHTML = celestialBodies[Math.floor(Math.random() * celestialBodies.length)];
-                body.style.left = Math.random() * 100 + '%';
-                body.style.top = Math.random() * 100 + '%';
-                body.style.fontSize = (Math.random() * 10 + 10) + 'px';
-                body.style.animationDelay = Math.random() * 10 + 's';
-                galaxy.appendChild(body);
-            }
-            
-            // ایجاد شهاب‌سنگ‌های متناوب - تعداد بیشتر
-            setInterval(createShootingStar, 1500);
-        }
+               const planet1 = document.createElement('div');
+               planet1.className = 'planet orange';
+               planet1.style.left = '10%';
+               planet1.style.top = '15%';
+               galaxy.appendChild(planet1);
 
-        function createShootingStar() {
+               const planet2 = document.createElement('div');
+               planet2.className = 'planet blue';
+               planet2.style.left = '85%';
+               planet2.style.top = '75%';
+               galaxy.appendChild(planet2);
+
+             // ایجاد اجرام آسمانی کوچک در سراسر کهکشان
+              const celestialBodies = ['🪐', '🌙', '🌘', '☀️', '🌗'];
+          for (let i = 0; i < 200; i++) {
+              const body = document.createElement('div');
+              body.className = 'celestial-body';
+              body.innerHTML = celestialBodies[Math.floor(Math.random() * celestialBodies.length)];
+              body.style.left = Math.random() * 100 + '%';
+              body.style.top = Math.random() * 100 + '%';
+              body.style.fontSize = (Math.random() * 20 + 15) + 'px';
+              body.style.animationDelay = Math.random() * 10 + 's';
+              galaxy.appendChild(body);
+          }
+
+             // ایجاد شهاب‌سنگ‌های متناوب - تعداد بیشتر
+             setInterval(createShootingStar, 1500);
+            
+        
+         }
+            function createShootingStar() {
             const galaxy = document.getElementById('galaxyBackground');
             const shootingStar = document.createElement('div');
             shootingStar.className = 'shooting-star';
-            
+    
             const startX = -100;
             const startY = Math.random() * 100;
-            
-            shootingStar.style.left = startX + 'px';
-            shootingStar.style.top = startY + 'vh';
-            shootingStar.style.setProperty('--shoot-duration', (1 + Math.random()) + 's');
-            
-            galaxy.appendChild(shootingStar);
-            
-            setTimeout(() => {
-                shootingStar.remove();
-            }, 3000);
-        }
+    
+           shootingStar.style.left = startX + 'px';
+           shootingStar.style.top = startY + 'vh';
+           shootingStar.style.setProperty('--shoot-duration', (1 + Math.random()) + 's');
+    
+           galaxy.appendChild(shootingStar);
+    
+          setTimeout(() => {
+         shootingStar.remove();
+     }, 3000);
+            }
         // تمام شد سیستم کهکشان و ستاره‌های متحرک
 
 
