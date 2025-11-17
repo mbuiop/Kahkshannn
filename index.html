@@ -200,28 +200,7 @@
         @keyframes celestialFloat {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-10px) rotate(5deg); }
-        /* استایل اجرام آسمانی */
-                .celestial-body {
-                position: absolute;
-                z-index: 1;
-                pointer-events: none;
         }
-
-/* انیمیشن شناور برای اجرام */
-       @keyframes celestialFloat {
-      0%, 100% { 
-        transform: translateY(0px) rotate(0deg); 
-    }
-    25% { 
-        transform: translateY(-5px) rotate(2deg); 
-    }
-    50% { 
-        transform: translateY(3px) rotate(-1deg); 
-    }
-    75% { 
-        transform: translateY(-3px) rotate(1deg); 
-    }
-
         /* تمام شد استایل کهکشان و ستاره‌های متحرک */
 
 
@@ -1834,54 +1813,53 @@
             }
             
             // ایجاد سیارات دوردست
-               const planet1 = document.createElement('div');
-               planet1.className = 'planet orange';
-               planet1.style.left = '10%';
-               planet1.style.top = '15%';
-               galaxy.appendChild(planet1);
-
-               const planet2 = document.createElement('div');
-               planet2.className = 'planet blue';
-               planet2.style.left = '85%';
-               planet2.style.top = '75%';
-               galaxy.appendChild(planet2);
-
-             // ایجاد اجرام آسمانی کوچک در سراسر کهکشان
-              const celestialBodies = ['🪐', '🌙', '🌘', '☀️', '🌗'];
-          for (let i = 0; i < 200; i++) {
-              const body = document.createElement('div');
-              body.className = 'celestial-body';
-              body.innerHTML = celestialBodies[Math.floor(Math.random() * celestialBodies.length)];
-              body.style.left = Math.random() * 100 + '%';
-              body.style.top = Math.random() * 100 + '%';
-              body.style.fontSize = (Math.random() * 20 + 15) + 'px';
-              body.style.animationDelay = Math.random() * 10 + 's';
-              galaxy.appendChild(body);
-          }
-
-             // ایجاد شهاب‌سنگ‌های متناوب - تعداد بیشتر
-             setInterval(createShootingStar, 1500);
+            const planet1 = document.createElement('div');
+            planet1.className = 'planet orange';
+            planet1.style.left = '10%';
+            planet1.style.top = '15%';
+            galaxy.appendChild(planet1);
             
-        
-         }
-            function createShootingStar() {
+            const planet2 = document.createElement('div');
+            planet2.className = 'planet blue';
+            planet2.style.left = '85%';
+            planet2.style.top = '75%';
+            galaxy.appendChild(planet2);
+            
+            // ایجاد اجرام آسمانی کوچک در سراسر کهکشان
+            const celestialBodies = ['🪐', '🌙', '🌘', '☀️', '🌗'];
+            for (let i = 0; i < 200; i++) {
+                const body = document.createElement('div');
+                body.className = 'celestial-body';
+                body.innerHTML = celestialBodies[Math.floor(Math.random() * celestialBodies.length)];
+                body.style.left = Math.random() * 100 + '%';
+                body.style.top = Math.random() * 100 + '%';
+                body.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                body.style.animationDelay = Math.random() * 10 + 's';
+                galaxy.appendChild(body);
+            }
+            
+            // ایجاد شهاب‌سنگ‌های متناوب - تعداد بیشتر
+            setInterval(createShootingStar, 1500);
+        }
+
+        function createShootingStar() {
             const galaxy = document.getElementById('galaxyBackground');
             const shootingStar = document.createElement('div');
             shootingStar.className = 'shooting-star';
-    
+            
             const startX = -100;
             const startY = Math.random() * 100;
-    
-           shootingStar.style.left = startX + 'px';
-           shootingStar.style.top = startY + 'vh';
-           shootingStar.style.setProperty('--shoot-duration', (1 + Math.random()) + 's');
-    
-           galaxy.appendChild(shootingStar);
-    
-          setTimeout(() => {
-         shootingStar.remove();
-     }, 3000);
-            }
+            
+            shootingStar.style.left = startX + 'px';
+            shootingStar.style.top = startY + 'vh';
+            shootingStar.style.setProperty('--shoot-duration', (1 + Math.random()) + 's');
+            
+            galaxy.appendChild(shootingStar);
+            
+            setTimeout(() => {
+                shootingStar.remove();
+            }, 3000);
+        }
         // تمام شد سیستم کهکشان و ستاره‌های متحرک
 
 
@@ -2090,7 +2068,7 @@
             });
             
             // به‌روزرسانی موقعیت گلوله‌ها
-                bullets.forEach(bullet => {
+            bullets.forEach(bullet => {
                 bullet.element.style.left = (bullet.x + cameraOffsetX) + 'px';
                 bullet.element.style.top = (bullet.y + cameraOffsetY) + 'px';
             });
@@ -2619,6 +2597,7 @@
                     setupTouchControls();
                 }
                 
+                setupGame();
                 setupCameraSystem();
                 
                 // شروع پخش موسیقی پس‌زمینه
@@ -2630,7 +2609,6 @@
                 }, 3000);
                 
                 createPlayer();
-                protectCelestialBodies();
                 
                 score = 0;
                 coinsCollected = 0;
@@ -2653,9 +2631,9 @@
                 player.x = 2500;
                 player.y = 2500;
                 
-                
+                updateFuel();
                 createCoins();
-                createPlayer();
+                
                 gameRunning = true;
                 gameLoop();
             });
@@ -2673,7 +2651,15 @@
             document.body.appendChild(miniMap);
         }
         // تمام شد تابع ایجاد مینی مپ
-    
+        // تمام شد تابع شروع بازی
+
+
+
+
+
+
+
+
 
         // شروع تنظیم کنترل لمسی
         function setupTouchControls() {
@@ -2801,8 +2787,7 @@
             playerElement.style.top = (player.y + cameraOffsetY) + 'px';
             
             gameScreen.appendChild(playerElement);
-            console.log('✅ سفینه ایجاد شد');
-         }
+        }
         // تمام شد تابع ایجاد بازیکن
 
 
@@ -2875,12 +2860,12 @@
             
             // تعیین تعداد دشمن‌ها بر اساس مرحله
             let enemyCount;
-            if (currentLevel >= 80) {
-                enemyCount = 20;
-            } else if (currentLevel >= 60) {
-                enemyCount = Math.min(10 + Math.floor(Math.random() * 4), maxEnemies - enemies.length);
-            } else if (currentLevel >= 35) {
+            if (currentLevel >= 70) {
+                enemyCount = 10;
+            } else if (currentLevel >= 50) {
                 enemyCount = Math.min(8 + Math.floor(Math.random() * 4), maxEnemies - enemies.length);
+            } else if (currentLevel >= 30) {
+                enemyCount = Math.min(6 + Math.floor(Math.random() * 4), maxEnemies - enemies.length);
             } else {
                 enemyCount = Math.min(4 + Math.floor(Math.random() * 6), maxEnemies - enemies.length);
             }
@@ -3192,7 +3177,7 @@
             }
             
             // به‌روزرسانی موقعیت گلوله‌ها
-            for (let i = bullets.length - 2; i >= 0; i--) {
+            for (let i = bullets.length - 1; i >= 0; i--) {
                 const bullet = bullets[i];
                 
                 bullet.x += Math.cos(bullet.angle) * bullet.speed;
@@ -3214,10 +3199,10 @@
             
             // ایجاد گلوله از دو طرف سفینه
             const bulletOffsets = [
-                { x: -40, j: -10 },
-                { x: 50, yf: -10 },
-                { x: -25, ym: 10 },
-                { x: 25, yk: 10 }
+                { x: -30, y: -10 },
+                { x: 30, y: -10 },
+                { x: -25, y: 10 },
+                { x: 25, y: 10 }
             ];
             
             bulletOffsets.forEach(offset => {
@@ -3237,7 +3222,7 @@
                 
                 bullets.push({
                     element: bulletElement,
-                    xj: bulletX,
+                    x: bulletX,
                     y: bulletY,
                     angle: angle,
                     speed: 8
@@ -3800,61 +3785,50 @@
 
 
 
-        
-        
         // شروع تابع شروع مجدد مرحله
-function restartCurrentLevel() {
-    gameRunning = false;
-    
-    showFuelMessage("💥 برخورد! شروع مجدد مرحله...");
-    
-    setTimeout(() => {
-        coinsCollected = 0;
-        bombCooldown = 0;
-        bombAvailable = true;
-        safeTime = 0;
-        isSafeTime = false;
-        playerPath = [];
-        player.fuel = 100;
-        fuelConsumption = 0;
-        enemySpawnTimer = 0;
-        sphereSpawnTimer = 0;
-        bombButton.disabled = false;
-        safeTimeIndicator.classList.add('hidden');
-        
-        // فقط المان‌های بازی را پاک کن، نه اجرام آسمانی
-        document.querySelectorAll('.coin, .enemy, .coin-trail, .coin-number, .destruction-sphere, .sphere-trail, .bullet').forEach(el => el.remove());
-        
-        enemies.forEach(enemy => enemy.element.remove());
-        destructionSpheres.forEach(sphere => sphere.element.remove());
-        bullets.forEach(bullet => bullet.element.remove());
-        
-        coins = [];
-        enemies = [];
-        destructionSpheres = [];
-        bullets = [];
-        coinTrail = [];
-        
-        // موقعیت بازیکن را reset کن
-        player.x = 2500;
-        player.y = 2500;
-        
-        // ایجاد دوباره سفینه اگر وجود ندارد
-        if (!playerElement) {
-            createPlayer();
+        function restartCurrentLevel() {
+            gameRunning = false;
+            
+            showFuelMessage("💥 برخورد! شروع مجدد مرحله...");
+            
+            setTimeout(() => {
+                coinsCollected = 0;
+                bombCooldown = 0;
+                bombAvailable = true;
+                safeTime = 0;
+                isSafeTime = false;
+                playerPath = [];
+                player.fuel = 100;
+                fuelConsumption = 0;
+                enemySpawnTimer = 0;
+                sphereSpawnTimer = 0;
+                bulletTimer = 0;
+                bombButton.disabled = false;
+                safeTimeIndicator.classList.add('hidden');
+                
+                document.querySelectorAll('.coin, .enemy, .coin-trail, .coin-number, .destruction-sphere, .sphere-trail, .bullet').forEach(el => el.remove());
+                enemies.forEach(enemy => enemy.element.remove());
+                destructionSpheres.forEach(sphere => sphere.element.remove());
+                bullets.forEach(bullet => bullet.element.remove());
+                
+                coins = [];
+                enemies = [];
+                destructionSpheres = [];
+                bullets = [];
+                coinTrail = [];
+                
+                player.x = 2500;
+                player.y = 2500;
+                updatePlayerPosition();
+                
+                updateFuel();
+                createCoins();
+                
+                gameRunning = true;
+                gameLoop();
+            }, 1500);
         }
-        
-        updatePlayerPosition();
-        updateFuel();
-        createCoins();
-        
-        gameRunning = true;
-        gameLoop();
-    }, 1500);
-}
-
-// تمام شد تابع شروع مجدد مرحله
-        
+        // تمام شد تابع شروع مجدد مرحله
 
 
 
@@ -3864,46 +3838,45 @@ function restartCurrentLevel() {
 
 
 
-        
         // شروع تابع پایان بازی
         function gameOver() {
-        gameRunning = false;
-        stopBackgroundMusic();
-    
-        saveGameData();
-    
-    showFuelMessage("⛽ سوخت تمام شد! بازی تمام شد");
-    
-    setTimeout(() => {
-        mainScreen.classList.remove('hidden');
-        gameScreen.classList.add('hidden');
-        fuelIndicator.classList.add('hidden');
-        bombButton.classList.add('hidden');
-        bombTimer.classList.add('hidden');
-        safeTimeIndicator.classList.add('hidden');
-        touchControls.classList.add('hidden');
-        levelComplete.classList.remove('show');
-        
-        // فقط المان‌های بازی را پاک کن، نه اجرام آسمانی
-        document.querySelectorAll('.coin, .enemy, .coin-trail, .coin-number, .destruction-sphere, .sphere-trail, .bullet').forEach(el => el.remove());
-        
-        if (playerElement) {
-            playerElement.remove();
-            playerElement = null;
+            gameRunning = false;
+            stopBackgroundMusic();
+            
+            saveGameData();
+            
+            showFuelMessage("⛽ سوخت تمام شد! بازی تمام شد");
+            
+            setTimeout(() => {
+                mainScreen.classList.remove('hidden');
+                gameScreen.classList.add('hidden');
+                fuelIndicator.classList.add('hidden');
+                bombButton.classList.add('hidden');
+                bombTimer.classList.add('hidden');
+                safeTimeIndicator.classList.add('hidden');
+                touchControls.classList.add('hidden');
+                levelComplete.classList.remove('show');
+                
+                // حذف مینی مپ
+                document.querySelector('.mini-map')?.remove();
+                
+                document.querySelectorAll('.coin, .enemy, .coin-trail, .coin-number, .destruction-sphere, .sphere-trail, .bullet').forEach(el => el.remove());
+                if (playerElement) {
+                    playerElement.remove();
+                    playerElement = null;
+                }
+                
+                coins = [];
+                enemies = [];
+                destructionSpheres = [];
+                bullets = [];
+                coinTrail = [];
+                playerPath = [];
+                
+                updateMainScreenStats();
+            }, 2000);
         }
-        
-        coins = [];
-        enemies = [];
-        destructionSpheres = [];
-        bullets = [];
-        coinTrail = [];
-        playerPath = [];
-        
-        updateMainScreenStats();
-    }, 2000);
-}
-   // تمام شد تابع پایان بازی
-    
+        // تمام شد تابع پایان بازی
 
 
 
@@ -3913,50 +3886,36 @@ function restartCurrentLevel() {
 
 
 
-        
         // شروع رویداد کلیک دکمه مرحله بعد
         nextLevelButton.addEventListener('click', () => {
-        levelComplete.classList.remove('show');
-    
-    showLevelLoading(() => {
-        currentLevel++;
-        coinsCollected = 0;
-        totalCoinsNeeded = Math.min(20, 5 + currentLevel);
-        coinTrail = [];
-        playerPath = [];
-        player.fuel = 100;
-        updateFuel();
-        
-        // فقط المان‌های بازی را پاک کن، نه اجرام آسمانی
-        document.querySelectorAll('.coin, .coin-trail, .coin-number, .destruction-sphere, .sphere-trail, .bullet').forEach(el => el.remove());
-        
-        enemies.forEach(enemy => enemy.element.remove());
-        destructionSpheres.forEach(sphere => sphere.element.remove());
-        bullets.forEach(bullet => bullet.element.remove());
-        
-        enemies = [];
-        destructionSpheres = [];
-        bullets = [];
-        
-        createCoins(); // فقط سکه‌ها را دوباره ایجاد کن
-        protectCelestialBodies();
-        gameRunning = true;
-        gameLoop();
-    });
-});
-
+            levelComplete.classList.remove('show');
+            
+            showLevelLoading(() => {
+                currentLevel++;
+                coinsCollected = 0;
+                totalCoinsNeeded = Math.min(20, 5 + currentLevel);
+                coinTrail = [];
+                playerPath = [];
+                player.fuel = 100;
+                updateFuel();
+                
+                document.querySelectorAll('.coin, .coin-trail, .coin-number, .destruction-sphere, .sphere-trail, .bullet').forEach(el => el.remove());
+                enemies.forEach(enemy => enemy.element.remove());
+                destructionSpheres.forEach(sphere => sphere.element.remove());
+                bullets.forEach(bullet => bullet.element.remove());
+                enemies = [];
+                destructionSpheres = [];
+                bullets = [];
+                
+                createCoins();
+                
+                gameRunning = true;
+                gameLoop();
+            });
+        });
         // تمام شد رویداد کلیک دکمه مرحله بعد
-        // شروع تابع محافظت از اجرام آسمانی
-        function protectCelestialBodies() {
-        const galaxy = document.getElementById('galaxyBackground');
-        const celestialBodies = document.querySelectorAll('.celestial-body');
-    
-    // اگر اجرام آسمانی وجود ندارند، دوباره ایجادشان کن
-    if (celestialBodies.length === 0) {
-        createCelestialBodies();
-    }
-}
-// تمام شد تابع محافظت از اجرام آسمانی
+
+
 
 
 
