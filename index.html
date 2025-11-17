@@ -2674,7 +2674,39 @@
             document.body.appendChild(miniMap);
         }
         // تمام شد تابع ایجاد مینی مپ
-        // تمام شد تابع شروع بازی
+        // شروع تابع شروع بازی
+       function startGame() {
+           showLoadingScreen(() => {
+           mainScreen.classList.add('hidden');
+           gameScreen.classList.remove('hidden');
+           fuelIndicator.classList.remove('hidden');
+           bombButton.classList.remove('hidden');
+           bombTimer.classList.remove('hidden');
+        
+        // ایجاد مینی مپ
+          createMiniMap();
+        
+        // نمایش کنترل لمسی در موبایل
+        if (window.innerWidth <= 480) {
+            touchControls.classList.remove('hidden');
+            setupTouchControls();
+        }
+        
+           setupGame();
+           setupCameraSystem();
+          
+        // شروع پخش موسیقی پس‌زمینه
+           playBackgroundMusic();
+        
+           playerIndicator.classList.remove('hidden');
+           setTimeout(() => {
+            playerIndicator.classList.add('hidden');
+        }, 3000);
+        
+        // ایجاد سفینه - این خط خیلی مهم است!
+        createPlayer();
+        
+        // بقیه کدهای مقداردهی اولیه...
 
 
 
