@@ -2090,7 +2090,7 @@
             });
             
             // به‌روزرسانی موقعیت گلوله‌ها
-            bullets.forEach(bullet => {
+                bullets.forEach(bullet => {
                 bullet.element.style.left = (bullet.x + cameraOffsetX) + 'px';
                 bullet.element.style.top = (bullet.y + cameraOffsetY) + 'px';
             });
@@ -2619,7 +2619,6 @@
                     setupTouchControls();
                 }
                 
-                setupGame();
                 setupCameraSystem();
                 
                 // شروع پخش موسیقی پس‌زمینه
@@ -2654,7 +2653,7 @@
                 player.x = 2500;
                 player.y = 2500;
                 
-                updateFuel();
+                
                 createCoins();
                 
                 gameRunning = true;
@@ -2674,47 +2673,7 @@
             document.body.appendChild(miniMap);
         }
         // تمام شد تابع ایجاد مینی مپ
-        // شروع تابع شروع بازی
-       function startGame() {
-           showLoadingScreen(() => {
-           mainScreen.classList.add('hidden');
-           gameScreen.classList.remove('hidden');
-           fuelIndicator.classList.remove('hidden');
-           bombButton.classList.remove('hidden');
-           bombTimer.classList.remove('hidden');
-        
-        // ایجاد مینی مپ
-          createMiniMap();
-        
-        // نمایش کنترل لمسی در موبایل
-        if (window.innerWidth <= 480) {
-            touchControls.classList.remove('hidden');
-            setupTouchControls();
-        }
-        
-           setupGame();
-           setupCameraSystem();
-          
-        // شروع پخش موسیقی پس‌زمینه
-           playBackgroundMusic();
-        
-           playerIndicator.classList.remove('hidden');
-           setTimeout(() => {
-            playerIndicator.classList.add('hidden');
-        }, 3000);
-        
-        // ایجاد سفینه - این خط خیلی مهم است!
-        createPlayer();
-        
-        // بقیه کدهای مقداردهی اولیه...
-
-
-
-
-
-
-
-
+    
 
         // شروع تنظیم کنترل لمسی
         function setupTouchControls() {
