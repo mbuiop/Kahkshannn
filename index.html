@@ -540,7 +540,7 @@
         .main-btn {
             background: linear-gradient(45deg, #00ccff, #0066ff);
             border: none;
-            padding: 18px 25px;
+            padding: 5px 15px;
             font-size: 1.2rem;
             border-radius: 50px;
             cursor: pointer;
@@ -548,7 +548,7 @@
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0, 204, 255, 0.5);
             transition: all 0.3s;
-            width: 100%;
+            width: auto;
             text-align: center;
         }
         
@@ -577,15 +577,15 @@
         .management-btn {
             background: linear-gradient(45deg, #ff4444, #cc0000);
             border: none;
-            padding: 15px 25px;
-            font-size: 1.1rem;
+            padding: 5px 15px;
+            font-size: 0.7rem;
             border-radius: 50px;
             cursor: pointer;
             color: white;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(255, 68, 68, 0.5);
             transition: all 0.3s;
-            width: 100%;
+            width: auto;
             text-align: center;
             animation: redPulse 2s infinite;
         }
@@ -1281,8 +1281,8 @@
         /* شروع استایل افکت جمع‌آوری سکه */
         .coin-collect-effect {
             position: absolute;
-            font-size: 35px;
-            z-index: 26;
+            font-size: 50px;
+            z-index: 28;
             pointer-events: none;
             animation: collectEffect 0.8s forwards;
         }
@@ -1827,7 +1827,7 @@
             
             // ایجاد اجرام آسمانی کوچک در سراسر کهکشان
             const celestialBodies = ['🪐', '🌙', '🌘', '☀️', '🌗'];
-            for (let i = 0; i < 200; i++) {
+            for (let i = 0; i < 1000; i++) {
                 const body = document.createElement('div');
                 body.className = 'celestial-body';
                 body.innerHTML = celestialBodies[Math.floor(Math.random() * celestialBodies.length)];
