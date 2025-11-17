@@ -2655,7 +2655,7 @@
                 
                 
                 createCoins();
-                
+                createPlayer();
                 gameRunning = true;
                 gameLoop();
             });
@@ -2875,12 +2875,12 @@
             
             // تعیین تعداد دشمن‌ها بر اساس مرحله
             let enemyCount;
-            if (currentLevel >= 70) {
-                enemyCount = 10;
-            } else if (currentLevel >= 50) {
+            if (currentLevel >= 80) {
+                enemyCount = 20;
+            } else if (currentLevel >= 60) {
+                enemyCount = Math.min(10 + Math.floor(Math.random() * 4), maxEnemies - enemies.length);
+            } else if (currentLevel >= 35) {
                 enemyCount = Math.min(8 + Math.floor(Math.random() * 4), maxEnemies - enemies.length);
-            } else if (currentLevel >= 30) {
-                enemyCount = Math.min(6 + Math.floor(Math.random() * 4), maxEnemies - enemies.length);
             } else {
                 enemyCount = Math.min(4 + Math.floor(Math.random() * 6), maxEnemies - enemies.length);
             }
@@ -3192,7 +3192,7 @@
             }
             
             // به‌روزرسانی موقعیت گلوله‌ها
-            for (let i = bullets.length - 1; i >= 0; i--) {
+            for (let i = bullets.length - 2; i >= 0; i--) {
                 const bullet = bullets[i];
                 
                 bullet.x += Math.cos(bullet.angle) * bullet.speed;
@@ -3214,10 +3214,10 @@
             
             // ایجاد گلوله از دو طرف سفینه
             const bulletOffsets = [
-                { x: -30, y: -10 },
-                { x: 30, y: -10 },
-                { x: -25, y: 10 },
-                { x: 25, y: 10 }
+                { x: -40, j: -10 },
+                { x: 50, yf: -10 },
+                { x: -25, ym: 10 },
+                { x: 25, yk: 10 }
             ];
             
             bulletOffsets.forEach(offset => {
@@ -3237,7 +3237,7 @@
                 
                 bullets.push({
                     element: bulletElement,
-                    x: bulletX,
+                    xj: bulletX,
                     y: bulletY,
                     angle: angle,
                     speed: 8
@@ -3800,7 +3800,7 @@
 
 
 
-        // شروع تابع شروع مجدد مرحله
+        
         
         // شروع تابع شروع مجدد مرحله
 function restartCurrentLevel() {
