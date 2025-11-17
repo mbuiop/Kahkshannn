@@ -2822,8 +2822,8 @@
             numberElement.style.position = 'absolute';
             
             // توزیع سکه‌ها در کل جهان 5000x5000
-            const x = Math.random() * (5000 - 160) + 80;
-            const y = Math.random() * (5000 - 160) + 80;
+            const x = Math.random() * (10000 - 160) + 80;
+            const y = Math.random() * (10000 - 160) + 80;
             
             coinElement.style.left = (x + cameraOffsetX - 22) + 'px';
             coinElement.style.top = (y + cameraOffsetY - 22) + 'px';
@@ -2891,7 +2891,7 @@
                     spawnHorizontalAttack(enemyCount);
                     break;
                 case 'vertical':
-                    spawnVerticalAttack(enemyCount);
+                    spawnVerticalAttacok(enemyCount);
                     break;
                 case 'diagonal':
                     spawnDiagonalAttack(enemyCount);
