@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بازی کهکشانی پیشرفته</title>
+    <link rel="icon" href="m.html" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            touch-action: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+        }
+        
+        /* استایل‌های اصلی بازی */
+        #gameContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* HUD بازی */
+        .game-hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            z-index: 4;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+        
+        .hud-item {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .hud-value {
+            color: #00ccff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* صفحه اصلی منو */
+        #mainMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+        }
+
+        .menu-title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #ff8a00, #e52e71, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { filter: drop-shadow(0 0 5px rgba(255, 138, 0, 0.7)); }
+            to { filter: drop-shadow(0 0 15px rgba(229, 46, 113, 0.7)); }
+        }
+
+        .menu-btn {
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- صفحه اصلی منو -->
+    <div id="mainMenu">
+        <h1 class="menu-title">🚀 بازی کهکشانی پیشرفته</h1>
+        <button class="menu-btn" onclick="startGame()">شروع بازی</button>
+        <button class="menu-btn" onclick="showSettings()">تنظیمات</button>
+        <button class="menu-btn" onclick="showCredits()">سازندگان</button>
+    </div>
+
+    <!-- کانتینر اصلی بازی -->
+    <div id="gameContainer" class="hidden">
+        <div class="game-hud">
+            <div class="hud-item">امتیاز: <span class="hud-value" id="currentScore">0</span></div>
+            <div class="hud-item">مرحله: <span class="hud-value" id="currentLevel">1</span></div>
+            <div class="hud-item">سکه: <span class="hud-value" id="currentCoins">0</span></div>
+            <div class="hud-item">سلامت: <span class="hud-value" id="currentHealth">100</span></div>
+        </div>
+    </div>
+
+    <!-- بارگذاری فایل‌های سیستمی -->
+    <script src="m.js"></script>
+    <script src="m1.js"></script>
+    <script src="m2.js"></script>
+    <script src="m3.js"></script>
+    <script src="m5.js"></script>
+    <script src="m6.js"></script>
+    
+    <script>
+        // متغیرهای اصلی بازی
+        let gameEngine = null;
+        let physicsEngine = null;
+
+        // راه‌اندازی اصلی بازی
+        window.addEventListener('load', function() {
+            console.log('در حال راه‌اندازی سیستم بازی...');
+            
+            // راه‌اندازی موتور فیزیک
+            if (typeof PhysicsEngine !== 'undefined') {
+                physicsEngine = new PhysicsEngine();
+                physicsEngine.init();
+                console.log('موتور فیزیک راه‌اندازی شد');
+            }
+
+            // راه‌اندازی موتور بازی
+            if (typeof GameEngine !== 'undefined') {
+                gameEngine = new GameEngine();
+                gameEngine.init();
+                console.log('موتور بازی راه‌اندازی شد');
+            }
+
+            // راه‌اندازی سیستم‌های دیگر
+            if (typeof GalaxyBackground !== 'undefined') {
+                const background = new GalaxyBackground();
+                background.init();
+                console.log('سیستم پس‌زمینه راه‌اندازی شد');
+            }
+            
+            if (typeof CameraSystem !== 'undefined') {
+                const camera = new CameraSystem();
+                camera.init();
+                console.log('سیستم دوربین راه‌اندازی شد');
+            }
+            
+            if (typeof AnimationSystem !== 'undefined') {
+                const animations = new AnimationSystem();
+                animations.init();
+                console.log('سیستم انیمیشن راه‌اندازی شد');
+            }
+            
+            if (typeof CombatSystem !== 'undefined') {
+                const combat = new CombatSystem();
+                combat.init();
+                console.log('سیستم جنگنده راه‌اندازی شد');
+            }
+
+            console.log('✅ تمام سیستم‌ها با موفقیت راه‌اندازی شدند!');
+        });
+
+        // توابع منو
+        function startGame() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('gameContainer').classList.remove('hidden');
+            
+            if (gameEngine) {
+                gameEngine.start();
+            }
+        }
+
+        function showSettings() {
+            alert('منوی تنظیمات به زودی اضافه خواهد شد!');
+        }
+
+        function showCredits() {
+            alert('سازندگان:\n\n• تیم توسعه بازی کهکشانی\n• گرافیک: موتور پیشرفته WebGL\n• فیزیک: سیستم واقع‌گرایانه\n• صدا: Web Audio API');
+        }
+
+        // مدیریت خطاها
+        window.addEventListener('error', function(e) {
+            console.error('خطا در بازی:', e.error);
+        });
+    </script>
+</body>
+</html>
