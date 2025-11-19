@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بازی کهکشانی پیشرفته - Galactic Wars</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+    
+    <!-- کتابخانه‌های ضروری -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    
+    <!-- فایل‌های اختصاصی بازی -->
+    <script src="m.js"></script>
+    <script src="m1.js"></script>
+    <script src="m2.js"></script>
+    <script src="m3.js"></script>
+    <script src="m5.js"></script>
+    <script src="m6.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            touch-action: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+        }
+        
+        #gameContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* HUD و رابط کاربری */
+        .hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .health-bar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .health-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff3300, #ffaa00, #00ff88);
+            transition: width 0.3s;
+        }
+        
+        .score-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: white;
+            text-shadow: 0 0 10px #00ccff;
+            font-weight: bold;
+        }
+        
+        .weapon-display {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 18px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .level-display {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #00ff88;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .energy-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 150px;
+            width: 200px;
+            height: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .energy-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ccff, #0066ff);
+            transition: width 0.3s;
+        }
+        
+        /* کنترل‌های لمسی */
+        .touch-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: 150px;
+            z-index: 20;
+        }
+        
+        .joystick {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            top: 25px;
+            left: 25px;
+        }
+        
+        .joystick-handle {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
+        }
+        
+        .fire-button {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, #ff4444, #cc0000);
+            border-radius: 50%;
+            bottom: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            pointer-events: auto;
+        }
+        
+        /* منوها و صفحات */
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .main-menu {
+            background: radial-gradient(circle, rgba(0, 20, 40, 0.9), rgba(0, 0, 0, 0.95));
+        }
+        
+        .game-title {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff8a00, #e52e71, #00aaff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(229, 46, 113, 0.5);
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 138, 0, 0.7)); }
+            to { filter: drop-shadow(0 0 25px rgba(229, 46, 113, 0.7)); }
+        }
+        
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 40px 0;
+            align-items: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .menu-btn {
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border: none;
+            padding: 20px 30px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0, 204, 255, 0.5);
+            transition: all 0.3s;
+            width: 100%;
+            text-align: center;
+            pointer-events: auto;
+        }
+        
+        .menu-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 7px 25px rgba(0, 204, 255, 0.7);
+        }
+        
+        .menu-btn.start {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.5);
+            font-size: 1.5rem;
+            padding: 22px 30px;
+        }
+        
+        .loading-screen {
+            background: radial-gradient(circle, rgba(10, 30, 60, 0.95), rgba(0, 0, 0, 0.98));
+        }
+        
+        .loading-text {
+            font-size: 2rem;
+            color: #00ccff;
+            margin-top: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .loading-bar-container {
+            width: 300px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ccff, #0066ff);
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            font-size: 14px;
+            max-width: 500px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* افکت‌های ویژه */
+        .damage-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.3);
+            pointer-events: none;
+            z-index: 15;
+            opacity: 0;
+        }
+        
+        /* رسپانسیو */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 3rem;
+            }
+            
+            .menu-btn {
+                padding: 18px 25px;
+                font-size: 1.2rem;
+            }
+            
+            .menu-btn.start {
+                font-size: 1.3rem;
+                padding: 20px 25px;
+            }
+            
+            .health-bar {
+                width: 200px;
+            }
+            
+            .score-display {
+                font-size: 20px;
+            }
+            
+            .energy-bar {
+                width: 150px;
+                right: 130px;
+            }
+            
+            .touch-controls {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .joystick {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .joystick-handle {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .fire-button {
+                width: 60px;
+                height: 60px;
+                font-size: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-title {
+                font-size: 2.5rem;
+            }
+            
+            .menu-btn {
+                padding: 16px 20px;
+                font-size: 1.1rem;
+            }
+            
+            .menu-btn.start {
+                font-size: 1.2rem;
+                padding: 18px 20px;
+            }
+            
+            .health-bar {
+                width: 150px;
+                top: 10px;
+                left: 10px;
+            }
+            
+            .score-display {
+                font-size: 18px;
+                top: 10px;
+                right: 10px;
+            }
+            
+            .level-display {
+                font-size: 16px;
+                top: 10px;
+            }
+            
+            .weapon-display {
+                bottom: 10px;
+                left: 10px;
+                font-size: 16px;
+                padding: 8px 12px;
+            }
+            
+            .energy-bar {
+                width: 120px;
+                right: 110px;
+                bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- کانتینر اصلی بازی -->
+    <div id="gameContainer"></div>
+    
+    <!-- HUD و رابط کاربری -->
+    <div class="hud">
+        <div class="health-bar">
+            <div class="health-fill" id="healthFill"></div>
+        </div>
+        <div class="score-display" id="scoreDisplay">امتیاز: 0</div>
+        <div class="level-display" id="levelDisplay">مرحله 1</div>
+        <div class="weapon-display" id="weaponDisplay">سلاح: لیزر پایه</div>
+        <div class="energy-bar">
+            <div class="energy-fill" id="energyFill"></div>
+        </div>
+        
+        <!-- کنترل‌های لمسی -->
+        <div class="touch-controls" id="touchControls">
+            <div class="joystick">
+                <div class="joystick-handle"></div>
+            </div>
+            <div class="fire-button" id="fireButton">🔥</div>
+        </div>
+    </div>
+    
+    <!-- افکت‌های ویژه -->
+    <div class="damage-flash" id="damageFlash"></div>
+    
+    <!-- صفحات مختلف -->
+    <div id="mainMenu" class="screen main-menu">
+        <h1 class="game-title">🚀 Galactic Wars</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 20px; color: #aaddff;">تجربه نبردهای کهکشانی در ابعاد بی‌نهایت</p>
+        
+        <div class="menu-buttons">
+            <button class="menu-btn start" onclick="startGame()">شروع مأموریت</button>
+            <button class="menu-btn" onclick="showSettings()">تنظیمات</button>
+            <button class="menu-btn" onclick="showCredits()">سازندگان</button>
+        </div>
+        
+        <div style="margin-top: 40px; color: #8899aa; font-size: 0.9rem;">
+            <p>گرافیک فوق‌العاده • فیزیک پیشرفته • گیم‌پلی اکشن</p>
+        </div>
+    </div>
+    
+    <div id="loadingScreen" class="screen loading-screen hidden">
+        <div style="font-size: 4rem; margin-bottom: 20px;">🌌</div>
+        <div class="loading-text" id="loadingText">در حال بارگذاری جهان...</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar"></div>
+        </div>
+        <div style="margin-top: 20px; color: #aaddff; font-size: 1rem;" id="loadingDetail">
+            راه‌اندازی موتور گرافیکی...
+        </div>
+        <div id="loadingErrors" class="error-message hidden"></div>
+    </div>
+    
+    <div id="gameOverScreen" class="screen hidden">
+        <h1 style="font-size: 3rem; color: #ff4444; margin-bottom: 20px;">مأموریت شکست خورد!</h1>
+        <p style="font-size: 1.5rem; margin-bottom: 30px; color: #ffaaaa;">امتیاز نهایی: <span id="finalScore">0</span></p>
+        <p style="font-size: 1.2rem; margin-bottom: 40px; color: #aaddff;">آماده تلاش مجدد هستید؟</p>
+        <button class="menu-btn" onclick="restartGame()">تلاش مجدد</button>
+        <button class="menu-btn" onclick="showMainMenu()" style="margin-top: 15px; background: linear-gradient(45deg, #888888, #555555);">بازگشت به منو</button>
+    </div>
+    
+    <div id="levelCompleteScreen" class="screen hidden">
+        <h1 style="font-size: 3rem; color: #00ff88; margin-bottom: 20px;">تبریک! 🎉</h1>
+        <p style="font-size: 1.5rem; margin-bottom: 30px; color: #aaffaa;">مرحله <span id="completedLevel">1</span> تکمیل شد!</p>
+        <p style="font-size: 1.2rem; margin-bottom: 40px; color: #aaddff;">آماده چالش بعدی هستید؟</p>
+        <button class="menu-btn" onclick="nextLevel()">مرحله بعد</button>
+    </div>
+
+    <script>
+        // =============================================
+        // سیستم مدیریت بازی - بارگذاری فایل‌های خارجی
+        // =============================================
+
+        const GameState = {
+            MENU: 'menu',
+            LOADING: 'loading',
+            PLAYING: 'playing',
+            PAUSED: 'paused',
+            GAME_OVER: 'game_over',
+            LEVEL_COMPLETE: 'level_complete'
+        };
+        
+        let currentState = GameState.MENU;
+        let gameInstance = null;
+        let loadedFiles = {
+            'm.js': false,
+            'm1.js': false,
+            'm2.js': false,
+            'm3.js': false,
+            'm5.js': false,
+            'm6.js': false
+        };
+
+        // تابع بارگذاری فایل‌های JS
+        function loadScript(src, onLoad, onError) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = () => {
+                    loadedFiles[src] = true;
+                    if (onLoad) onLoad();
+                    resolve(src);
+                };
+                script.onerror = () => {
+                    if (onError) onError(src);
+                    reject(new Error(`خطا در بارگذاری ${src}`));
+                };
+                document.head.appendChild(script);
+            });
+        }
+
+        // تابع شروع بازی با بارگذاری فایل‌ها
+        async function startGame() {
+            setGameState(GameState.LOADING);
+            
+            try {
+                // بارگذاری فایل‌های بازی
+                await loadAllGameFiles();
+                
+                // راه‌اندازی بازی پس از بارگذاری موفق
+                setTimeout(() => {
+                    initializeGame();
+                }, 500);
+                
+            } catch (error) {
+                console.error('خطا در بارگذاری بازی:', error);
+                showLoadingError('خطا در بارگذاری فایل‌های بازی. لطفاً مطمئن شوید تمام فایل‌ها در مسیر صحیح قرار دارند.');
+            }
+        }
+
+        // بارگذاری تمام فایل‌های بازی
+        async function loadAllGameFiles() {
+            const files = [
+                'm.js',  // سیستم گرافیک
+                'm1.js', // سیستم دوربین  
+                'm2.js', // سیستم انیمیشن
+                'm3.js', // سیستم جنگنده
+                'm5.js', // موتور بازی
+                'm6.js'  // سیستم فیزیک
+            ];
+            
+            let progress = 0;
+            const totalFiles = files.length;
+            
+            for (const file of files) {
+                try {
+                    updateLoadingScreen(progress, `در حال بارگذاری ${file}...`);
+                    await loadScript(file, 
+                        () => {
+                            console.log(`✅ ${file} با موفقیت بارگذاری شد`);
+                        },
+                        (failedFile) => {
+                            console.error(`❌ خطا در بارگذاری ${failedFile}`);
+                        }
+                    );
+                    progress += (100 / totalFiles);
+                } catch (error) {
+                    throw new Error(`خطا در بارگذاری ${file}: ${error.message}`);
+                }
+            }
+            
+            updateLoadingScreen(100, 'آماده برای مأموریت!');
+        }
+
+        // به‌روزرسانی صفحه بارگذاری
+        function updateLoadingScreen(progress, detail = '') {
+            document.getElementById('loadingBar').style.width = `${progress}%`;
+            
+            const loadingText = document.getElementById('loadingText');
+            const loadingDetail = document.getElementById('loadingDetail');
+            
+            if (progress < 20) {
+                loadingText.textContent = "در حال بارگذاری جهان...";
+            } else if (progress < 40) {
+                loadingText.textContent = "ایجاد کهکشان...";
+            } else if (progress < 60) {
+                loadingText.textContent = "راه‌اندازی جنگنده...";
+            } else if (progress < 80) {
+                loadingText.textContent = "بارگذاری دشمنان...";
+            } else {
+                loadingText.textContent = "آماده برای مأموریت!";
+            }
+            
+            if (detail) {
+                loadingDetail.textContent = detail;
+            }
+        }
+
+        // نمایش خطای بارگذاری
+        function showLoadingError(message) {
+            const errorDiv = document.getElementById('loadingErrors');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            
+            const retryButton = document.createElement('button');
+            retryButton.textContent = 'تلاش مجدد';
+            retryButton.className = 'menu-btn';
+            retryButton.style.marginTop = '15px';
+            retryButton.onclick = startGame;
+            
+            errorDiv.appendChild(retryButton);
+        }
+
+        // بررسی موجود بودن کلاس‌های ضروری
+        function checkRequiredClasses() {
+            const requiredClasses = [
+                'GraphicsSystem',
+                'CinematicCamera', 
+                'AnimationSystem',
+                'FighterSystem',
+                'GameEngine',
+                'PhysicsSystem'
+            ];
+            
+            const missingClasses = [];
+            
+            for (const className of requiredClasses) {
+                if (typeof window[className] === 'undefined') {
+                    missingClasses.push(className);
+                }
+            }
+            
+            return missingClasses;
+        }
+
+        // مقداردهی اولیه بازی پس از بارگذاری فایل‌ها
+        function initializeGame() {
+            // بررسی موجود بودن کلاس‌های ضروری
+            const missingClasses = checkRequiredClasses();
+            if (missingClasses.length > 0) {
+                showLoadingError(`کلاس‌های ضروری یافت نشد: ${missingClasses.join(', ')}`);
+                return;
+            }
+            
+            // مخفی کردن کنترل‌های لمسی در دسکتاپ
+            if (window.innerWidth > 768) {
+                document.getElementById('touchControls').style.display = 'none';
+            }
+            
+            // ایجاد نمونه بازی
+            try {
+                gameInstance = new window.GameEngine('gameContainer');
+                gameInstance.start();
+                setGameState(GameState.PLAYING);
+                
+                console.log('✅ بازی با موفقیت راه‌اندازی شد');
+                console.log('📁 فایل‌های بارگذاری شده:', loadedFiles);
+                
+            } catch (error) {
+                console.error('❌ خطا در راه‌اندازی بازی:', error);
+                showLoadingError(`خطا در راه‌اندازی بازی: ${error.message}`);
+            }
+        }
+        
+        // تغییر وضعیت بازی
+        function setGameState(newState) {
+            currentState = newState;
+            
+            // مخفی کردن تمام صفحات
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            // نمایش صفحه مناسب
+            switch(newState) {
+                case GameState.MENU:
+                    document.getElementById('mainMenu').classList.remove('hidden');
+                    break;
+                case GameState.LOADING:
+                    document.getElementById('loadingScreen').classList.remove('hidden');
+                    break;
+                case GameState.PLAYING:
+                    // هیچ صفحه‌ای نمایش داده نمی‌شود (HUD فعال است)
+                    break;
+                case GameState.GAME_OVER:
+                    document.getElementById('gameOverScreen').classList.remove('hidden');
+                    break;
+                case GameState.LEVEL_COMPLETE:
+                    document.getElementById('levelCompleteScreen').classList.remove('hidden');
+                    break;
+            }
+        }
+        
+        // توابع منو
+        function showSettings() {
+            alert("منوی تنظیمات - این بخش در نسخه کامل پیاده‌سازی خواهد شد");
+        }
+        
+        function showCredits() {
+            const credits = `
+سازندگان بازی کهکشانی:
+
+• سیستم گرافیک: m.js
+• سیستم دوربین: m1.js  
+• سیستم انیمیشن: m2.js
+• سیستم جنگنده: m3.js
+• موتور بازی: m5.js
+• سیستم فیزیک: m6.js
+
+تکنولوژی‌ها:
+• Three.js - گرافیک سه‌بعدی
+• GSAP - انیمیشن‌های پیشرفته
+• Howler.js - سیستم صوتی
+            `;
+            alert(credits);
+        }
+        
+        function restartGame() {
+            if (gameInstance) {
+                gameInstance.destroy();
+                gameInstance = null;
+            }
+            startGame();
+        }
+        
+        function showMainMenu() {
+            if (gameInstance) {
+                gameInstance.destroy();
+                gameInstance = null;
+            }
+            setGameState(GameState.MENU);
+        }
+        
+        function nextLevel() {
+            if (gameInstance && gameInstance.nextLevel) {
+                gameInstance.nextLevel();
+                setGameState(GameState.PLAYING);
+            }
+        }
+        
+        // به‌روزرسانی HUD
+        function updateHUD(health, score, level, weapon, energy) {
+            document.getElementById('healthFill').style.width = `${health}%`;
+            document.getElementById('scoreDisplay').textContent = `امتیاز: ${score}`;
+            document.getElementById('levelDisplay').textContent = `مرحله ${level}`;
+            document.getElementById('weaponDisplay').textContent = `سلاح: ${weapon}`;
+            document.getElementById('energyFill').style.width = `${energy}%`;
+        }
+        
+        // نمایش بازی تمام شده
+        function showGameOver(finalScore) {
+            document.getElementById('finalScore').textContent = finalScore;
+            setGameState(GameState.GAME_OVER);
+        }
+        
+        // نمایش تکمیل مرحله
+        function showLevelComplete(level) {
+            document.getElementById('completedLevel').textContent = level;
+            setGameState(GameState.LEVEL_COMPLETE);
+        }
+        
+        // افکت آسیب
+        function showDamageEffect() {
+            const damageFlash = document.getElementById('damageFlash');
+            damageFlash.style.opacity = '1';
+            
+            gsap.to(damageFlash, {
+                opacity: 0,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+        }
+        
+        // کنترل‌های لمسی
+        function setupTouchControls() {
+            const joystick = document.querySelector('.joystick');
+            const joystickHandle = document.querySelector('.joystick-handle');
+            const fireButton = document.getElementById('fireButton');
+            
+            let isTouching = false;
+            let touchId = null;
+            let joystickBaseX = 0;
+            let joystickBaseY = 0;
+            const joystickRadius = 40;
+            
+            // محاسبه موقعیت پایه جویستیک
+            const updateJoystickBase = () => {
+                const rect = joystick.getBoundingClientRect();
+                joystickBaseX = rect.left + rect.width / 2;
+                joystickBaseY = rect.top + rect.height / 2;
+            };
+            
+            window.addEventListener('resize', updateJoystickBase);
+            updateJoystickBase();
+            
+            // رویدادهای لمسی
+            joystick.addEventListener('touchstart', (e) => {
+                if (isTouching) return;
+                
+                e.preventDefault();
+                isTouching = true;
+                touchId = e.changedTouches[0].identifier;
+                
+                if (gameInstance && gameInstance.systems && gameInstance.systems.input) {
+                    gameInstance.systems.input.setJoystickActive(true);
+                }
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!isTouching) return;
+                
+                // پیدا کردن لمسی که مربوط به جویستیک است
+                let touch = null;
+                for (let i = 0; i < e.touches.length; i++) {
+                    if (e.touches[i].identifier === touchId) {
+                        touch = e.touches[i];
+                        break;
+                    }
+                }
+                
+                if (!touch) return;
+                
+                e.preventDefault();
+                
+                const deltaX = touch.clientX - joystickBaseX;
+                const deltaY = touch.clientY - joystickBaseY;
+                
+                // محاسبه فاصله از مرکز
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                const angle = Math.atan2(deltaY, deltaX);
+                
+                // محدود کردن به شعاع جویستیک
+                const limitedDistance = Math.min(distance, joystickRadius);
+                
+                // موقعیت جدید هندل
+                const newX = limitedDistance * Math.cos(angle);
+                const newY = limitedDistance * Math.sin(angle);
+                
+                joystickHandle.style.transform = `translate(${newX}px, ${newY}px)`;
+                
+                // ارسال اطلاعات به بازی
+                if (gameInstance && gameInstance.systems && gameInstance.systems.input) {
+                    const normalizedX = limitedDistance / joystickRadius * Math.cos(angle);
+                    const normalizedY = limitedDistance / joystickRadius * Math.sin(angle);
+                    gameInstance.systems.input.setJoystickDirection(normalizedX, normalizedY);
+                }
+            });
+            
+            document.addEventListener('touchend', (e) => {
+                if (!isTouching) return;
+                
+                // بررسی اینکه آیا لمسی که تمام شده مربوط به جویستیک است
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    if (e.changedTouches[i].identifier === touchId) {
+                        isTouching = false;
+                        touchId = null;
+                        
+                        joystickHandle.style.transform = 'translate(0, 0)';
+                        
+                        if (gameInstance && gameInstance.systems && gameInstance.systems.input) {
+                            gameInstance.systems.input.setJoystickActive(false);
+                        }
+                        break;
+                    }
+                }
+            });
+            
+            // دکمه شلیک
+            fireButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                
+                if (gameInstance && gameInstance.systems && gameInstance.systems.input) {
+                    gameInstance.systems.input.setFiring(true);
+                }
+                
+                fireButton.style.transform = 'scale(0.9)';
+                fireButton.style.background = 'radial-gradient(circle, #ff6666, #aa0000)';
+            });
+            
+            fireButton.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                
+                if (gameInstance && gameInstance.systems && gameInstance.systems.input) {
+                    gameInstance.systems.input.setFiring(false);
+                }
+                
+                fireButton.style.transform = 'scale(1)';
+                fireButton.style.background = 'radial-gradient(circle, #ff4444, #cc0000)';
+            });
+        }
+        
+        // کنترل‌های کیبورد
+        function setupKeyboardControls() {
+            document.addEventListener('keydown', (e) => {
+                if (currentState !== GameState.PLAYING || !gameInstance || !gameInstance.systems || !gameInstance.systems.input) return;
+                
+                switch(e.key) {
+                    case ' ':
+                    case 'Spacebar':
+                        e.preventDefault();
+                        gameInstance.systems.input.setFiring(true);
+                        break;
+                    case '1':
+                    case '2':
+                    case '3':
+                        // تغییر سلاح
+                        const weaponIndex = parseInt(e.key) - 1;
+                        if (gameInstance.systems.fighter) {
+                            gameInstance.systems.fighter.switchWeapon(weaponIndex - gameInstance.systems.fighter.currentWeaponIndex);
+                        }
+                        break;
+                    case 'Escape':
+                        // مکث بازی
+                        break;
+                }
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                if (currentState !== GameState.PLAYING || !gameInstance || !gameInstance.systems || !gameInstance.systems.input) return;
+                
+                switch(e.key) {
+                    case ' ':
+                    case 'Spacebar':
+                        e.preventDefault();
+                        gameInstance.systems.input.setFiring(false);
+                        break;
+                }
+            });
+        }
+        
+        // کنترل‌های موس
+        function setupMouseControls() {
+            document.addEventListener('mousedown', (e) => {
+                if (currentState !== GameState.PLAYING || !gameInstance || !gameInstance.systems || !gameInstance.systems.input) return;
+                
+                if (e.button === 0) { // کلیک چپ
+                    gameInstance.systems.input.setFiring(true);
+                }
+            });
+            
+            document.addEventListener('mouseup', (e) => {
+                if (currentState !== GameState.PLAYING || !gameInstance || !gameInstance.systems || !gameInstance.systems.input) return;
+                
+                if (e.button === 0) { // کلیک چپ
+                    gameInstance.systems.input.setFiring(false);
+                }
+            });
+        }
+        
+        // توابع عمومی برای استفاده توسط موتور بازی
+        window.GameUI = {
+            updateHUD,
+            showGameOver,
+            showLevelComplete,
+            setGameState,
+            showDamageEffect
+        };
+
+        // مقداردهی اولیه هنگام بارگذاری صفحه
+        window.addEventListener('load', () => {
+            setupTouchControls();
+            setupKeyboardControls();
+            setupMouseControls();
+            
+            // نمایش منوی اصلی
+            setGameState(GameState.MENU);
+            
+            // نمایش وضعیت فایل‌ها در کنسول
+            console.log('🚀 بازی کهکشانی آماده است');
+            console.log('📁 فایل‌های مورد نیاز:', Object.keys(loadedFiles));
+        });
+        
+        // رویداد تغییر اندازه پنجره
+        window.addEventListener('resize', () => {
+            if (gameInstance && gameInstance.onResize) {
+                gameInstance.onResize();
+            }
+        });
+    </script>
+</body>
+      </html>
