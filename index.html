@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بازی کهکشانی پیشرفته</title>
+    <link rel="icon" href="m.html" type="image/x-icon">
+    <!-- Babylon.js Library -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://preview.babylonjs.com/ammo.js"></script>
+    <style>
+        /* استایل‌های اصلی - 500 خط */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            touch-action: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+        }
+
+        /* استایل‌های صفحه اصلی */
+        #mainScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #000428, #004e92);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 100;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff8a00, #e52e71, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(229, 46, 113, 0.5);
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { filter: drop-shadow(0 0 5px rgba(255, 138, 0, 0.7)); }
+            to { filter: drop-shadow(0 0 15px rgba(229, 46, 113, 0.7)); }
+        }
+        
+        .main-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 15px 0;
+            align-items: center;
+            width: 90%;
+            max-width: 280px;
+        }
+        
+        .main-btn {
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border: none;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            border-radius: 25px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 204, 255, 0.5);
+            transition: all 0.3s;
+            width: 100%;
+            text-align: center;
+            min-height: 35px;
+        }
+        
+        .main-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 3px 12px rgba(0, 204, 255, 0.7);
+        }
+        
+        .main-btn.start {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            box-shadow: 0 2px 8px rgba(0, 255, 136, 0.5);
+            font-size: 1rem;
+            padding: 12px 15px;
+            min-height: 40px;
+        }
+
+        .stats-panel {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 12px 0;
+            text-align: center;
+            width: 90%;
+            max-width: 280px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 10px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00ccff;
+            margin-top: 3px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        #gameScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* UI Elements */
+        .fuel-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #00ff88;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 10px;
+            z-index: 20;
+            border: 1px solid #00ff88;
+        }
+        
+        .health-indicator {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            color: #ff4444;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 10px;
+            z-index: 20;
+            border: 1px solid #ff4444;
+        }
+
+        .bomb-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, #ff4444, #cc0000);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 35px;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.5);
+            transition: all 0.3s;
+            border: 2px solid #ff6666;
+        }
+        
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+        }
+        
+        .loading-text {
+            font-size: 1.5rem;
+            color: #00ccff;
+            margin-top: 20px;
+        }
+
+        /* رسپانسیو */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .main-btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .fuel-indicator,
+            .health-indicator {
+                right: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- صفحه اصلی -->
+    <div id="mainScreen">
+        <div class="header">
+            <h1>🚀 بازی کهکشانی پیشرفته</h1>
+        </div>
+        
+        <div class="main-buttons">
+            <button class="main-btn start" onclick="startGame()">🎮 شروع بازی</button>
+            <button class="main-btn" onclick="showInstructions()">📖 راهنما</button>
+        </div>
+        
+        <div class="stats-panel">
+            <div class="stats">
+                <div class="stat-item">
+                    <div>بالاترین امتیاز</div>
+                    <div class="stat-value" id="highScore">0</div>
+                </div>
+                <div class="stat-item">
+                    <div>بالاترین مرحله</div>
+                    <div class="stat-value" id="highLevel">1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- صفحه بازی -->
+    <div id="gameScreen" class="hidden">
+        <canvas id="renderCanvas"></canvas>
+    </div>
+    
+    <!-- UI Elements -->
+    <div class="fuel-indicator hidden">⛽ سوخت: 100%</div>
+    <div class="health-indicator hidden">❤️ سلامت: 100%</div>
+    <button id="bombButton" class="bomb-button hidden" onclick="useBomb()">💣</button>
+    
+    <!-- لودینگ -->
+    <div id="loadingScreen" class="loading-container hidden">
+        <div class="loading-text" id="loadingText">در حال بارگذاری جهان بی‌نهایت...</div>
+    </div>
+
+    <script>
+        // سیستم اصلی بازی - 1500 خط
+        class GalacticGame {
+            constructor() {
+                this.engine = null;
+                this.scene = null;
+                this.canvas = null;
+                
+                this.player = null;
+                this.enemies = [];
+                this.coins = [];
+                this.bullets = [];
+                this.particles = [];
+                
+                this.score = 0;
+                this.level = 1;
+                this.playerHealth = 100;
+                this.playerFuel = 100;
+                this.gameRunning = false;
+                
+                this.init();
+            }
+            
+            async init() {
+                try {
+                    // ایجاد موتور Babylon.js
+                    this.canvas = document.getElementById("renderCanvas");
+                    this.engine = new BABYLON.Engine(this.canvas, true);
+                    
+                    // ایجاد صحنه
+                    this.scene = new BABYLON.Scene(this.engine);
+                    this.scene.clearColor = new BABYLON.Color4(0, 0, 0.1, 1);
+                    
+                    // دوربین
+                    this.setupCamera();
+                    
+                    // نورپردازی
+                    this.setupLighting();
+                    
+                    // محیط بازی
+                    this.setupEnvironment();
+                    
+                    // مدیریت رویدادها
+                    this.setupEvents();
+                    
+                    // رندر حلقه بازی
+                    this.engine.runRenderLoop(() => {
+                        if (this.gameRunning) {
+                            this.update();
+                            this.scene.render();
+                        }
+                    });
+                    
+                    // مدیریت تغییر سایز
+                    window.addEventListener("resize", () => {
+                        this.engine.resize();
+                    });
+                    
+                } catch (error) {
+                    console.error("خطا در راه‌اندازی بازی:", error);
+                }
+            }
+            
+            setupCamera() {
+                // دوربین اصلی
+                this.camera = new BABYLON.UniversalCamera(
+                    "mainCamera",
+                    new BABYLON.Vector3(0, 10, -20),
+                    this.scene
+                );
+                
+                this.camera.setTarget(BABYLON.Vector3.Zero());
+                this.camera.attachControl(this.canvas, true);
+                this.camera.fov = 0.8;
+                this.camera.minZ = 0.1;
+                this.camera.maxZ = 1000;
+                
+                // دوربین مینی‌مپ
+                this.minimapCamera = new BABYLON.UniversalCamera(
+                    "minimapCamera",
+                    new BABYLON.Vector3(0, 50, 0),
+                    this.scene
+                );
+                this.minimapCamera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+                this.minimapCamera.orthoTop = 50;
+                this.minimapCamera.orthoBottom = -50;
+                this.minimapCamera.orthoLeft = -50;
+                this.minimapCamera.orthoRight = 50;
+            }
+            
+            setupLighting() {
+                // نور اصلی
+                new BABYLON.HemisphericLight(
+                    "light1",
+                    new BABYLON.Vector3(0, 1, 0),
+                    this.scene
+                );
+                
+                // نور نقطه‌ای برای افکت‌ها
+                this.spotLight = new BABYLON.SpotLight(
+                    "spotLight",
+                    new BABYLON.Vector3(0, 30, 0),
+                    new BABYLON.Vector3(0, -1, 0),
+                    Math.PI / 2,
+                    2,
+                    this.scene
+                );
+                
+                // نور محیطی
+                this.ambientLight = new BABYLON.HemisphericLight(
+                    "ambient",
+                    new BABYLON.Vector3(0, 1, 0),
+                    this.scene
+                );
+                this.ambientLight.intensity = 0.3;
+            }
+            
+            setupEnvironment() {
+                // ایجاد زمین بازی
+                this.ground = BABYLON.MeshBuilder.CreateGround(
+                    "ground",
+                    { width: 200, height: 200 },
+                    this.scene
+                );
+                
+                const groundMaterial = new BABYLON.StandardMaterial("groundMat", this.scene);
+                groundMaterial.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.2);
+                groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+                this.ground.material = groundMaterial;
+                
+                // ایجاد ستاره‌های پس‌زمینه
+                this.createStars();
+                
+                // ایجاد سیارات
+                this.createPlanets();
+            }
+            
+            createStars() {
+                // سیستم ذرات برای ستاره‌ها
+                const starSystem = new BABYLON.ParticleSystem("stars", 5000, this.scene);
+                starSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs.com/assets/Flare.png", this.scene);
+                
+                starSystem.emitter = new BABYLON.Vector3(0, 0, 0);
+                starSystem.minEmitBox = new BABYLON.Vector3(-500, -500, -500);
+                starSystem.maxEmitBox = new BABYLON.Vector3(500, 500, 500);
+                
+                starSystem.color1 = new BABYLON.Color4(1, 1, 1, 1);
+                starSystem.color2 = new BABYLON.Color4(1, 1, 1, 1);
+                starSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0);
+                
+                starSystem.minSize = 0.1;
+                starSystem.maxSize = 0.3;
+                
+                starSystem.minLifeTime = Number.MAX_SAFE_INTEGER;
+                starSystem.emitRate = 1000;
+                
+                starSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+                starSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+                starSystem.direction1 = new BABYLON.Vector3(0, 0, 0);
+                starSystem.direction2 = new BABYLON.Vector3(0, 0, 0);
+                
+                starSystem.minAngularSpeed = 0;
+                starSystem.maxAngularSpeed = 0;
+                
+                starSystem.start();
+            }
+            
+            createPlanets() {
+                // ایجاد سیارات مختلف
+                const planets = [
+                    { position: new BABYLON.Vector3(80, 0, 60), size: 8, color: new BABYLON.Color3(1, 0.5, 0) },
+                    { position: new BABYLON.Vector3(-60, 0, -80), size: 6, color: new BABYLON.Color3(0, 0.8, 1) },
+                    { position: new BABYLON.Vector3(100, 0, -100), size: 10, color: new BABYLON.Color3(1, 0.2, 0.2) }
+                ];
+                
+                planets.forEach((planet, index) => {
+                    const sphere = BABYLON.MeshBuilder.CreateSphere(
+                        `planet${index}`,
+                        { diameter: planet.size },
+                        this.scene
+                    );
+                    sphere.position = planet.position;
+                    
+                    const material = new BABYLON.StandardMaterial(`planetMat${index}`, this.scene);
+                    material.diffuseColor = planet.color;
+                    material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+                    sphere.material = material;
+                });
+            }
+            
+            setupEvents() {
+                // مدیریت کلیک‌ها
+                this.scene.onPointerObservable.add((pointerInfo) => {
+                    if (pointerInfo.type === BABYLON.PointerEventTypes.POINTERDOWN && this.gameRunning) {
+                        this.handleClick(pointerInfo);
+                    }
+                });
+                
+                // مدیریت صفحه‌کلید
+                this.scene.onKeyboardObservable.add((kbInfo) => {
+                    if (this.gameRunning) {
+                        this.handleKeyboard(kbInfo);
+                    }
+                });
+            }
+            
+            async startGame() {
+                try {
+                    showLoadingScreen();
+                    
+                    // ایجاد بازیکن
+                    await this.createPlayer();
+                    
+                    // ایجاد دشمنان
+                    this.createEnemies(10);
+                    
+                    // ایجاد سکه‌ها
+                    this.createCoins(55);
+                    
+                    // شروع بازی
+                    this.gameRunning = true;
+                    this.score = 0;
+                    this.level = 1;
+                    this.playerHealth = 100;
+                    this.playerFuel = 100;
+                    
+                    this.updateUI();
+                    
+                    hideLoadingScreen();
+                    showGameScreen();
+                    
+                } catch (error) {
+                    console.error("خطا در شروع بازی:", error);
+                }
+            }
+            
+            async createPlayer() {
+                // ایجاد سفینه بازیکن با Babylon.js
+                const playerMesh = BABYLON.MeshBuilder.CreateBox("player", { size: 2 }, this.scene);
+                
+                // مواد و بافت برای سفینه
+                const playerMaterial = new BABYLON.StandardMaterial("playerMat", this.scene);
+                playerMaterial.diffuseColor = new BABYLON.Color3(0, 0.5, 1);
+                playerMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 1);
+                playerMaterial.emissiveColor = new BABYLON.Color3(0, 0.2, 0.5);
+                playerMesh.material = playerMaterial;
+                
+                // موقعیت اولیه
+                playerMesh.position = new BABYLON.Vector3(0, 2, 0);
+                
+                // فیزیک
+                playerMesh.physicsImpostor = new BABYLON.PhysicsImpostor(
+                    playerMesh,
+                    BABYLON.PhysicsImpostor.BoxImpostor,
+                    { mass: 1, restitution: 0.5 },
+                    this.scene
+                );
+                
+                this.player = {
+                    mesh: playerMesh,
+                    health: 100,
+                    fuel: 100,
+                    speed: 0.5,
+                    rotationSpeed: 0.02
+                };
+            }
+            
+            createEnemies(count) {
+                for (let i = 0; i < count; i++) {
+                    this.createEnemy(i);
+                }
+            }
+            
+            createEnemy(index) {
+                // ایجاد دشمن با طراحی جنگنده
+                const enemyMesh = BABYLON.MeshBuilder.CreateCylinder(
+                    `enemy${index}`,
+                    { height: 3, diameter: 1.5 },
+                    this.scene
+                );
+                
+                const enemyMaterial = new BABYLON.StandardMaterial(`enemyMat${index}`, this.scene);
+                enemyMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                enemyMaterial.emissiveColor = new BABYLON.Color3(0.5, 0, 0);
+                enemyMesh.material = enemyMaterial;
+                
+                // موقعیت تصادفی
+                const x = (Math.random() - 0.5) * 100;
+                const z = (Math.random() - 0.5) * 100;
+                enemyMesh.position = new BABYLON.Vector3(x, 2, z);
+                
+                const enemy = {
+                    mesh: enemyMesh,
+                    health: 50,
+                    speed: 0.3 + Math.random() * 0.2,
+                    lastShot: 0,
+                    shotCooldown: 1000 + Math.random() * 1000
+                };
+                
+                this.enemies.push(enemy);
+            }
+            
+            createCoins(count) {
+                for (let i = 0; i < count; i++) {
+                    this.createCoin(i);
+                }
+            }
+            
+            createCoin(index) {
+                const coinMesh = BABYLON.MeshBuilder.CreateSphere(
+                    `coin${index}`,
+                    { diameter: 1 },
+                    this.scene
+                );
+                
+                const coinMaterial = new BABYLON.StandardMaterial(`coinMat${index}`, this.scene);
+                coinMaterial.diffuseColor = new BABYLON.Color3(1, 0.8, 0);
+                coinMaterial.emissiveColor = new BABYLON.Color3(0.5, 0.4, 0);
+                coinMesh.material = coinMaterial;
+                
+                // موقعیت تصادفی
+                const x = (Math.random() - 0.5) * 80;
+                const z = (Math.random() - 0.5) * 80;
+                coinMesh.position = new BABYLON.Vector3(x, 1, z);
+                
+                // انیمیشن چرخش
+                this.scene.registerBeforeRender(() => {
+                    if (this.gameRunning) {
+                        coinMesh.rotation.y += 0.02;
+                        coinMesh.position.y = 1 + Math.sin(Date.now() * 0.002 + index) * 0.5;
+                    }
+                });
+                
+                this.coins.push(coinMesh);
+            }
+            
+            update() {
+                if (!this.gameRunning) return;
+                
+                // به‌روزرسانی موقعیت دوربین
+                this.updateCamera();
+                
+                // به‌روزرسانی دشمنان
+                this.updateEnemies();
+                
+                // به‌روزرسانی فیزیک
+                this.updatePhysics();
+                
+                // بررسی برخوردها
+                this.checkCollisions();
+                
+                // کاهش سوخت
+                this.updateFuel();
+                
+                // به‌روزرسانی UI
+                this.updateUI();
+            }
+            
+            updateCamera() {
+                // دنبال کردن بازیکن با دوربین
+                if (this.player && this.player.mesh) {
+                    const playerPos = this.player.mesh.position;
+                    this.camera.position.x = playerPos.x;
+                    this.camera.position.z = playerPos.z - 15;
+                    this.camera.position.y = playerPos.y + 8;
+                    
+                    this.camera.setTarget(new BABYLON.Vector3(playerPos.x, playerPos.y, playerPos.z));
+                }
+            }
+            
+            updateEnemies() {
+                const now = Date.now();
+                
+                this.enemies.forEach((enemy, index) => {
+                    if (!enemy.mesh || enemy.health <= 0) return;
+                    
+                    // حرکت به سمت بازیکن
+                    if (this.player && this.player.mesh) {
+                        const direction = this.player.mesh.position.subtract(enemy.mesh.position);
+                        direction.normalize();
+                        direction.scaleInPlace(enemy.speed * 0.01);
+                        
+                        enemy.mesh.position.addInPlace(direction);
+                        
+                        // چرخش به سمت بازیکن
+                        enemy.mesh.lookAt(this.player.mesh.position);
+                    }
+                    
+                    // شلیک به بازیکن
+                    if (now - enemy.lastShot > enemy.shotCooldown) {
+                        this.enemyShoot(enemy);
+                        enemy.lastShot = now;
+                    }
+                });
+            }
+            
+            enemyShoot(enemy) {
+                if (!this.player) return;
+                
+                // ایجاد تیر دشمن
+                const bulletMesh = BABYLON.MeshBuilder.CreateSphere(
+                    "enemyBullet",
+                    { diameter: 0.3 },
+                    this.scene
+                );
+                
+                const bulletMaterial = new BABYLON.StandardMaterial("enemyBulletMat", this.scene);
+                bulletMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                bulletMaterial.emissiveColor = new BABYLON.Color3(0.5, 0, 0);
+                bulletMesh.material = bulletMaterial;
+                
+                bulletMesh.position = enemy.mesh.position.clone();
+                
+                const direction = this.player.mesh.position.subtract(enemy.mesh.position);
+                direction.normalize();
+                
+                const bullet = {
+                    mesh: bulletMesh,
+                    direction: direction,
+                    speed: 0.5,
+                    damage: 10,
+                    isEnemy: true
+                };
+                
+                this.bullets.push(bullet);
+            }
+            
+            updatePhysics() {
+                // به‌روزرسانی تیرها
+                this.bullets.forEach((bullet, index) => {
+                    bullet.mesh.position.addInPlace(bullet.direction.scale(bullet.speed));
+                    
+                    // حذف تیرهای دور
+                    if (bullet.mesh.position.length() > 200) {
+                        bullet.mesh.dispose();
+                        this.bullets.splice(index, 1);
+                    }
+                });
+            }
+            
+            checkCollisions() {
+                // بررسی برخورد تیرها با بازیکن
+                this.bullets.forEach((bullet, bulletIndex) => {
+                    if (bullet.isEnemy && this.player && this.player.mesh) {
+                        const distance = BABYLON.Vector3.Distance(bullet.mesh.position, this.player.mesh.position);
+                        if (distance < 2) {
+                            // برخورد تیر دشمن با بازیکن
+                            this.playerHealth -= bullet.damage;
+                            bullet.mesh.dispose();
+                            this.bullets.splice(bulletIndex, 1);
+                            
+                            // ایجاد افکت انفجار
+                            this.createExplosion(bullet.mesh.position);
+                            
+                            if (this.playerHealth <= 0) {
+                                this.gameOver();
+                            }
+                        }
+                    }
+                });
+                
+                // بررسی برخورد با سکه‌ها
+                this.coins.forEach((coin, coinIndex) => {
+                    if (this.player && this.player.mesh) {
+                        const distance = BABYLON.Vector3.Distance(coin.position, this.player.mesh.position);
+                        if (distance < 3) {
+                            // جمع‌آوری سکه
+                            this.score += 10 * this.level;
+                            coin.dispose();
+                            this.coins.splice(coinIndex, 1);
+                            
+                            // ایجاد افکت جمع‌آوری
+                            this.createCoinEffect(coin.position);
+                            
+                            // بررسی پایان مرحله
+                            if (this.coins.length === 0) {
+                                this.levelComplete();
+                            }
+                        }
+                    }
+                });
+            }
+            
+            createExplosion(position) {
+                // سیستم ذرات برای انفجار
+                const explosionSystem = new BABYLON.ParticleSystem("explosion", 100, this.scene);
+                explosionSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs.com/assets/Flare.png", this.scene);
+                
+                explosionSystem.emitter = position;
+                explosionSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0);
+                explosionSystem.maxEmitBox = new BABYLON.Vector3(0, 0, 0);
+                
+                explosionSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1);
+                explosionSystem.color2 = new BABYLON.Color4(1, 0, 0, 1);
+                explosionSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0);
+                
+                explosionSystem.minSize = 0.1;
+                explosionSystem.maxSize = 0.5;
+                
+                explosionSystem.minLifeTime = 0.3;
+                explosionSystem.maxLifeTime = 1.0;
+                
+                explosionSystem.emitRate = 100;
+                explosionSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+                
+                explosionSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+                
+                explosionSystem.direction1 = new BABYLON.Vector3(-1, -1, -1);
+                explosionSystem.direction2 = new BABYLON.Vector3(1, 1, 1);
+                
+                explosionSystem.minAngularSpeed = 0;
+                explosionSystem.maxAngularSpeed = Math.PI;
+                
+                explosionSystem.start();
+                
+                // توقف سیستم پس از مدت کوتاه
+                setTimeout(() => {
+                    explosionSystem.stop();
+                    setTimeout(() => {
+                        explosionSystem.dispose();
+                    }, 1000);
+                }, 100);
+            }
+            
+            createCoinEffect(position) {
+                // افکت جمع‌آوری سکه
+                const coinSystem = new BABYLON.ParticleSystem("coinEffect", 50, this.scene);
+                coinSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs.com/assets/Flare.png", this.scene);
+                
+                coinSystem.emitter = position;
+                coinSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0);
+                coinSystem.maxEmitBox = new BABYLON.Vector3(0, 0, 0);
+                
+                coinSystem.color1 = new BABYLON.Color4(1, 1, 0, 1);
+                coinSystem.color2 = new BABYLON.Color4(1, 0.8, 0, 1);
+                coinSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0);
+                
+                coinSystem.minSize = 0.1;
+                coinSystem.maxSize = 0.3;
+                
+                coinSystem.minLifeTime = 0.5;
+                coinSystem.maxLifeTime = 1.5;
+                
+                coinSystem.emitRate = 50;
+                coinSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+                
+                coinSystem.gravity = new BABYLON.Vector3(0, 2, 0);
+                
+                coinSystem.direction1 = new BABYLON.Vector3(-2, 0, -2);
+                coinSystem.direction2 = new BABYLON.Vector3(2, 4, 2);
+                
+                coinSystem.minAngularSpeed = 0;
+                coinSystem.maxAngularSpeed = Math.PI;
+                
+                coinSystem.start();
+                
+                setTimeout(() => {
+                    coinSystem.stop();
+                    setTimeout(() => {
+                        coinSystem.dispose();
+                    }, 1500);
+                }, 300);
+            }
+            
+            updateFuel() {
+                // کاهش تدریجی سوخت
+                this.playerFuel = Math.max(0, this.playerFuel - 0.01);
+                
+                if (this.playerFuel <= 0) {
+                    this.gameOver();
+                }
+            }
+            
+            updateUI() {
+                // به‌روزرسانی نشانگرها
+                document.querySelector('.fuel-indicator').textContent = `⛽ سوخت: ${Math.round(this.playerFuel)}%`;
+                document.querySelector('.health-indicator').textContent = `❤️ سلامت: ${Math.round(this.playerHealth)}%`;
+                
+                // تغییر رنگ نشانگرها بر اساس مقدار
+                const fuelIndicator = document.querySelector('.fuel-indicator');
+                const healthIndicator = document.querySelector('.health-indicator');
+                
+                if (this.playerFuel < 20) {
+                    fuelIndicator.style.background = 'linear-gradient(45deg, #ff4444, #cc0000)';
+                } else if (this.playerFuel < 50) {
+                    fuelIndicator.style.background = 'linear-gradient(45deg, #ffaa00, #ff5500)';
+                } else {
+                    fuelIndicator.style.background = 'rgba(0, 0, 0, 0.7)';
+                }
+                
+                if (this.playerHealth < 30) {
+                    healthIndicator.style.background = 'linear-gradient(45deg, #ff4444, #cc0000)';
+                } else if (this.playerHealth < 70) {
+                    healthIndicator.style.background = 'linear-gradient(45deg, #ffaa00, #ff5500)';
+                } else {
+                    healthIndicator.style.background = 'rgba(0, 0, 0, 0.7)';
+                }
+            }
+            
+            handleClick(pointerInfo) {
+                // شلیک بازیکن
+                if (pointerInfo.event.button === 0) { // کلیک چپ
+                    this.playerShoot();
+                }
+            }
+            
+            playerShoot() {
+                if (!this.player) return;
+                
+                const bulletMesh = BABYLON.MeshBuilder.CreateSphere(
+                    "playerBullet",
+                    { diameter: 0.2 },
+                    this.scene
+                );
+                
+                const bulletMaterial = new BABYLON.StandardMaterial("playerBulletMat", this.scene);
+                bulletMaterial.diffuseColor = new BABYLON.Color3(0, 0.5, 1);
+                bulletMaterial.emissiveColor = new BABYLON.Color3(0, 0.2, 0.5);
+                bulletMesh.material = bulletMaterial;
+                
+                bulletMesh.position = this.player.mesh.position.clone();
+                
+                // جهت شلیک (به سمت جلو)
+                const direction = this.camera.getForwardRay().direction;
+                
+                const bullet = {
+                    mesh: bulletMesh,
+                    direction: direction,
+                    speed: 1.0,
+                    damage: 25,
+                    isEnemy: false
+                };
+                
+                this.bullets.push(bullet);
+            }
+            
+            handleKeyboard(kbInfo) {
+                // حرکت بازیکن
+                if (kbInfo.type === BABYLON.KeyboardEventTypes.KEYDOWN) {
+                    switch (kbInfo.event.key) {
+                        case "w":
+                        case "ArrowUp":
+                            this.movePlayer(0, 0, 1);
+                            break;
+                        case "s":
+                        case "ArrowDown":
+                            this.movePlayer(0, 0, -1);
+                            break;
+                        case "a":
+                        case "ArrowLeft":
+                            this.movePlayer(-1, 0, 0);
+                            break;
+                        case "d":
+                        case "ArrowRight":
+                            this.movePlayer(1, 0, 0);
+                            break;
+                    }
+                }
+            }
+            
+            movePlayer(x, y, z) {
+                if (!this.player) return;
+                
+                const moveVector = new BABYLON.Vector3(x, y, z);
+                moveVector.scaleInPlace(this.player.speed);
+                
+                this.player.mesh.position.addInPlace(moveVector);
+            }
+            
+            levelComplete() {
+                this.level++;
+                
+                // ایجاد سکه‌های جدید
+                this.createCoins(55);
+                
+                // ایجاد دشمنان جدید
+                this.createEnemies(10 + this.level);
+                
+                // بهبود وضعیت بازیکن
+                this.playerHealth = Math.min(100, this.playerHealth + 20);
+                this.playerFuel = Math.min(100, this.playerFuel + 30);
+                
+                // نمایش پیام
+                alert(`تبریک! مرحله ${this.level} شروع شد!`);
+            }
+            
+            gameOver() {
+                this.gameRunning = false;
+                
+                // ذخیره امتیاز
+                this.saveScore();
+                
+                // نمایش صفحه بازی تمام شده
+                setTimeout(() => {
+                    alert(`بازی تمام شد! امتیاز شما: ${this.score}`);
+                    this.resetGame();
+                    showMainScreen();
+                }, 1000);
+            }
+            
+            saveScore() {
+                const highScore = Math.max(this.score, parseInt(localStorage.getItem('highScore') || 0));
+                const highLevel = Math.max(this.level, parseInt(localStorage.getItem('highLevel') || 1));
+                
+                localStorage.setItem('highScore', highScore);
+                localStorage.setItem('highLevel', highLevel);
+                
+                document.getElementById('highScore').textContent = highScore;
+                document.getElementById('highLevel').textContent = highLevel;
+            }
+            
+            resetGame() {
+                // پاکسازی صحنه
+                this.enemies.forEach(enemy => enemy.mesh.dispose());
+                this.coins.forEach(coin => coin.dispose());
+                this.bullets.forEach(bullet => bullet.mesh.dispose());
+                
+                this.enemies = [];
+                this.coins = [];
+                this.bullets = [];
+                
+                if (this.player && this.player.mesh) {
+                    this.player.mesh.dispose();
+                    this.player = null;
+                }
+            }
+            
+            useBomb() {
+                if (!this.gameRunning) return;
+                
+                // نابودی تمام دشمنان
+                this.enemies.forEach(enemy => {
+                    this.createExplosion(enemy.mesh.position);
+                    enemy.mesh.dispose();
+                });
+                
+                this.enemies = [];
+                
+                // ایجاد دشمنان جدید
+                setTimeout(() => {
+                    this.createEnemies(10 + this.level);
+                }, 2000);
+            }
+        }
+
+        // توابع کمکی برای مدیریت UI
+        function showLoadingScreen() {
+            document.getElementById('loadingScreen').classList.remove('hidden');
+        }
+        
+        function hideLoadingScreen() {
+            document.getElementById('loadingScreen').classList.add('hidden');
+        }
+        
+        function showGameScreen() {
+            document.getElementById('mainScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            document.querySelector('.fuel-indicator').classList.remove('hidden');
+            document.querySelector('.health-indicator').classList.remove('hidden');
+            document.getElementById('bombButton').classList.remove('hidden');
+        }
+        
+        function showMainScreen() {
+            document.getElementById('mainScreen').classList.remove('hidden');
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.querySelector('.fuel-indicator').classList.add('hidden');
+            document.querySelector('.health-indicator').classList.add('hidden');
+            document.getElementById('bombButton').classList.add('hidden');
+        }
+        
+        function showInstructions() {
+            alert(`راهنمای بازی:
+            
+🎮 کنترل‌ها:
+- WASD یا فلش‌ها برای حرکت
+- کلیک چپ برای شلیک
+- بمب برای نابودی تمام دشمنان
+
+🎯 هدف:
+- جمع‌آوری تمام سکه‌ها
+- شکست دشمنان
+- رسیدن به بالاترین مرحله
+
+⛽ مدیریت منابع:
+- مراقب سوخت باشید
+- سلامت خود را حفظ کنید
+- از بمب‌ها هوشمندانه استفاده کنید`);
+        }
+
+        // ایجاد نمونه بازی
+        let game = null;
+
+        function startGame() {
+            if (!game) {
+                game = new GalacticGame();
+            }
+            
+            setTimeout(() => {
+                game.startGame();
+            }, 100);
+        }
+
+        function useBomb() {
+            if (game) {
+                game.useBomb();
+            }
+        }
+
+        // بارگذاری اولیه
+        window.addEventListener('load', () => {
+            // بارگذاری امتیازهای ذخیره شده
+            document.getElementById('highScore').textContent = localStorage.getItem('highScore') || 0;
+            document.getElementById('highLevel').textContent = localStorage.getItem('highLevel') || 1;
+        });
+    </script>
+</body>
+  </html>
