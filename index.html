@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GALACTIC WARFARE - نبرد سینمایی فضایی</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+    
+    <!-- کتابخانه‌های پیشرفته -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        
+        body {
+            background: #000000;
+            overflow: hidden;
+            touch-action: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            color: white;
+        }
+
+        /* صفحه اصلی */
+        #mainScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #0a0a2a 0%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .cinematic-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 0, 200, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 100, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 0, 100, 0.3) 0%, transparent 50%);
+            animation: nebulaPulse 15s ease-in-out infinite;
+        }
+
+        @keyframes nebulaPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .stars-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: starsMove 100s linear infinite;
+        }
+
+        @keyframes starsMove {
+            from { transform: translateY(0); }
+            to { transform: translateY(200px); }
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-title {
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff0080, #8000ff, #0080ff, #00ff80);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(255, 0, 128, 0.7);
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { filter: drop-shadow(0 0 20px rgba(255, 0, 128, 0.5)); }
+            to { filter: drop-shadow(0 0 40px rgba(0, 128, 255, 0.7)); }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #aaccff;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(0, 204, 255, 0.7);
+            animation: subtitleFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes subtitleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 350px;
+            z-index: 2;
+        }
+
+        .menu-btn {
+            background: linear-gradient(45deg, rgba(0, 102, 204, 0.8), rgba(0, 204, 255, 0.8));
+            border: 2px solid rgba(0, 204, 255, 0.6);
+            padding: 18px 30px;
+            font-size: 1.3rem;
+            border-radius: 15px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.4s;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .menu-btn:hover::before {
+            left: 100%;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 204, 255, 0.6);
+            background: linear-gradient(45deg, rgba(0, 102, 204, 0.9), rgba(0, 204, 255, 0.9));
+        }
+
+        .menu-btn.start {
+            background: linear-gradient(45deg, rgba(255, 0, 128, 0.8), rgba(255, 102, 0, 0.8));
+            border-color: rgba(255, 0, 128, 0.6);
+            font-size: 1.6rem;
+            padding: 22px 30px;
+        }
+
+        .menu-btn.start:hover {
+            background: linear-gradient(45deg, rgba(255, 0, 128, 0.95), rgba(255, 102, 0, 0.95));
+            box-shadow: 0 15px 35px rgba(255, 0, 128, 0.6);
+        }
+
+        /* صفحه بازی */
+        #gameScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: none;
+        }
+
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* HUD سینمایی */
+        .cinematic-hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .hud-top {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .health-container {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 10px 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .health-bar {
+            width: 300px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff3300, #ffaa00, #00ff88);
+            width: 100%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .health-text {
+            color: white;
+            font-size: 1.1rem;
+            text-shadow: 0 0 5px #00ff88;
+        }
+
+        .score-display {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(0, 204, 255, 0.5);
+            border-radius: 10px;
+            padding: 15px 25px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 2rem;
+            color: #00ccff;
+            text-shadow: 0 0 10px #00ccff;
+            font-weight: bold;
+        }
+
+        .score-label {
+            font-size: 1rem;
+            color: #aaccff;
+        }
+
+        .hud-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .crosshair {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(0, 255, 255, 0.8);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .crosshair::before, .crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(0, 255, 255, 0.8);
+        }
+
+        .crosshair::before {
+            width: 2px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .crosshair::after {
+            width: 20px;
+            height: 2px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hud-bottom {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            align-items: flex-end;
+        }
+
+        .weapon-info {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .weapon-name {
+            font-size: 1.3rem;
+            color: #ffaa00;
+            margin-bottom: 5px;
+        }
+
+        .ammo-count {
+            font-size: 1.1rem;
+            color: #00ff88;
+        }
+
+        .mission-info {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 0, 128, 0.5);
+            border-radius: 10px;
+            padding: 15px 25px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .mission-text {
+            font-size: 1.1rem;
+            color: #ff0080;
+            margin-bottom: 5px;
+        }
+
+        .objective-text {
+            font-size: 1rem;
+            color: #aaccff;
+        }
+
+        /* کنترل‌های لمسی */
+        .touch-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 300;
+            display: flex;
+            gap: 20px;
+        }
+
+        .joystick-container {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .joystick {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 204, 255, 0.7);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .action-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff3300, #ff6600);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 51, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.2s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.9);
+            box-shadow: 0 2px 10px rgba(255, 51, 0, 0.8);
+        }
+
+        .action-btn.boost {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+        }
+
+        .action-btn.special {
+            background: linear-gradient(45deg, #ff00ff, #8000ff);
+        }
+
+        /* انیمیشن‌های ویژه */
+        @keyframes cinematicShake {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px) translateY(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px) translateY(5px); }
+        }
+
+        .cinematic-shake {
+            animation: cinematicShake 0.5s ease-in-out;
+        }
+
+        /* رسپانسیو */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 3rem;
+            }
+            
+            .main-menu {
+                width: 90%;
+            }
+            
+            .health-bar {
+                width: 200px;
+            }
+            
+            .joystick-container {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .joystick {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .action-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- صفحه اصلی -->
+    <div id="mainScreen">
+        <div class="cinematic-background"></div>
+        <div class="stars-layer"></div>
+        
+        <div class="title-container">
+            <h1 class="main-title">GALACTIC WARFARE</h1>
+            <p class="subtitle">نبرد سینمایی در عمق فضا</p>
+        </div>
+        
+        <div class="main-menu">
+            <button class="menu-btn start" onclick="startGame()">🚀 شروع نبرد سینمایی</button>
+            <button class="menu-btn" onclick="showHangar()">🛸 پایگاه فضایی</button>
+            <button class="menu-btn" onclick="showMissions()">🎯 ماموریت‌ها</button>
+            <button class="menu-btn" onclick="showSettings()">⚙️ تنظیمات پیشرفته</button>
+        </div>
+    </div>
+    
+    <!-- صفحه بازی -->
+    <div id="gameScreen">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- HUD سینمایی -->
+        <div class="cinematic-hud">
+            <div class="hud-top">
+                <div class="health-container">
+                    <div class="health-bar">
+                        <div class="health-fill" id="healthFill"></div>
+                    </div>
+                    <div class="health-text" id="healthText">ساختار: 100%</div>
+                </div>
+                
+                <div class="score-display">
+                    <div class="score-value" id="scoreValue">0</div>
+                    <div class="score-label">امتیاز نبرد</div>
+                </div>
+            </div>
+            
+            <div class="hud-center">
+                <div class="crosshair"></div>
+                <div class="target-info" id="targetInfo"></div>
+            </div>
+            
+            <div class="hud-bottom">
+                <div class="weapon-info">
+                    <div class="weapon-name" id="weaponName">سلاح پلاسمایی Mk.II</div>
+                    <div class="ammo-count" id="ammoCount">انرژی: ∞</div>
+                </div>
+                
+                <div class="mission-info">
+                    <div class="mission-text">ماموریت: نابودی ناوگان دشمن</div>
+                    <div class="objective-text" id="objectiveText">کشتار: 0/50</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- کنترل‌های لمسی -->
+        <div class="touch-controls">
+            <div class="joystick-container">
+                <div class="joystick" id="joystick"></div>
+            </div>
+            
+            <div class="action-buttons">
+                <div class="action-btn" id="shootBtn">🔫</div>
+                <div class="action-btn boost" id="boostBtn">🚀</div>
+                <div class="action-btn special" id="specialBtn">💥</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // سیستم گرافیک Three.js و فیزیک Cannon.js
+        let scene, camera, renderer, world;
+        let playerShip, enemyShips = [], bullets = [], particles = [], stars = [];
+        let mixer, clock;
+        
+        // وضعیت بازی
+        let gameState = {
+            score: 0,
+            health: 100,
+            shields: 100,
+            energy: 100,
+            enemiesDestroyed: 0,
+            missionTarget: 50,
+            gameRunning: false,
+            cameraMode: 'chase' // chase, cockpit, cinematic
+        };
+        
+        // کنترل‌ها
+        let controls = {
+            moveX: 0,
+            moveY: 0,
+            moveZ: 0,
+            rotationX: 0,
+            rotationY: 0,
+            shoot: false,
+            boost: false,
+            special: false
+        };
+        
+        // عناصر DOM
+        const mainScreen = document.getElementById('mainScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const gameCanvas = document.getElementById('gameCanvas');
+        const healthFill = document.getElementById('healthFill');
+        const healthText = document.getElementById('healthText');
+        const scoreValue = document.getElementById('scoreValue');
+        const weaponName = document.getElementById('weaponName');
+        const ammoCount = document.getElementById('ammoCount');
+        const objectiveText = document.getElementById('objectiveText');
+        const targetInfo = document.getElementById('targetInfo');
+        const joystick = document.getElementById('joystick');
+        const shootBtn = document.getElementById('shootBtn');
+        const boostBtn = document.getElementById('boostBtn');
+        const specialBtn = document.getElementById('specialBtn');
+        
+        // راه‌اندازی Three.js
+        function initThreeJS() {
+            // ایجاد صحنه
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000010);
+            scene.fog = new THREE.Fog(0x000020, 50, 2000);
+            
+            // ایجاد دوربین
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+            camera.position.set(0, 10, 30);
+            
+            // ایجاد رندرر
+            renderer = new THREE.WebGLRenderer({
+                canvas: gameCanvas,
+                antialias: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1;
+            
+            // نورپردازی
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(100, 100, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            const pointLight = new THREE.PointLight(0x00aaff, 2, 100);
+            pointLight.position.set(0, 0, 0);
+            scene.add(pointLight);
+            
+            // ساعت برای انیمیشن‌ها
+            clock = new THREE.Clock();
+            
+            console.log('سیستم Three.js راه‌اندازی شد');
+        }
+        
+        // راه‌اندازی فیزیک Cannon.js
+        function initPhysics() {
+            world = new CANNON.World();
+            world.gravity.set(0, 0, 0); // بدون جاذبه در فضا
+            world.broadphase = new CANNON.NaiveBroadphase();
+            world.solver.iterations = 10;
+            
+            console.log('سیستم فیزیک Cannon.js راه‌اندازی شد');
+        }
+        
+        // ایجاد سفینه بازیکن
+        function createPlayerShip() {
+            const group = new THREE.Group();
+            
+            // بدنه اصلی
+            const bodyGeometry = new THREE.ConeGeometry(2, 6, 8);
+            const bodyMaterial = new THREE.MeshPhongMaterial({
+                color: 0x00aaff,
+                shininess: 100,
+                emissive: 0x0044aa
+            });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.rotation.x = Math.PI;
+            body.castShadow = true;
+            group.add(body);
+            
+            // بال‌ها
+            const wingGeometry = new THREE.BoxGeometry(8, 0.5, 3);
+            const wingMaterial = new THREE.MeshPhongMaterial({
+                color: 0x0088ff,
+                emissive: 0x002266
+            });
+            const leftWing = new THREE.Mesh(wingGeometry, wingMaterial);
+            leftWing.position.set(-4, 0, 0);
+            leftWing.castShadow = true;
+            group.add(leftWing);
+            
+            const rightWing = new THREE.Mesh(wingGeometry, wingMaterial);
+            rightWing.position.set(4, 0, 0);
+            rightWing.castShadow = true;
+            group.add(rightWing);
+            
+            // موتورها
+            const engineGeometry = new THREE.CylinderGeometry(0.5, 1, 2, 8);
+            const engineMaterial = new THREE.MeshPhongMaterial({
+                color: 0xff6600,
+                emissive: 0xff3300
+            });
+            
+            const leftEngine = new THREE.Mesh(engineGeometry, engineMaterial);
+            leftEngine.position.set(-3, -2, -1);
+            leftEngine.rotation.x = Math.PI / 2;
+            group.add(leftEngine);
+            
+            const rightEngine = new THREE.Mesh(engineGeometry, engineMaterial);
+            rightEngine.position.set(3, -2, -1);
+            rightEngine.rotation.x = Math.PI / 2;
+            group.add(rightEngine);
+            
+            // نور موتورها
+            const engineLight1 = new THREE.PointLight(0xff4400, 2, 10);
+            engineLight1.position.set(-3, -2, -2);
+            group.add(engineLight1);
+            
+            const engineLight2 = new THREE.PointLight(0xff4400, 2, 10);
+            engineLight2.position.set(3, -2, -2);
+            group.add(engineLight2);
+            
+            // فیزیک بدنه
+            const shipShape = new CANNON.Box(new CANNON.Vec3(4, 3, 3));
+            const shipBody = new CANNON.Body({
+                mass: 10,
+                position: new CANNON.Vec3(0, 0, 0)
+            });
+            shipBody.addShape(shipShape);
+            shipBody.linearDamping = 0.1;
+            shipBody.angularDamping = 0.5;
+            world.addBody(shipBody);
+            
+            group.userData.physicsBody = shipBody;
+            
+            scene.add(group);
+            return group;
+        }
+        
+        // ایجاد سفینه دشمن
+        function createEnemyShip(type = 'fighter') {
+            const group = new THREE.Group();
+            let color, size;
+            
+            switch(type) {
+                case 'fighter':
+                    color = 0xff3333;
+                    size = 1;
+                    break;
+                case 'cruiser':
+                    color = 0xff6600;
+                    size = 2;
+                    break;
+                case 'battleship':
+                    color = 0xcc0000;
+                    size = 4;
+                    break;
+            }
+            
+            // بدنه دشمن
+            const geometry = new THREE.OctahedronGeometry(size);
+            const material = new THREE.MeshPhongMaterial({
+                color: color,
+                shininess: 50,
+                emissive: new THREE.Color(color).multiplyScalar(0.3)
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.castShadow = true;
+            group.add(mesh);
+            
+            // فیزیک
+            const shape = new CANNON.Sphere(size);
+            const body = new CANNON.Body({
+                mass: 5,
+                position: new CANNON.Vec3(
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 50,
+                    -100 - Math.random() * 50
+                )
+            });
+            body.addShape(shape);
+            world.addBody(body);
+            
+            group.userData = {
+                physicsBody: body,
+                type: type,
+                health: type === 'fighter' ? 50 : type === 'cruiser' ? 100 : 200
+            };
+            
+            scene.add(group);
+            return group;
+        }
+        
+        // ایجاد محیط فضایی
+        function createSpaceEnvironment() {
+            // کهکشان پس‌زمینه
+            const galaxyGeometry = new THREE.SphereGeometry(2000, 32, 32);
+            const galaxyMaterial = new THREE.MeshBasicMaterial({
+                map: createGalaxyTexture(),
+                side: THREE.BackSide,
+                transparent: true,
+                opacity: 0.8
+            });
+            const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
+            scene.add(galaxy);
+            
+            // ستاره‌ها
+            const starGeometry = new THREE.BufferGeometry();
+            const starPositions = [];
+            const starColors = [];
+            
+            for (let i = 0; i < 10000; i++) {
+                const x = (Math.random() - 0.5) * 4000;
+                const y = (Math.random() - 0.5) * 4000;
+                const z = (Math.random() - 0.5) * 4000;
+                
+                starPositions.push(x, y, z);
+                
+                const color = new THREE.Color();
+                color.setHSL(Math.random() * 0.2 + 0.5, 0.8, Math.random() * 0.5 + 0.5);
+                starColors.push(color.r, color.g, color.b);
+            }
+            
+            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+            starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
+            
+            const starMaterial = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const starField = new THREE.Points(starGeometry, starMaterial);
+            scene.add(starField);
+            
+            // سیارات
+            createPlanet(100, 50, -300, 20, 0xff6600);
+            createPlanet(-150, -30, -500, 30, 0x00aaff);
+            createPlanet(200, 100, -800, 50, 0xaa00ff);
+        }
+        
+        // ایجاد بافت کهکشان
+        function createGalaxyTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const context = canvas.getContext('2d');
+            
+            const gradient = context.createRadialGradient(256, 256, 0, 256, 256, 256);
+            gradient.addColorStop(0, 'rgba(100, 0, 200, 0.8)');
+            gradient.addColorStop(0.5, 'rgba(50, 0, 100, 0.5)');
+            gradient.addColorStop(1, 'rgba(0, 0, 50, 0.3)');
+            
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 512, 512);
+            
+            // اضافه کردن نقاط درخشان
+            for (let i = 0; i < 1000; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const radius = Math.random() * 2;
+                
+                context.beginPath();
+                context.arc(x, y, radius, 0, Math.PI * 2);
+                context.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.8 + 0.2})`;
+                context.fill();
+            }
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            return texture;
+        }
+        
+        // ایجاد سیاره
+        function createPlanet(x, y, z, radius, color) {
+            const geometry = new THREE.SphereGeometry(radius, 32, 32);
+            const material = new THREE.MeshPhongMaterial({
+                color: color,
+                shininess: 30,
+                emissive: new THREE.Color(color).multiplyScalar(0.1)
+            });
+            const planet = new THREE.Mesh(geometry, material);
+            planet.position.set(x, y, z);
+            planet.castShadow = true;
+            planet.receiveShadow = true;
+            scene.add(planet);
+            
+            // حلقه سیاره (برای سیارات گازی)
+            if (Math.random() > 0.5) {
+                const ringGeometry = new THREE.RingGeometry(radius * 1.5, radius * 2, 32);
+                const ringMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xaaaaaa,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.rotation.x = Math.PI / 2;
+                ring.position.set(x, y, z);
+                scene.add(ring);
+            }
+        }
+        
+        // شلیک گلوله
+        function shoot() {
+            if (!playerShip) return;
+            
+            const bulletGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+            const bulletMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00ffff,
+                emissive: 0x0088ff
+            });
+            const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+            
+            const playerPos = playerShip.userData.physicsBody.position;
+            bullet.position.set(playerPos.x, playerPos.y, playerPos.z - 5);
+            
+            const bulletBody = new CANNON.Body({
+                mass: 0.1,
+                position: new CANNON.Vec3(playerPos.x, playerPos.y, playerPos.z - 5),
+                velocity: new CANNON.Vec3(0, 0, -100)
+            });
+            bulletBody.addShape(new CANNON.Sphere(0.2));
+            world.addBody(bulletBody);
+            
+            bullet.userData.physicsBody = bulletBody;
+            scene.add(bullet);
+            bullets.push(bullet);
+            
+            // افکت شلیک
+            createMuzzleFlash(playerPos.x, playerPos.y, playerPos.z - 3);
+            
+            // حذف خودکار پس از 2 ثانیه
+            setTimeout(() => {
+                if (scene.children.includes(bullet)) {
+                    scene.remove(bullet);
+                    world.remove(bulletBody);
+                    bullets = bullets.filter(b => b !== bullet);
+                }
+            }, 2000);
+        }
+        
+        // ایجاد افکت دهانه شلیک
+        function createMuzzleFlash(x, y, z) {
+            const flashGeometry = new THREE.SphereGeometry(1, 8, 8);
+            const flashMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffff00,
+                transparent: true,
+                opacity: 0.8
+            });
+            const flash = new THREE.Mesh(flashGeometry, flashMaterial);
+            flash.position.set(x, y, z);
+            scene.add(flash);
+            
+            // انیمیشن محو شدن
+            gsap.to(flash.scale, {
+                x: 3,
+                y: 3,
+                z: 3,
+                duration: 0.1
+            });
+            
+            gsap.to(flash.material, {
+                opacity: 0,
+                duration: 0.2,
+                onComplete: () => {
+                    scene.remove(flash);
+                }
+            });
+        }
+        
+        // ایجاد انفجار
+        function createExplosion(x, y, z, size = 5) {
+            // ذرات انفجار
+            const particleCount = 50;
+            const particles = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const velocities = [];
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                positions[i3] = x;
+                positions[i3 + 1] = y;
+                positions[i3 + 2] = z;
+                
+                const color = new THREE.Color();
+                color.setHSL(Math.random() * 0.1, 1, Math.random() * 0.5 + 0.5);
+                colors[i3] = color.r;
+                colors[i3 + 1] = color.g;
+                colors[i3 + 2] = color.b;
+                
+                velocities.push({
+                    x: (Math.random() - 0.5) * 20,
+                    y: (Math.random() - 0.5) * 20,
+                    z: (Math.random() - 0.5) * 20
+                });
+            }
+            
+            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 1
+            });
+            
+            const particleSystem = new THREE.Points(particles, particleMaterial);
+            particleSystem.userData.velocities = velocities;
+            particleSystem.userData.life = 1;
+            scene.add(particleSystem);
+            
+            particles.push(particleSystem);
+            
+            // نور انفجار
+            const light = new THREE.PointLight(0xff6600, 5, 50);
+            light.position.set(x, y, z);
+            scene.add(light);
+            
+            gsap.to(light, {
+                intensity: 0,
+                duration: 0.5,
+                onComplete: () => {
+                    scene.remove(light);
+                }
+            });
+        }
+        
+        // به‌روزرسانی HUD
+        function updateHUD() {
+            healthFill.style.width = `${gameState.health}%`;
+            healthText.textContent = `ساختار: ${Math.round(gameState.health)}%`;
+            scoreValue.textContent = gameState.score.toLocaleString();
+            objectiveText.textContent = `کشتار: ${gameState.enemiesDestroyed}/${gameState.missionTarget}`;
+            
+            // تغییر رنگ سلامت بر اساس مقدار
+            if (gameState.health > 70) {
+                healthFill.style.background = 'linear-gradient(90deg, #00ff88, #00ccff)';
+            } else if (gameState.health > 30) {
+                healthFill.style.background = 'linear-gradient(90deg, #ffaa00, #ff6600)';
+            } else {
+                healthFill.style.background = 'linear-gradient(90deg, #ff3300, #cc0000)';
+            }
+        }
+        
+        // تشخیص برخورد
+        function checkCollisions() {
+            // برخورد گلوله با دشمن
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                
+                for (let j = enemyShips.length - 1; j >= 0; j--) {
+                    const enemy = enemyShips[j];
+                    
+                    const bulletPos = bullet.userData.physicsBody.position;
+                    const enemyPos = enemy.userData.physicsBody.position;
+                    
+                    const dx = bulletPos.x - enemyPos.x;
+                    const dy = bulletPos.y - enemyPos.y;
+                    const dz = bulletPos.z - enemyPos.z;
+                    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    
+                    const enemySize = enemy.userData.type === 'fighter' ? 1 : 
+                                    enemy.userData.type === 'cruiser' ? 2 : 4;
+                    
+                    if (distance < enemySize + 0.2) {
+                        // آسیب به دشمن
+                        enemy.userData.health -= 25;
+                        
+                        // ایجاد انفجار کوچک
+                        createExplosion(bulletPos.x, bulletPos.y, bulletPos.z, 2);
+                        
+                        // نابودی گلوله
+                        scene.remove(bullet);
+                        world.remove(bullet.userData.physicsBody);
+                        bullets.splice(i, 1);
+                        
+                        if (enemy.userData.health <= 0) {
+                            // نابودی دشمن
+                            createExplosion(enemyPos.x, enemyPos.y, enemyPos.z, enemySize * 2);
+                            
+                            scene.remove(enemy);
+                            world.remove(enemy.userData.physicsBody);
+                            enemyShips.splice(j, 1);
+                            
+                            // افزایش امتیاز
+                            const points = enemy.userData.type === 'fighter' ? 100 :
+                                         enemy.userData.type === 'cruiser' ? 250 : 500;
+                            gameState.score += points;
+                            gameState.enemiesDestroyed++;
+                            
+                            // لرزش سینمایی
+                            gsap.to(camera.position, {
+                                x: camera.position.x + (Math.random() - 0.5) * 2,
+                                y: camera.position.y + (Math.random() - 0.5) * 2,
+                                duration: 0.1,
+                                yoyo: true,
+                                repeat: 1
+                            });
+                        }
+                        
+                        updateHUD();
+                        break;
+                    }
+                }
+            }
+            
+            // برخورد دشمن با بازیکن
+            if (playerShip) {
+                const playerPos = playerShip.userData.physicsBody.position;
+                
+                for (let i = enemyShips.length - 1; i >= 0; i--) {
+                    const enemy = enemyShips[i];
+                    const enemyPos = enemy.userData.physicsBody.position;
+                    
+                    const dx = playerPos.x - enemyPos.x;
+                    const dy = playerPos.y - enemyPos.y;
+                    const dz = playerPos.z - enemyPos.z;
+                    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    
+                    const enemySize = enemy.userData.type === 'fighter' ? 1 : 
+                                    enemy.userData.type === 'cruiser' ? 2 : 4;
+                    
+                    if (distance < 4 + enemySize) {
+                        // آسیب به بازیکن
+                        gameState.health -= 10;
+                        createExplosion(
+                            (playerPos.x + enemyPos.x) / 2,
+                            (playerPos.y + enemyPos.y) / 2,
+                            (playerPos.z + enemyPos.z) / 2,
+                            3
+                        );
+                        
+                        // لرزش شدید
+                        gsap.to(camera.position, {
+                            x: camera.position.x + (Math.random() - 0.5) * 5,
+                            y: camera.position.y + (Math.random() - 0.5) * 5,
+                            duration: 0.2,
+                            yoyo: true,
+                            repeat: 2
+                        });
+                        
+                        updateHUD();
+                        
+                        if (gameState.health <= 0) {
+                            gameOver();
+                        }
+                    }
+                }
+            }
+        }
+        
+        // ایجاد دشمن تصادفی
+        function spawnRandomEnemy() {
+            const types = ['fighter', 'fighter', 'fighter', 'cruiser', 'battleship'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const enemy = createEnemyShip(type);
+            enemyShips.push(enemy);
+        }
+        
+        // حلقه رندر
+        function animate() {
+            if (!gameState.gameRunning) return;
+            
+            requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            
+            // به‌روزرسانی فیزیک
+            world.step(1/60, delta, 3);
+            
+            // به‌روزرسانی موقعیت سفینه بازیکن
+            if (playerShip) {
+                const body = playerShip.userData.physicsBody;
+                
+                // اعمال کنترل‌ها
+                body.velocity.x = controls.moveX * 20;
+                body.velocity.y = controls.moveY * 20;
+                body.velocity.z = controls.moveZ * 30;
+                
+                // به‌روزرسانی موقعیت بصری
+                playerShip.position.copy(body.position);
+                playerShip.quaternion.copy(body.quaternion);
+                
+                // به‌روزرسانی دوربین
+                updateCamera();
+            }
+            
+            // به‌روزرسانی دشمنان
+            enemyShips.forEach(enemy => {
+                if (enemy.userData.physicsBody) {
+                    enemy.position.copy(enemy.userData.physicsBody.position);
+                    enemy.quaternion.copy(enemy.userData.physicsBody.quaternion);
+                    
+                    // حرکت به سمت بازیکن
+                    if (playerShip) {
+                        const playerPos = playerShip.userData.physicsBody.position;
+                        const enemyPos = enemy.userData.physicsBody.position;
+                        
+                        const dx = playerPos.x - enemyPos.x;
+                        const dy = playerPos.y - enemyPos.y;
+                        const dz = playerPos.z - enemyPos.z;
+                        const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                        
+                        if (distance > 0) {
+                            enemy.userData.physicsBody.velocity.x = (dx / distance) * 10;
+                            enemy.userData.physicsBody.velocity.y = (dy / distance) * 10;
+                            enemy.userData.physicsBody.velocity.z = (dz / distance) * 15;
+                        }
+                    }
+                }
+            });
+            
+            // به‌روزرسانی گلوله‌ها
+            bullets.forEach(bullet => {
+                if (bullet.userData.physicsBody) {
+                    bullet.position.copy(bullet.userData.physicsBody.position);
+                }
+            });
+            
+            // به‌روزرسانی ذرات
+            updateParticles(delta);
+            
+            // تشخیص برخورد
+            checkCollisions();
+            
+            // ایجاد دشمنان جدید
+            if (Math.random() < 0.02) {
+                spawnRandomEnemy();
+            }
+            
+            // بررسی پایان ماموریت
+            if (gameState.enemiesDestroyed >= gameState.missionTarget) {
+                missionComplete();
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // به‌روزرسانی دوربین
+        function updateCamera() {
+            if (!playerShip) return;
+            
+            const playerPos = playerShip.position;
+            const playerQuat = playerShip.quaternion;
+            
+            switch(gameState.cameraMode) {
+                case 'chase':
+                    // دوربین تعقیبی
+                    const chaseOffset = new THREE.Vector3(0, 5, 15);
+                    chaseOffset.applyQuaternion(playerQuat);
+                    camera.position.copy(playerPos).add(chaseOffset);
+                    camera.lookAt(playerPos);
+                    break;
+                    
+                case 'cockpit':
+                    // دوربین کابین خلبان
+                    camera.position.copy(playerPos);
+                    camera.quaternion.copy(playerQuat);
+                    break;
+                    
+                case 'cinematic':
+                    // دوربین سینمایی
+                    const cinematicOffset = new THREE.Vector3(
+                        10 * Math.sin(Date.now() * 0.001),
+                        5,
+                        20 * Math.cos(Date.now() * 0.001)
+                    );
+                    camera.position.copy(playerPos).add(cinematicOffset);
+                    camera.lookAt(playerPos);
+                    break;
+            }
+        }
+        
+        // به‌روزرسانی ذرات
+        function updateParticles(delta) {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particleSystem = particles[i];
+                
+                if (particleSystem.userData.life <= 0) {
+                    scene.remove(particleSystem);
+                    particles.splice(i, 1);
+                    continue;
+                }
+                
+                particleSystem.userData.life -= delta;
+                
+                const positions = particleSystem.geometry.attributes.position.array;
+                const velocities = particleSystem.userData.velocities;
+                
+                for (let j = 0; j < velocities.length; j++) {
+                    const j3 = j * 3;
+                    positions[j3] += velocities[j].x * delta;
+                    positions[j3 + 1] += velocities[j].y * delta;
+                    positions[j3 + 2] += velocities[j].z * delta;
+                }
+                
+                particleSystem.geometry.attributes.position.needsUpdate = true;
+                particleSystem.material.opacity = particleSystem.userData.life;
+            }
+        }
+        
+        // شروع بازی
+        function startGame() {
+            mainScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            
+            // راه‌اندازی سیستم‌ها
+            initThreeJS();
+            initPhysics();
+            
+            // ایجاد محیط
+            createSpaceEnvironment();
+            
+            // ایجاد سفینه بازیکن
+            playerShip = createPlayerShip();
+            
+            // تنظیم وضعیت بازی
+            gameState = {
+                score: 0,
+                health: 100,
+                shields: 100,
+                energy: 100,
+                enemiesDestroyed: 0,
+                missionTarget: 50,
+                gameRunning: true,
+                cameraMode: 'chase'
+            };
+            
+            // ایجاد دشمنان اولیه
+            for (let i = 0; i < 10; i++) {
+                spawnRandomEnemy();
+            }
+            
+            // به‌روزرسانی HUD
+            updateHUD();
+            
+            // شروع انیمیشن
+            animate();
+            
+            // تغییر دوربین هر 10 ثانیه
+            setInterval(() => {
+                const modes = ['chase', 'cockpit', 'cinematic'];
+                gameState.cameraMode = modes[Math.floor(Math.random() * modes.length)];
+            }, 10000);
+        }
+        
+        // پایان بازی
+        function gameOver() {
+            gameState.gameRunning = false;
+            
+            // انفجار بزرگ
+            if (playerShip) {
+                createExplosion(
+                    playerShip.position.x,
+                    playerShip.position.y,
+                    playerShip.position.z,
+                    20
+                );
+                
+                scene.remove(playerShip);
+                world.remove(playerShip.userData.physicsBody);
+            }
+            
+            setTimeout(() => {
+                alert(`ماموریت شکست خورد! امتیاز شما: ${gameState.score.toLocaleString()}`);
+                resetGame();
+            }, 2000);
+        }
+        
+        // تکمیل ماموریت
+        function missionComplete() {
+            gameState.gameRunning = false;
+            
+            // جشن پیروزی
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createExplosion(
+                        (Math.random() - 0.5) * 100,
+                        (Math.random() - 0.5) * 50,
+                        (Math.random() - 0.5) * 100 - 100,
+                        10
+                    );
+                }, i * 100);
+            }
+            
+            setTimeout(() => {
+                alert(`ماموریت با موفقیت انجام شد! امتیاز نهایی: ${gameState.score.toLocaleString()}`);
+                resetGame();
+            }, 3000);
+        }
+        
+        // بازنشانی بازی
+        function resetGame() {
+            // پاکسازی صحنه
+            while(scene.children.length > 0) {
+                scene.remove(scene.children[0]);
+            }
+            
+            // پاکسازی فیزیک
+            if (world) {
+                while(world.bodies.length > 0) {
+                    world.remove(world.bodies[0]);
+                }
+            }
+            
+            // پاکسازی آرایه‌ها
+            enemyShips = [];
+            bullets = [];
+            particles = [];
+            
+            // بازگشت به صفحه اصلی
+            mainScreen.style.display = 'flex';
+            gameScreen.style.display = 'none';
+        }
+        
+        // کنترل‌های لمسی
+        let joystickActive = false;
+        let joystickStartX = 0, joystickStartY = 0;
+        
+        joystick.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            joystickActive = true;
+            const touch = e.touches[0];
+            joystickStartX = touch.clientX;
+            joystickStartY = touch.clientY;
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (!joystickActive) return;
+            e.preventDefault();
+            
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - joystickStartX;
+            const deltaY = touch.clientY - joystickStartY;
+            
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const maxDistance = 40;
+            const limitedDistance = Math.min(distance, maxDistance);
+            
+            if (distance > 0) {
+                const angle = Math.atan2(deltaY, deltaX);
+                const moveX = limitedDistance * Math.cos(angle) / maxDistance;
+                const moveY = limitedDistance * Math.sin(angle) / maxDistance;
+                
+                controls.moveX = moveX;
+                controls.moveY = -moveY;
+                
+                joystick.style.transform = `translate(${moveX * 30}px, ${-moveY * 30}px)`;
+            }
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            joystickActive = false;
+            controls.moveX = 0;
+            controls.moveY = 0;
+            joystick.style.transform = 'translate(0, 0)';
+        });
+        
+        shootBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            shoot();
+        });
+        
+        boostBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            controls.moveZ = -1;
+        });
+        
+        boostBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            controls.moveZ = 0;
+        });
+        
+        specialBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            // قدرت ویژه - نابودی تمام دشمنان نزدیک
+            enemyShips.forEach(enemy => {
+                const dx = enemy.position.x - (playerShip ? playerShip.position.x : 0);
+                const dy = enemy.position.y - (playerShip ? playerShip.position.y : 0);
+                const dz = enemy.position.z - (playerShip ? playerShip.position.z : 0);
+                const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                
+                if (distance < 50) {
+                    createExplosion(enemy.position.x, enemy.position.y, enemy.position.z, 10);
+                    scene.remove(enemy);
+                    world.remove(enemy.userData.physicsBody);
+                    gameState.score += 200;
+                    gameState.enemiesDestroyed++;
+                }
+            });
+            
+            enemyShips = enemyShips.filter(enemy => world.has(enemy.userData.physicsBody));
+            updateHUD();
+        });
+        
+        // کنترل‌های کیبورد
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                case 'a':
+                    controls.moveX = -1;
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                    controls.moveX = 1;
+                    break;
+                case 'ArrowUp':
+                case 'w':
+                    controls.moveZ = -1;
+                    break;
+                case 'ArrowDown':
+                case 's':
+                    controls.moveZ = 1;
+                    break;
+                case ' ':
+                    shoot();
+                    break;
+                case 'Shift':
+                    controls.moveY = -1;
+                    break;
+                case 'Control':
+                    controls.moveY = 1;
+                    break;
+                case 'c':
+                    // تغییر دوربین
+                    const modes = ['chase', 'cockpit', 'cinematic'];
+                    const currentIndex = modes.indexOf(gameState.cameraMode);
+                    gameState.cameraMode = modes[(currentIndex + 1) % modes.length];
+                    break;
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                case 'a':
+                    controls.moveX = 0;
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                    controls.moveX = 0;
+                    break;
+                case 'ArrowUp':
+                case 'w':
+                    controls.moveZ = 0;
+                    break;
+                case 'ArrowDown':
+                case 's':
+                    controls.moveZ = 0;
+                    break;
+                case 'Shift':
+                    controls.moveY = 0;
+                    break;
+                case 'Control':
+                    controls.moveY = 0;
+                    break;
+            }
+        });
+        
+        // تنظیم اندازه canvas
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // توابع منو
+        function showHangar() {
+            alert('سیستم پایگاه فضایی در نسخه کامل فعال می‌شود');
+        }
+        
+        function showMissions() {
+            alert('سیستم ماموریت‌های پیشرفته در نسخه کامل فعال می‌شود');
+        }
+        
+        function showSettings() {
+            alert('تنظیمات گرافیکی پیشرفته در نسخه کامل فعال می‌شود');
+        }
+    </script>
+</body>
+  </html>
