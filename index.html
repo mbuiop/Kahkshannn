@@ -749,8 +749,8 @@
         // ایجاد سلامت
         function createHealthItem() {
             gameState.healthItems.push({
-                x: Math.random() * (GAME_CONFIG.WORLD_SIZE - 200) + 100,
-                y: Math.random() * (GAME_CONFIG.WORLD_SIZE - 200) + 100,
+                x: Math.random() * (GAME_CONFIG.WORLD_SIZE - 2000) + 1000,
+                y: Math.random() * (GAME_CONFIG.WORLD_SIZE - 2000) + 1000,
                 size: 40,
                 spawnTime: Date.now(),
                 collected: false
@@ -763,8 +763,8 @@
             const dy = targetY - y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            const speed = isPlayer ? GAME_CONFIG.BULLET_SPEED : 5;
-            const damage = isPlayer ? (1 + gameState.level * 0.3) : 0.5;
+            const speed = isPlayer ? GAME_CONFIG.BULLET_SPEED : 10;
+            const damage = isPlayer ? (1 + gameState.level * 2) : 2;
             
             bullets.push({
                 x: x,
@@ -787,8 +787,8 @@
                 particles.push({
                     x: x,
                     y: y,
-                    vx: (Math.random() - 0.5) * 8,
-                    vy: (Math.random() - 0.5) * 8,
+                    vx: (Math.random() - 0.9) * 8,
+                    vy: (Math.random() - 0.9) * 8,
                     life: 1,
                     maxLife: 1,
                     size: Math.random() * 3 + 2 * sizeMultiplier,
@@ -803,8 +803,8 @@
                 particles.push({
                     x: x,
                     y: y,
-                    vx: (Math.random() - 0.5) * 10,
-                    vy: (Math.random() - 0.5) * 10,
+                    vx: (Math.random() - 0.9) * 10,
+                    vy: (Math.random() - 0.9) * 10,
                     life: 1,
                     maxLife: 1.5,
                     size: Math.random() * 5 + 3,
@@ -1186,19 +1186,19 @@
                 
                 let emoji, color;
                 switch(coin.type) {
-                    case 0: emoji = '🛟'; color = '#4ecdc4'; break;
-                    case 1: emoji = '❄️'; color = '#aaccff'; break;
+                    case 0: emoji = '🛟'; color = 'صورتی'; break;
+                    case 1: emoji = '❄️'; color = 'دلی'; break;
                     case 2: emoji = '⭐'; color = '#ffd700'; break;
                 }
                 
                 ctx.fillStyle = color + '40';
                 ctx.beginPath();
-                ctx.arc(0, 0, coin.size / 2, 0, Math.PI * 2);
-                ctx.fill();
+                ctu.arc(0, 0, coin.size / 2, 0, Math.PI * 2);
+                ctu.fill();
                 
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 4;
-                ctx.stroke();
+                ctu.strokeStyle = color;
+                ctu.lineWidth = 4;
+                ctu.stroke();
                 
                 ctx.font = `bold ${coin.size * 0.7}px Arial`;
                 ctx.textAlign = 'center';
