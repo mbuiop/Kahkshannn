@@ -1,30 +1,1633 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🚀 بازی کهکشانی نهایی - فوق پیشرفته</title>
-    <style>
-   بوم {
-      color: بنفش;
-      background: سیاه;
-      margin: 2;
-      padding: 15px;
-      width: 90px;
-      height: 40px;
-      border: 4px قرمز سبز;
-      text-align: اسم;
-      font-size: 10px;
- }
-     </style>
-    </head>
-<body>
-    <h1>🎮 بازی فوق پیشرفته</h1>
-    <بوم id="بوم"></بوم>
+    <title>Galactic Warfare - نبرد سینمایی</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
     
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        
+        body {
+            background: #000000;
+            overflow: hidden;
+            touch-action: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            color: white;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        /* صفحه شروع */
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #0a0a2a 0%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .stars-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, #fff, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: starsMove 100s linear infinite;
+        }
+
+        @keyframes starsMove {
+            from { transform: translateY(0); }
+            to { transform: translateY(200px); }
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff0080, #8000ff, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(255, 0, 128, 0.7);
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #aaccff;
+            margin-bottom: 20px;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(0, 204, 255, 0.5);
+            border-radius: 12px;
+            padding: 12px 18px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            min-width: 100px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            color: #00ccff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #aaccff;
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #ff0080, #ff6600);
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(255, 0, 128, 0.5);
+            transition: all 0.3s;
+            z-index: 2;
+            margin-top: 15px;
+        }
+
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(255, 0, 128, 0.7);
+        }
+
+        /* صفحه بازی */
+        #gameScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: none;
+            overflow: hidden;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* HUD بازی */
+        .game-hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .hud-top {
+            position: absolute;
+            top: max(10px, env(safe-area-inset-top));
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 15px;
+        }
+
+        .score-container, .level-container, .health-container, .fuel-container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 8px 12px;
+            backdrop-filter: blur(10px);
+            min-width: 60px;
+        }
+
+        .score-value, .level-value, .health-value, .fuel-value {
+            font-size: 1rem;
+            color: #00ccff;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .score-label, .level-label, .health-label, .fuel-label {
+            font-size: 0.6rem;
+            color: #aaccff;
+            text-align: center;
+        }
+
+        /* مینی مپ */
+        .mini-map {
+            position: absolute;
+            bottom: max(25px, env(safe-area-inset-bottom));
+            right: 15px;
+            width: 180px;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 250;
+            overflow: hidden;
+        }
+
+        .map-legend {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 0.6rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+
+        .legend-color {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        /* پیام بازی */
+        .game-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 20px 30px;
+            text-align: center;
+            z-index: 400;
+            display: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+        }
+
+        .message-text {
+            font-size: 1.5rem;
+            color: #00ff88;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.7);
+        }
+
+        .message-button {
+            background: linear-gradient(45deg, #00ff88, #00cc66);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* صفحه لودینگ رنگی */
+        .colorful-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 500;
+        }
+
+        .loading-title {
+            font-size: 3rem;
+            color: #00ccff;
+            margin-bottom: 30px;
+            text-align: center;
+            animation: colorCycle 3s infinite;
+            text-shadow: 0 0 20px rgba(0, 204, 255, 0.7);
+        }
+
+        .loading-subtitle {
+            font-size: 1.5rem;
+            color: #aaccff;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .colorful-spinner {
+            width: 120px;
+            height: 120px;
+            border: 8px solid transparent;
+            border-radius: 50%;
+            animation: spinColors 2s linear infinite;
+            position: relative;
+        }
+
+        .spinner-inner {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 4px solid transparent;
+            border-radius: 50%;
+            animation: spinColorsReverse 1.5s linear infinite;
+        }
+
+        @keyframes spinColors {
+            0% { 
+                border-top-color: #ff0080;
+                border-right-color: #8000ff;
+                border-bottom-color: #0080ff;
+                border-left-color: #00ff80;
+                transform: rotate(0deg);
+            }
+            25% {
+                border-top-color: #8000ff;
+                border-right-color: #0080ff;
+                border-bottom-color: #00ff80;
+                border-left-color: #ff0080;
+            }
+            50% {
+                border-top-color: #0080ff;
+                border-right-color: #00ff80;
+                border-bottom-color: #ff0080;
+                border-left-color: #8000ff;
+            }
+            75% {
+                border-top-color: #00ff80;
+                border-right-color: #ff0080;
+                border-bottom-color: #8000ff;
+                border-left-color: #0080ff;
+            }
+            100% { 
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spinColorsReverse {
+            0% { 
+                border-top-color: #00ff80;
+                border-right-color: #ff0080;
+                border-bottom-color: #8000ff;
+                border-left-color: #0080ff;
+                transform: rotate(0deg);
+            }
+            100% { 
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes colorCycle {
+            0% { color: #ff0080; }
+            25% { color: #8000ff; }
+            50% { color: #0080ff; }
+            75% { color: #00ff80; }
+            100% { color: #ff0080; }
+        }
+
+        /* جوی‌استیک پایین صفحه */
+        .joystick-container {
+            position: fixed;
+            bottom: max(25px, env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 90px;
+            z-index: 300;
+        }
+
+        .joystick-base {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .joystick-handle {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(45deg, #00ccff, #0066ff);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.7);
+            transition: transform 0.1s;
+        }
+
+        /* رسپانسیو */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .hud-top {
+                flex-direction: row;
+                gap: 8px;
+                align-items: flex-start;
+            }
+            
+            .score-container, .level-container, .health-container, .fuel-container {
+                width: auto;
+                text-align: center;
+            }
+            
+            .start-button {
+                padding: 14px 30px;
+                font-size: 1rem;
+            }
+            
+            .mini-map {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.6rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .stat-item {
+                padding: 10px 12px;
+                min-width: 85px;
+            }
+            
+            .stat-value {
+                font-size: 1.3rem;
+            }
+            
+            .stat-label {
+                font-size: 0.7rem;
+            }
+            
+            .mini-map {
+                width: 130px;
+                height: 130px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- صفحه شروع -->
+    <div id="startScreen">
+        <div class="stars-bg"></div>
+        
+        <div class="title-container">
+            <h1 class="main-title">GALACTIC WARFARE</h1>
+            <p class="subtitle">نبرد سینمایی در عمق فضا</p>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value" id="highScore">0</div>
+                <div class="stat-label">بالاترین امتیاز</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalCoins">0</div>
+                <div class="stat-label">سکه‌های جمع‌آوری شده</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalKills">0</div>
+                <div class="stat-label">دشمنان نابود شده</div>
+            </div>
+        </div>
+        
+        <button class="start-button" onclick="startGame()">🚀 شروع نبرد</button>
+    </div>
+
+    <!-- صفحه بازی -->
+    <div id="gameScreen">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- HUD بازی -->
+        <div class="game-hud">
+            <div class="hud-top">
+                <div class="score-container">
+                    <div class="score-value" id="scoreValue">0</div>
+                    <div class="score-label">امتیاز</div>
+                </div>
+                
+                <div class="level-container">
+                    <div class="level-value" id="levelValue">1</div>
+                    <div class="level-label">مرحله</div>
+                </div>
+                
+                <div class="health-container">
+                    <div class="health-value" id="healthValue">100</div>
+                    <div class="health-label">سالمت</div>
+                </div>
+                
+                <div class="fuel-container">
+                    <div class="fuel-value" id="fuelValue">100</div>
+                    <div class="fuel-label">سوخت</div>
+                </div>
+            </div>
+            
+            <!-- مینی مپ -->
+            <div class="mini-map">
+                <canvas id="miniMap"></canvas>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <span>شما</span>
+                        <div class="legend-color" style="background: #00aaff;"></div>
+                    </div>
+                    <div class="legend-item">
+                        <span>دشمن</span>
+                        <div class="legend-color" style="background: #ff0000;"></div>
+                    </div>
+                    <div class="legend-item">
+                        <span>سکه</span>
+                        <div class="legend-color" style="background: #00ff00;"></div>
+                    </div>
+                    <div class="legend-item">
+                        <span>سالمت</span>
+                        <div class="legend-color" style="background: #ffff00;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- جوی‌استیک -->
+        <div class="joystick-container">
+            <div class="joystick-base">
+                <div class="joystick-handle" id="joystickHandle"></div>
+            </div>
+        </div>
+        
+        <!-- پیام بازی -->
+        <div class="game-message" id="gameMessage">
+            <div class="message-text" id="messageText"></div>
+            <button class="message-button" onclick="restartLevel()">شروع مجدد</button>
+        </div>
+        
+        <!-- صفحه لودینگ رنگی -->
+        <div class="colorful-loading" id="colorfulLoading">
+            <div class="loading-title">مرحله بعد</div>
+            <div class="loading-subtitle">در حال بارگذاری جهان جدید...</div>
+            <div class="colorful-spinner">
+                <div class="spinner-inner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تنظیمات بازی
+        const GAME_CONFIG = {
+            WORLD_SIZE: 20000,
+            COINS_PER_LEVEL: 100,
+            COIN_HITS_REQUIRED: 5,
+            ENEMY_SPAWN_RATE: 200,
+            PLAYER_SPEED: 20,
+            CAMERA_FOLLOW_SPEED: 0.08,
+            PLAYER_SIZE: 120,
+            BULLET_COUNT: 8,
+            INITIAL_ENEMIES: 60,
+            ZOOM_FACTOR: 0.3,
+            COIN_SIZE: 60,
+            ENEMY_SIZE: 50,
+            HEALTH_SPAWN_RATE: 60000,
+            HEALTH_DURATION: 60000,
+            FUEL_DECAY_RATE: 0.05,
+            BULLET_RANGE: 2000,
+            BULLET_SPEED: 18,
+            ENEMY_SPAWN_INCREASE: 0.2
+        };
+
+        // وضعیت بازی
+        const gameState = {
+            score: 0,
+            highScore: parseInt(localStorage.getItem('galacticHighScore')) || 0,
+            totalCoins: parseInt(localStorage.getItem('galacticTotalCoins')) || 0,
+            totalKills: parseInt(localStorage.getItem('galacticTotalKills')) || 0,
+            coins: 0,
+            health: 100,
+            fuel: 100,
+            level: parseInt(localStorage.getItem('galacticLevel')) || 1,
+            enemiesDestroyed: 0,
+            gameRunning: false,
+            camera: { x: 0, y: 0 },
+            lastHealthSpawn: 0,
+            healthItems: []
+        };
+
+        // المان‌های DOM
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const gameCanvas = document.getElementById('gameCanvas');
+        const scoreValue = document.getElementById('scoreValue');
+        const levelValue = document.getElementById('levelValue');
+        const healthValue = document.getElementById('healthValue');
+        const fuelValue = document.getElementById('fuelValue');
+        const highScoreElement = document.getElementById('highScore');
+        const totalCoinsElement = document.getElementById('totalCoins');
+        const totalKillsElement = document.getElementById('totalKills');
+        const joystickHandle = document.getElementById('joystickHandle');
+        const miniMap = document.getElementById('miniMap');
+        const gameMessage = document.getElementById('gameMessage');
+        const messageText = document.getElementById('messageText');
+        const colorfulLoading = document.getElementById('colorfulLoading');
+
+        // تنظیم Canvas
+        const ctx = gameCanvas.getContext('2d');
+        const mapCtx = miniMap.getContext('2d');
+        
+        function setupCanvas() {
+            gameCanvas.width = window.innerWidth;
+            gameCanvas.height = window.innerHeight;
+            miniMap.width = miniMap.clientWidth;
+            miniMap.height = miniMap.clientHeight;
+        }
+        
+        setupCanvas();
+
+        // صداها
+        const moveSound = new Audio('m1.mp3');
+        const coinSound = new Audio('m2.mp3');
+        
+        // تنظیمات صدا
+        moveSound.volume = 0.3;
+        coinSound.volume = 0.5;
+        moveSound.loop = true;
+        let moveSoundPlaying = false;
+
+        // اشیاء بازی
+        let player = {
+            x: GAME_CONFIG.WORLD_SIZE / 2,
+            y: GAME_CONFIG.WORLD_SIZE / 2,
+            width: GAME_CONFIG.PLAYER_SIZE,
+            height: GAME_CONFIG.PLAYER_SIZE * 0.8,
+            speed: GAME_CONFIG.PLAYER_SPEED,
+            color: '#00aaff',
+            rotation: 0
+        };
+
+        let enemies = [];
+        let bullets = [];
+        let coins = [];
+        let particles = [];
+        let stars = [];
+
+        // کنترل‌ها
+        let controls = {
+            moveX: 0,
+            moveY: 0,
+            joystickActive: false,
+            joystickStartX: 0,
+            joystickStartY: 0
+        };
+
+        // ایجاد ستاره‌ها
+        function createStars() {
+            stars = [];
+            for (let i = 0; i < 5000; i++) {
+                stars.push({
+                    x: Math.random() * GAME_CONFIG.WORLD_SIZE,
+                    y: Math.random() * GAME_CONFIG.WORLD_SIZE,
+                    size: Math.random() * 3 + 1,
+                    brightness: Math.random() * 0.8 + 0.2
+                });
+            }
+        }
+
+        // ایجاد سکه‌ها
+        function createCoins() {
+            coins = [];
+            const coinsCount = GAME_CONFIG.COINS_PER_LEVEL;
+            
+            for (let i = 0; i < coinsCount; i++) {
+                coins.push({
+                    x: Math.random() * GAME_CONFIG.WORLD_SIZE,
+                    y: Math.random() * GAME_CONFIG.WORLD_SIZE,
+                    size: GAME_CONFIG.COIN_SIZE,
+                    value: 100,
+                    hits: 0,
+                    hitsRequired: GAME_CONFIG.COIN_HITS_REQUIRED,
+                    type: Math.floor(Math.random() * 3),
+                    rotation: 0,
+                    collected: false
+                });
+            }
+        }
+
+        // ایجاد دشمن
+        function createEnemy() {
+            const x = Math.random() * GAME_CONFIG.WORLD_SIZE;
+            const y = Math.random() * GAME_CONFIG.WORLD_SIZE;
+            
+            const baseHealth = 2 + Math.floor(gameState.level * 0.5);
+            const enemyTypes = [
+                { health: baseHealth, speed: 1.5, color: '#ff3333', size: GAME_CONFIG.ENEMY_SIZE },
+                { health: baseHealth + 1, speed: 1.2, color: '#ff6600', size: GAME_CONFIG.ENEMY_SIZE * 1.1 },
+                { health: baseHealth + 2, speed: 1, color: '#cc0000', size: GAME_CONFIG.ENEMY_SIZE * 1.2 }
+            ];
+            
+            const type = enemyTypes[Math.min(gameState.level - 1, 2)];
+            
+            enemies.push({
+                x: x,
+                y: y,
+                width: type.size,
+                height: type.size,
+                speed: type.speed,
+                health: type.health,
+                maxHealth: type.health,
+                color: type.color,
+                lastShot: Date.now(),
+                shootDelay: 2000 - (gameState.level * 150),
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.05
+            });
+        }
+
+        // ایجاد سلامت
+        function createHealthItem() {
+            gameState.healthItems.push({
+                x: Math.random() * (GAME_CONFIG.WORLD_SIZE - 200) + 100,
+                y: Math.random() * (GAME_CONFIG.WORLD_SIZE - 200) + 100,
+                size: 40,
+                spawnTime: Date.now(),
+                collected: false
+            });
+        }
+
+        // ایجاد گلوله
+        function createBullet(x, y, targetX, targetY, isPlayer = true) {
+            const dx = targetX - x;
+            const dy = targetY - y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            const speed = isPlayer ? GAME_CONFIG.BULLET_SPEED : 5;
+            const damage = isPlayer ? (1 + gameState.level * 0.3) : 0.5;
+            
+            bullets.push({
+                x: x,
+                y: y,
+                vx: (dx / distance) * speed,
+                vy: (dy / distance) * speed,
+                width: isPlayer ? 12 : 6,
+                height: isPlayer ? 12 : 6,
+                color: isPlayer ? '#00ffff' : '#ff3300',
+                isPlayer: isPlayer,
+                damage: damage,
+                range: GAME_CONFIG.BULLET_RANGE,
+                distanceTraveled: 0
+            });
+        }
+
+        // ایجاد ذرات
+        function createParticles(x, y, count, color, sizeMultiplier = 1) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    life: 1,
+                    maxLife: 1,
+                    size: Math.random() * 3 + 2 * sizeMultiplier,
+                    color: color
+                });
+            }
+        }
+
+        // ایجاد افکت تخریب سکه
+        function createCoinExplosion(x, y) {
+            for (let i = 0; i < 30; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    life: 1,
+                    maxLife: 1.5,
+                    size: Math.random() * 5 + 3,
+                    color: '#ffd700'
+                });
+            }
+            
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    life: 1,
+                    maxLife: 2,
+                    size: Math.random() * 8 + 5,
+                    color: '#ffff00'
+                });
+            }
+        }
+
+        // شلیک خودکار
+        function autoShoot() {
+            if (!gameState.gameRunning) return;
+            
+            let closestTarget = null;
+            let closestDistance = 800;
+            
+            coins.forEach(coin => {
+                if (coin.collected) return;
+                
+                const dx = coin.x - player.x;
+                const dy = coin.y - player.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestTarget = coin;
+                }
+            });
+            
+            if (!closestTarget) {
+                enemies.forEach(enemy => {
+                    const dx = enemy.x - player.x;
+                    const dy = enemy.y - player.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestTarget = enemy;
+                    }
+                });
+            }
+            
+            if (closestTarget) {
+                for (let i = 0; i < GAME_CONFIG.BULLET_COUNT; i++) {
+                    setTimeout(() => {
+                        if (gameState.gameRunning) {
+                            const targetX = closestTarget.x + (Math.random() - 0.5) * 50;
+                            const targetY = closestTarget.y + (Math.random() - 0.5) * 50;
+                            createBullet(player.x, player.y, targetX, targetY, true);
+                            createParticles(player.x, player.y, 2, '#00aaff');
+                        }
+                    }, i * 80);
+                }
+            }
+        }
+
+        // شلیک دشمنان
+        function enemyShoot() {
+            const now = Date.now();
+            
+            enemies.forEach(enemy => {
+                if (now - enemy.lastShot > enemy.shootDelay) {
+                    const dx = player.x - enemy.x;
+                    const dy = player.y - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 1000) {
+                        createBullet(enemy.x, enemy.y, player.x, player.y, false);
+                        enemy.lastShot = now;
+                        createParticles(enemy.x, enemy.y, 3, '#ff3300');
+                    }
+                }
+            });
+        }
+
+        // به‌روزرسانی HUD
+        function updateHUD() {
+            scoreValue.textContent = gameState.score.toLocaleString();
+            levelValue.textContent = gameState.level;
+            healthValue.textContent = Math.max(0, Math.floor(gameState.health));
+            fuelValue.textContent = Math.max(0, Math.floor(gameState.fuel));
+        }
+
+        // تشخیص برخورد
+        function checkCollisions() {
+            // برخورد گلوله بازیکن با دشمن
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                
+                if (!bullet.isPlayer) continue;
+                
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    const enemy = enemies[j];
+                    
+                    if (Math.abs(bullet.x - enemy.x) < (bullet.width + enemy.width) / 2 &&
+                        Math.abs(bullet.y - enemy.y) < (bullet.height + enemy.height) / 2) {
+                        
+                        enemy.health -= bullet.damage;
+                        createParticles(enemy.x, enemy.y, 8, '#ff6600');
+                        bullets.splice(i, 1);
+                        
+                        if (enemy.health <= 0) {
+                            createParticles(enemy.x, enemy.y, 15, '#ff3300');
+                            enemies.splice(j, 1);
+                            gameState.score += 100 * gameState.level;
+                            gameState.enemiesDestroyed++;
+                            gameState.totalKills++;
+                        }
+                        
+                        break;
+                    }
+                }
+            }
+            
+            // برخورد گلوله بازیکن با سکه
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                
+                if (!bullet.isPlayer) continue;
+                
+                for (let j = coins.length - 1; j >= 0; j--) {
+                    const coin = coins[j];
+                    
+                    if (coin.collected) continue;
+                    
+                    if (Math.abs(bullet.x - coin.x) < (bullet.width + coin.size) / 2 &&
+                        Math.abs(bullet.y - coin.y) < (bullet.height + coin.size) / 2) {
+                        
+                        coin.hits += 1;
+                        createParticles(coin.x, coin.y, 5, '#ffd700');
+                        bullets.splice(i, 1);
+                        
+                        if (coin.hits >= coin.hitsRequired) {
+                            coin.collected = true;
+                            gameState.coins++;
+                            gameState.totalCoins++;
+                            gameState.score += coin.value;
+                            
+                            createCoinExplosion(coin.x, coin.y);
+                            coinSound.play();
+                            coins.splice(j, 1);
+                            
+                            if (gameState.coins >= GAME_CONFIG.COINS_PER_LEVEL) {
+                                showLevelComplete();
+                            }
+                        }
+                        
+                        updateHUD();
+                        break;
+                    }
+                }
+            }
+            
+            // برخورد گلوله دشمن با بازیکن
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                
+                if (bullet.isPlayer) continue;
+                
+                if (Math.abs(bullet.x - player.x) < (bullet.width + player.width) / 2 &&
+                    Math.abs(bullet.y - player.y) < (bullet.height + player.height) / 2) {
+                    
+                    gameState.health -= 8;
+                    createParticles(player.x, player.y, 12, '#ff0000');
+                    bullets.splice(i, 1);
+                    
+                    if (gameState.health <= 0) {
+                        gameOver();
+                    }
+                    
+                    updateHUD();
+                }
+            }
+            
+            // برخورد بازیکن با سلامت
+            for (let i = gameState.healthItems.length - 1; i >= 0; i--) {
+                const healthItem = gameState.healthItems[i];
+                
+                if (healthItem.collected) continue;
+                
+                if (Math.abs(player.x - healthItem.x) < (player.width + healthItem.size) / 2 &&
+                    Math.abs(player.y - healthItem.y) < (player.height + healthItem.size) / 2) {
+                    
+                    healthItem.collected = true;
+                    gameState.health = Math.min(100, gameState.health + 25);
+                    createParticles(healthItem.x, healthItem.y, 15, '#ffff00', 1.2);
+                    gameState.healthItems.splice(i, 1);
+                    
+                    updateHUD();
+                }
+            }
+            
+            // برخورد دشمن با بازیکن
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                
+                if (Math.abs(player.x - enemy.x) < (player.width + enemy.width) / 2 &&
+                    Math.abs(player.y - enemy.y) < (player.height + enemy.height) / 2) {
+                    
+                    gameState.health -= 12;
+                    createParticles(player.x, player.y, 15, '#ff0000');
+                    enemies.splice(i, 1);
+                    
+                    if (gameState.health <= 0) {
+                        gameOver();
+                    }
+                    
+                    updateHUD();
+                }
+            }
+        }
+
+        // حرکت دشمنان به سمت بازیکن
+        function updateEnemyMovement() {
+            enemies.forEach(enemy => {
+                const dx = player.x - enemy.x;
+                const dy = player.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 0) {
+                    enemy.x += (dx / distance) * enemy.speed;
+                    enemy.y += (dy / distance) * enemy.speed;
+                }
+            });
+        }
+
+        // محاسبه موقعیت دوربین
+        function updateCamera() {
+            const targetX = player.x - gameCanvas.width / (2 * GAME_CONFIG.ZOOM_FACTOR);
+            const targetY = player.y - gameCanvas.height / (2 * GAME_CONFIG.ZOOM_FACTOR);
+            
+            gameState.camera.x += (targetX - gameState.camera.x) * GAME_CONFIG.CAMERA_FOLLOW_SPEED;
+            gameState.camera.y += (targetY - gameState.camera.y) * GAME_CONFIG.CAMERA_FOLLOW_SPEED;
+            
+            gameState.camera.x = Math.max(0, Math.min(GAME_CONFIG.WORLD_SIZE - gameCanvas.width / GAME_CONFIG.ZOOM_FACTOR, gameState.camera.x));
+            gameState.camera.y = Math.max(0, Math.min(GAME_CONFIG.WORLD_SIZE - gameCanvas.height / GAME_CONFIG.ZOOM_FACTOR, gameState.camera.y));
+        }
+
+        // تبدیل مختصات جهانی به مختصات صفحه
+        function worldToScreen(x, y) {
+            return {
+                x: (x - gameState.camera.x) * GAME_CONFIG.ZOOM_FACTOR,
+                y: (y - gameState.camera.y) * GAME_CONFIG.ZOOM_FACTOR
+            };
+        }
+
+        // رسم مینی مپ
+        function renderMiniMap() {
+            // پس‌زمینه نقشه
+            mapCtx.fillStyle = '#000022';
+            mapCtx.fillRect(0, 0, miniMap.width, miniMap.height);
+            
+            const scale = Math.min(miniMap.width, miniMap.height) / GAME_CONFIG.WORLD_SIZE;
+            
+            // رسم کل جهان در مینی مپ
+            const offsetX = (miniMap.width - GAME_CONFIG.WORLD_SIZE * scale) / 2;
+            const offsetY = (miniMap.height - GAME_CONFIG.WORLD_SIZE * scale) / 2;
+            
+            // رسم سکه‌ها (سبز)
+            coins.forEach(coin => {
+                if (coin.collected) return;
+                const x = coin.x * scale + offsetX;
+                const y = coin.y * scale + offsetY;
+                
+                // فقط اگر در محدوده نقشه باشد رسم کن
+                if (x >= 0 && x <= miniMap.width && y >= 0 && y <= miniMap.height) {
+                    mapCtx.fillStyle = '#00ff00';
+                    mapCtx.beginPath();
+                    mapCtx.arc(x, y, 2, 0, Math.PI * 2);
+                    mapCtx.fill();
+                }
+            });
+            
+            // رسم دشمنان (قرمز)
+            enemies.forEach(enemy => {
+                const x = enemy.x * scale + offsetX;
+                const y = enemy.y * scale + offsetY;
+                
+                // فقط اگر در محدوده نقشه باشد رسم کن
+                if (x >= 0 && x <= miniMap.width && y >= 0 && y <= miniMap.height) {
+                    mapCtx.fillStyle = '#ff0000';
+                    mapCtx.beginPath();
+                    mapCtx.arc(x, y, 2, 0, Math.PI * 2);
+                    mapCtx.fill();
+                }
+            });
+            
+            // رسم سلامت (زرد)
+            gameState.healthItems.forEach(healthItem => {
+                const x = healthItem.x * scale + offsetX;
+                const y = healthItem.y * scale + offsetY;
+                
+                // فقط اگر در محدوده نقشه باشد رسم کن
+                if (x >= 0 && x <= miniMap.width && y >= 0 && y <= miniMap.height) {
+                    mapCtx.fillStyle = '#ffff00';
+                    mapCtx.beginPath();
+                    mapCtx.arc(x, y, 2, 0, Math.PI * 2);
+                    mapCtx.fill();
+                }
+            });
+            
+            // رسم بازیکن (آبی)
+            const playerX = player.x * scale + offsetX;
+            const playerY = player.y * scale + offsetY;
+            
+            // فقط اگر در محدوده نقشه باشد رسم کن
+            if (playerX >= 0 && playerX <= miniMap.width && playerY >= 0 && playerY <= miniMap.height) {
+                mapCtx.fillStyle = '#00aaff';
+                mapCtx.beginPath();
+                mapCtx.arc(playerX, playerY, 3, 0, Math.PI * 2);
+                mapCtx.fill();
+                
+                // جهت بازیکن
+                mapCtx.strokeStyle = '#ffffff';
+                mapCtx.lineWidth = 1;
+                mapCtx.beginPath();
+                mapCtx.moveTo(playerX, playerY);
+                mapCtx.lineTo(
+                    playerX + Math.cos(player.rotation) * 8,
+                    playerY + Math.sin(player.rotation) * 8
+                );
+                mapCtx.stroke();
+            }
+            
+            // رسم مرزهای دید فعلی
+            const cameraWidth = gameCanvas.width / GAME_CONFIG.ZOOM_FACTOR * scale;
+            const cameraHeight = gameCanvas.height / GAME_CONFIG.ZOOM_FACTOR * scale;
+            const cameraX = gameState.camera.x * scale + offsetX;
+            const cameraY = gameState.camera.y * scale + offsetY;
+            
+            mapCtx.strokeStyle = '#ffffff';
+            mapCtx.lineWidth = 1;
+            mapCtx.strokeRect(cameraX, cameraY, cameraWidth, cameraHeight);
+        }
+
+        // رندر بازی
+        function render() {
+            // پاک کردن Canvas
+            ctx.fillStyle = '#000011';
+            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+            
+            // رسم ستاره‌ها
+            ctx.fillStyle = '#ffffff';
+            stars.forEach(star => {
+                const screenPos = worldToScreen(star.x, star.y);
+                if (screenPos.x >= -10 && screenPos.x <= gameCanvas.width + 10 &&
+                    screenPos.y >= -10 && screenPos.y <= gameCanvas.height + 10) {
+                    ctx.globalAlpha = star.brightness;
+                    ctx.fillRect(screenPos.x, screenPos.y, star.size, star.size);
+                }
+            });
+            ctx.globalAlpha = 1;
+            
+            // رسم سکه‌ها
+            coins.forEach(coin => {
+                if (coin.collected) return;
+                
+                const screenPos = worldToScreen(coin.x, coin.y);
+                if (screenPos.x < -100 || screenPos.x > gameCanvas.width + 100 ||
+                    screenPos.y < -100 || screenPos.y > gameCanvas.height + 100) {
+                    return;
+                }
+                
+                ctx.save();
+                ctx.translate(screenPos.x, screenPos.y);
+                ctx.rotate(coin.rotation);
+                
+                let emoji, color;
+                switch(coin.type) {
+                    case 0: emoji = '🛟'; color = '#4ecdc4'; break;
+                    case 1: emoji = '❄️'; color = '#aaccff'; break;
+                    case 2: emoji = '⭐'; color = '#ffd700'; break;
+                }
+                
+                ctx.fillStyle = color + '40';
+                ctx.beginPath();
+                ctx.arc(0, 0, coin.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 4;
+                ctx.stroke();
+                
+                ctx.font = `bold ${coin.size * 0.7}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(emoji, 0, 0);
+                
+                ctx.font = 'bold 16px Arial';
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText((coin.hitsRequired - coin.hits).toString(), 0, coin.size / 2 + 15);
+                
+                ctx.restore();
+                
+                coin.rotation += 0.02;
+            });
+            
+            // رسم سلامت
+            gameState.healthItems.forEach(healthItem => {
+                const screenPos = worldToScreen(healthItem.x, healthItem.y);
+                if (screenPos.x < -100 || screenPos.x > gameCanvas.width + 100 ||
+                    screenPos.y < -100 || screenPos.y > gameCanvas.height + 100) {
+                    return;
+                }
+                
+                ctx.save();
+                ctx.translate(screenPos.x, screenPos.y);
+                
+                ctx.font = `bold ${healthItem.size}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('⚡️', 0, 0);
+                
+                ctx.restore();
+            });
+            
+            // رسم دشمنان
+            enemies.forEach(enemy => {
+                const screenPos = worldToScreen(enemy.x, enemy.y);
+                if (screenPos.x < -100 || screenPos.x > gameCanvas.width + 100 ||
+                    screenPos.y < -100 || screenPos.y > gameCanvas.height + 100) {
+                    return;
+                }
+                
+                ctx.save();
+                ctx.translate(screenPos.x, screenPos.y);
+                ctx.rotate(enemy.rotation);
+                
+                ctx.font = `bold ${enemy.width}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🌋', 0, 0);
+                
+                const healthWidth = 40;
+                const healthPercent = enemy.health / enemy.maxHealth;
+                
+                ctx.fillStyle = '#333333';
+                ctx.fillRect(-healthWidth / 2, -enemy.height / 2 - 12, healthWidth, 5);
+                
+                ctx.fillStyle = healthPercent > 0.5 ? '#00ff88' : healthPercent > 0.2 ? '#ffaa00' : '#ff3300';
+                ctx.fillRect(-healthWidth / 2, -enemy.height / 2 - 12, healthWidth * healthPercent, 5);
+                
+                ctx.restore();
+                
+                enemy.rotation += enemy.rotationSpeed;
+            });
+            
+            // رسم گلوله‌ها
+            bullets.forEach(bullet => {
+                const screenPos = worldToScreen(bullet.x, bullet.y);
+                ctx.fillStyle = bullet.color;
+                ctx.beginPath();
+                ctx.arc(screenPos.x, screenPos.y, bullet.width / 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = bullet.color + '80';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(screenPos.x - bullet.vx * 0.3, screenPos.y - bullet.vy * 0.3);
+                ctx.lineTo(screenPos.x, screenPos.y);
+                ctx.stroke();
+            });
+            
+            // رسم ذرات
+            particles.forEach(particle => {
+                const screenPos = worldToScreen(particle.x, particle.y);
+                const alpha = particle.life / particle.maxLife;
+                ctx.fillStyle = particle.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                ctx.beginPath();
+                ctx.arc(screenPos.x, screenPos.y, particle.size * alpha, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // رسم بازیکن
+            const playerScreenPos = worldToScreen(player.x, player.y);
+            ctx.save();
+            ctx.translate(playerScreenPos.x, playerScreenPos.y);
+            
+            if (controls.moveX !== 0 || controls.moveY !== 0) {
+                player.rotation = Math.atan2(controls.moveY, controls.moveX);
+            }
+            ctx.rotate(player.rotation);
+            
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.moveTo(player.width / 2, 0);
+            ctx.lineTo(-player.width / 3, -player.height / 2);
+            ctx.lineTo(-player.width / 2, 0);
+            ctx.lineTo(-player.width / 3, player.height / 2);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.fillStyle = '#aaffff';
+            ctx.beginPath();
+            ctx.arc(player.width / 4, 0, player.width / 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#ff6600';
+            ctx.beginPath();
+            ctx.arc(-player.width / 3, -player.height / 4, player.width / 8, 0, Math.PI * 2);
+            ctx.arc(-player.width / 3, player.height / 4, player.width / 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // رسم مینی مپ
+            renderMiniMap();
+        }
+
+        // به‌روزرسانی بازی
+        function update() {
+            if (!gameState.gameRunning) return;
+            
+            // حرکت بازیکن
+            player.x += controls.moveX * player.speed;
+            player.y += controls.moveY * player.speed;
+            
+            // کاهش سوخت
+            if (controls.moveX !== 0 || controls.moveY !== 0) {
+                gameState.fuel -= GAME_CONFIG.FUEL_DECAY_RATE;
+                if (gameState.fuel <= 0) {
+                    showFuelMessage();
+                    return;
+                }
+            }
+            
+            // کنترل صدا
+            if ((controls.moveX !== 0 || controls.moveY !== 0) && !moveSoundPlaying) {
+                moveSound.play();
+                moveSoundPlaying = true;
+            } else if (controls.moveX === 0 && controls.moveY === 0 && moveSoundPlaying) {
+                moveSound.pause();
+                moveSound.currentTime = 0;
+                moveSoundPlaying = false;
+            }
+            
+            // محدود کردن بازیکن به جهان
+            const margin = 50;
+            player.x = Math.max(player.width / 2 + margin, Math.min(GAME_CONFIG.WORLD_SIZE - player.width / 2 - margin, player.x));
+            player.y = Math.max(player.height / 2 + margin, Math.min(GAME_CONFIG.WORLD_SIZE - player.height / 2 - margin, player.y));
+            
+            // حرکت گلوله‌ها
+            bullets.forEach(bullet => {
+                bullet.x += bullet.vx;
+                bullet.y += bullet.vy;
+                bullet.distanceTraveled += Math.sqrt(bullet.vx * bullet.vx + bullet.vy * bullet.vy);
+            });
+            
+            // حذف گلوله‌های خارج از جهان
+            bullets = bullets.filter(bullet => 
+                bullet.x > -100 && bullet.x < GAME_CONFIG.WORLD_SIZE + 100 && 
+                bullet.y > -100 && bullet.y < GAME_CONFIG.WORLD_SIZE + 100 &&
+                bullet.distanceTraveled < bullet.range
+            );
+            
+            // حرکت دشمنان به سمت بازیکن
+            updateEnemyMovement();
+            
+            // تولید سلامت
+            const now = Date.now();
+            if (now - gameState.lastHealthSpawn > GAME_CONFIG.HEALTH_SPAWN_RATE) {
+                createHealthItem();
+                gameState.lastHealthSpawn = now;
+            }
+            
+            // حذف سلامت‌های قدیمی
+            gameState.healthItems = gameState.healthItems.filter(healthItem => 
+                now - healthItem.spawnTime < GAME_CONFIG.HEALTH_DURATION && !healthItem.collected
+            );
+            
+            // به‌روزرسانی ذرات
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life -= 0.02;
+                
+                if (particle.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            // به‌روزرسانی دوربین
+            updateCamera();
+            
+            // تشخیص برخورد
+            checkCollisions();
+            
+            // رندر
+            render();
+            
+            requestAnimationFrame(update);
+        }
+
+        // نمایش پیام اتمام سوخت
+        function showFuelMessage() {
+            gameState.gameRunning = false;
+            messageText.textContent = "سوخت شما تمام شد!\nهمان مرحله دوباره شروع می‌شود";
+            gameMessage.style.display = 'block';
+        }
+
+        // شروع مجدد مرحله
+        function restartLevel() {
+            gameMessage.style.display = 'none';
+            
+            gameState.health = 100;
+            gameState.fuel = 100;
+            gameState.gameRunning = true;
+            
+            enemies = [];
+            bullets = [];
+            particles = [];
+            gameState.healthItems = [];
+            
+            player.x = GAME_CONFIG.WORLD_SIZE / 2;
+            player.y = GAME_CONFIG.WORLD_SIZE / 2;
+            
+            for (let i = 0; i < GAME_CONFIG.INITIAL_ENEMIES; i++) {
+                createEnemy();
+            }
+            
+            updateHUD();
+            update();
+        }
+
+        // نمایش پایان مرحله
+        function showLevelComplete() {
+            gameState.gameRunning = false;
+            colorfulLoading.style.display = 'flex';
+            
+            setTimeout(() => {
+                colorfulLoading.style.display = 'none';
+                levelComplete();
+            }, 3000);
+        }
+
+        // تکمیل مرحله
+        function levelComplete() {
+            gameState.level++;
+            gameState.coins = 0;
+            gameState.health = Math.min(100, gameState.health + 25);
+            gameState.fuel = 100;
+            
+            localStorage.setItem('galacticLevel', gameState.level);
+            
+            createCoins();
+            
+            clearInterval(enemySpawnInterval);
+            enemySpawnInterval = setInterval(createEnemy, Math.max(400, GAME_CONFIG.ENEMY_SPAWN_RATE - (gameState.level * 50)));
+            
+            updateHUD();
+            
+            for (let i = 0; i < 25; i++) {
+                setTimeout(() => {
+                    createParticles(
+                        player.x + (Math.random() - 0.5) * 200,
+                        player.y + (Math.random() - 0.5) * 200,
+                        8,
+                        '#00ff88'
+                    );
+                }, i * 100);
+            }
+            
+            gameState.gameRunning = true;
+            update();
+        }
+
+        // پایان بازی
+        function gameOver() {
+            gameState.gameRunning = false;
+            clearInterval(autoShootInterval);
+            clearInterval(enemySpawnInterval);
+            moveSound.pause();
+            moveSound.currentTime = 0;
+            moveSoundPlaying = false;
+            
+            if (gameState.score > gameState.highScore) {
+                gameState.highScore = gameState.score;
+                localStorage.setItem('galacticHighScore', gameState.score);
+            }
+            localStorage.setItem('galacticTotalCoins', gameState.totalCoins);
+            localStorage.setItem('galacticTotalKills', gameState.totalKills);
+            localStorage.setItem('galacticLevel', gameState.level);
+            
+            createParticles(player.x, player.y, 60, '#ff0000', 1.5);
+            
+            setTimeout(() => {
+                messageText.textContent = `ماموریت شکست خورد!\nامتیاز: ${gameState.score.toLocaleString()}\nمرحله: ${gameState.level}`;
+                gameMessage.style.display = 'block';
+            }, 2000);
+        }
+
+        // شروع بازی
+        let enemySpawnInterval;
+        let autoShootInterval;
+        
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            
+            highScoreElement.textContent = gameState.highScore.toLocaleString();
+            totalCoinsElement.textContent = gameState.totalCoins.toLocaleString();
+            totalKillsElement.textContent = gameState.totalKills.toLocaleString();
+            
+            gameState.score = 0;
+            gameState.coins = 0;
+            gameState.health = 100;
+            gameState.fuel = 100;
+            gameState.enemiesDestroyed = 0;
+            gameState.gameRunning = true;
+            gameState.lastHealthSpawn = Date.now();
+            gameState.healthItems = [];
+            
+            enemies = [];
+            bullets = [];
+            coins = [];
+            particles = [];
+            
+            player.x = GAME_CONFIG.WORLD_SIZE / 2;
+            player.y = GAME_CONFIG.WORLD_SIZE / 2;
+            gameState.camera.x = player.x - gameCanvas.width / (2 * GAME_CONFIG.ZOOM_FACTOR);
+            gameState.camera.y = player.y - gameCanvas.height / (2 * GAME_CONFIG.ZOOM_FACTOR);
+            
+            createStars();
+            createCoins();
+            
+            updateHUD();
+            
+            autoShootInterval = setInterval(autoShoot, 400);
+            enemySpawnInterval = setInterval(createEnemy, GAME_CONFIG.ENEMY_SPAWN_RATE);
+            setInterval(enemyShoot, 150);
+            
+            for (let i = 0; i < GAME_CONFIG.INITIAL_ENEMIES; i++) {
+                createEnemy();
+            }
+            
+            update();
+        }
+
+        // کنترل جوی‌استیک
+        const joystickContainer = document.querySelector('.joystick-container');
+        const joystickBase = document.querySelector('.joystick-base');
+        
+        joystickContainer.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            controls.joystickActive = true;
+            
+            const rect = joystickBase.getBoundingClientRect();
+            controls.joystickStartX = rect.left + rect.width / 2;
+            controls.joystickStartY = rect.top + rect.height / 2;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!controls.joystickActive) return;
+            e.preventDefault();
+            
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - controls.joystickStartX;
+            const deltaY = touch.clientY - controls.joystickStartY;
+            
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const maxDistance = 35;
+            const limitedDistance = Math.min(distance, maxDistance);
+            
+            if (distance > 5) {
+                const angle = Math.atan2(deltaY, deltaX);
+                const moveX = limitedDistance * Math.cos(angle) / maxDistance;
+                const moveY = limitedDistance * Math.sin(angle) / maxDistance;
+                
+                controls.moveX = moveX;
+                controls.moveY = moveY;
+                
+                joystickHandle.style.transform = `translate(${moveX * 25}px, ${moveY * 25}px)`;
+            }
+        });
+
+        document.addEventListener('touchend', (e) => {
+            controls.joystickActive = false;
+            controls.moveX = 0;
+            controls.moveY = 0;
+            joystickHandle.style.transform = 'translate(0, 0)';
+        });
+
+        // تنظیم اندازه Canvas
+        window.addEventListener('resize', () => {
+            setupCanvas();
+        });
+
+        // بارگذاری اولیه آمار
+        window.addEventListener('load', () => {
+            highScoreElement.textContent = gameState.highScore.toLocaleString();
+            totalCoinsElement.textContent = gameState.totalCoins.toLocaleString();
+            totalKillsElement.textContent = gameState.totalKills.toLocaleString();
+        });
+
+        // جلوگیری از زوم صفحه
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gesturechange', function (e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gestureend', function (e) {
+            e.preventDefault();
+        });
     </script>
 </body>
-</html
-        
-        
-        
+</html>
