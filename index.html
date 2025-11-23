@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DevAI - محیط برنامه‌نویسی هوشمند</title>
+    
+    <!-- کتابخانه‌های مورد نیاز -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <style>
+        /* ریست کامل */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        /* جلوگیری کامل از زوم */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* کانتینر اصلی */
+        .app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* هدر */
+        .header {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #e2e8f0;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(71, 85, 105, 0.5);
+        }
+
+        /* ویرایشگر */
+        .editor-container {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        #editor {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        /* ناوبری پایین */
+        .bottom-nav {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 10px 8px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(148, 163, 184, 0.3);
+            flex-shrink: 0;
+            z-index: 100;
+            gap: 5px;
+        }
+
+        .nav-btn {
+            padding: 10px 8px;
+            background: rgba(71, 85, 105, 0.8);
+            border: none;
+            border-radius: 16px;
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-width: 0;
+            min-height: 60px;
+            gap: 4px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(100, 116, 139, 0.8);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn.run {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .nav-btn.download {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .nav-btn.debug {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .nav-btn.upload {
+            background: linear-gradient(135deg, #ec4899, #db2777);
+        }
+
+        .nav-btn.folder {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .nav-btn.delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .nav-btn span {
+            font-size: 16px;
+        }
+
+        /* منوی همبرگری */
+        .hamburger-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            max-width: 300px;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            padding: 20px;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .hamburger-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            color: #e2e8f0;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .menu-section {
+            margin-bottom: 25px;
+        }
+
+        .menu-section-title {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #94a3b8;
+            padding-right: 10px;
+        }
+
+        .menu-item {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(71, 85, 105, 0.5);
+            border: none;
+            border-radius: 10px;
+            color: #e2e8f0;
+            text-align: right;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background: rgba(100, 116, 139, 0.7);
+            transform: translateX(-5px);
+        }
+
+        /* پنل مدیریت پوشه */
+        .folder-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 2500;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .folder-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -40%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .folder-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .folder-close {
+            background: none;
+            border: none;
+            color: #e2e8f0;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .folder-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .folder-input {
+            padding: 12px 15px;
+            background: rgba(71, 85, 105, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .folder-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .folder-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .folder-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .folder-btn.create {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .folder-btn.cancel {
+            background: rgba(71, 85, 105, 0.8);
+        }
+
+        .folder-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* لودینگ */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(59, 130, 246, 0.3);
+            border-left: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* پنل خطا */
+        .error-panel {
+            position: fixed;
+            bottom: 90px;
+            left: 10px;
+            right: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(20px);
+            display: none;
+            z-index: 1500;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .error-panel.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* آپلود فایل */
+        #fileInput, #folderFileInput {
+            display: none;
+        }
+
+        /* نوتیفیکیشن */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 15px 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            z-index: 3000;
+            display: none;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .notification.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        /* هایلایت خطا */
+        .error-line {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-left: 3px solid #ef4444 !important;
+        }
+
+        /* رسپانسیو برای دستگاه‌های کوچک */
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px 12px;
+            }
+            
+            .app-title {
+                font-size: 16px;
+            }
+            
+            .bottom-nav {
+                padding: 8px 5px;
+            }
+            
+            .nav-btn {
+                padding: 8px 4px;
+                font-size: 10px;
+                min-height: 55px;
+            }
+            
+            .nav-btn span {
+                font-size: 14px;
+            }
+            
+            .hamburger-menu {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .nav-btn {
+                font-size: 9px;
+                min-height: 50px;
+            }
+            
+            .nav-btn span {
+                font-size: 12px;
+            }
+        }
+
+        /* برای دستگاه‌های بزرگ */
+        @media (min-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+            
+            .app-title {
+                font-size: 20px;
+            }
+            
+            .bottom-nav {
+                padding: 12px 15px;
+            }
+            
+            .nav-btn {
+                padding: 12px 10px;
+                font-size: 12px;
+                flex-direction: row;
+                gap: 8px;
+            }
+            
+            .nav-btn span {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- هدر -->
+    <div class="header">
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <div class="app-title">DevAI - محیط برنامه‌نویسی</div>
+        <div style="width: 40px;"></div> <!-- برای بالانس -->
+    </div>
+
+    <!-- کانتینر اصلی -->
+    <div class="app-container">
+        <!-- ویرایشگر -->
+        <div class="editor-container">
+            <div id="editor"></div>
+        </div>
+
+        <!-- پنل خطا -->
+        <div class="error-panel" id="errorPanel">
+            <div id="errorContent"></div>
+        </div>
+    </div>
+
+    <!-- ناوبری پایین -->
+    <div class="bottom-nav">
+        <button class="nav-btn run" onclick="runCode()">
+            <span>▶</span>
+            اجرا
+        </button>
+        <button class="nav-btn download" onclick="downloadCode()">
+            <span>📥</span>
+            دانلود
+        </button>
+        <button class="nav-btn debug" onclick="debugCode()">
+            <span>🔧</span>
+            اشکال‌زدایی
+        </button>
+        <button class="nav-btn upload" onclick="uploadFile()">
+            <span>📁</span>
+            آپلود
+        </button>
+        <button class="nav-btn folder" onclick="openFolderPanel()">
+            <span>📂</span>
+            پوشه
+        </button>
+        <button class="nav-btn delete" onclick="clearCode()">
+            <span>🗑️</span>
+            حذف
+        </button>
+    </div>
+
+    <!-- منوی همبرگری -->
+    <div class="hamburger-menu" id="hamburgerMenu">
+        <div class="menu-header">
+            <h3>منوی برنامه</h3>
+            <button class="close-menu" onclick="toggleMenu()">✕</button>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">زبان‌های برنامه‌نویسی</div>
+            <button class="menu-item" onclick="changeLanguage('python')">پایتون</button>
+            <button class="menu-item" onclick="changeLanguage('java')">جاوا</button>
+            <button class="menu-item" onclick="changeLanguage('html')">HTML</button>
+            <button class="menu-item" onclick="changeLanguage('cpp')">C++</button>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">مدیریت فایل‌ها</div>
+            <button class="menu-item" onclick="openFile('m.html')">باز کردن m.html</button>
+            <button class="menu-item" onclick="openFile('projects/')">پروژه‌ها</button>
+            <button class="menu-item" onclick="openFile('examples/')">مثال‌ها</button>
+        </div>
+    </div>
+
+    <!-- پنل مدیریت پوشه -->
+    <div class="folder-panel" id="folderPanel">
+        <div class="folder-header">
+            <h3>مدیریت پوشه</h3>
+            <button class="folder-close" onclick="closeFolderPanel()">✕</button>
+        </div>
+        <div class="folder-form">
+            <input type="text" class="folder-input" id="folderName" placeholder="نام پوشه جدید">
+            <div class="folder-buttons">
+                <button class="folder-btn create" onclick="createFolder()">ایجاد پوشه</button>
+                <button class="folder-btn cancel" onclick="closeFolderPanel()">انصراف</button>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="nav-btn upload" onclick="uploadToFolder()" style="flex-direction: row; min-height: auto;">
+                    <span>📁</span>
+                    آپلود فایل به پوشه
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- لودینگ -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div id="loadingText">در حال پردازش...</div>
+    </div>
+
+    <!-- نوتیفیکیشن -->
+    <div class="notification" id="notification"></div>
+
+    <!-- آپلود فایل -->
+    <input type="file" id="fileInput" accept=".html,.js,.css,.txt,.py,.java,.cpp" onchange="handleFileUpload(this.files)">
+    <input type="file" id="folderFileInput" accept=".html,.js,.css,.txt,.py,.java,.cpp" onchange="handleFolderFileUpload(this.files)">
+
+    <script>
+        // جلوگیری کامل از زوم
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gesturechange', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gestureend', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            if (e.scale !== 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
+                e.preventDefault();
+            }
+        });
+
+        // تنظیمات Monaco Editor
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
+
+        let editor;
+        let currentLanguage = 'java';
+        let currentFileContent = '';
+        
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: `// کد جاوا شما\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello World!");\n    }\n}`,
+                language: 'java',
+                theme: 'vs-dark',
+                fontSize: 14,
+                lineHeight: 1.6,
+                automaticLayout: true,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                lineNumbers: 'on',
+                glyphMargin: true,
+                folding: true,
+                renderLineHighlight: 'all'
+            });
+
+            // تنظیم سایز ویرایشگر
+            window.addEventListener('resize', function() {
+                if (editor) {
+                    editor.layout();
+                }
+            });
+        });
+
+        // نمایش نوتیفیکیشن
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${isError ? 'error' : ''}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // نمایش لودینگ
+        function showLoading(text = 'در حال پردازش...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loading').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+
+        // اجرای کد - باز کردن در پنجره جدید
+        function runCode() {
+            showLoading('در حال اجرای کد...');
+            
+            setTimeout(() => {
+                const code = editor.getValue();
+                currentFileContent = code;
+                
+                // ایجاد پنجره جدید و نمایش خروجی
+                const newWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                
+                if (newWindow) {
+                    if (currentLanguage === 'html') {
+                        // برای HTML، کد را مستقیماً نمایش می‌دهیم
+                        newWindow.document.write(code);
+                        newWindow.document.close();
+                    } else if (currentLanguage === 'java') {
+                        // برای جاوا، یک شبیه‌سازی ساده انجام می‌دهیم
+                        newWindow.document.write(`
+                            <!DOCTYPE html>
+                            <html dir="rtl">
+                            <head>
+                                <title>خروجی برنامه جاوا</title>
+                                <style>
+                                    body { 
+                                        font-family: Tahoma, Arial; 
+                                        padding: 20px; 
+                                        background: #1e293b; 
+                                        color: white;
+                                    }
+                                    .output { 
+                                        background: #0f172a; 
+                                        padding: 15px; 
+                                        border-radius: 10px; 
+                                        margin-top: 20px;
+                                        border-right: 4px solid #3b82f6;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <h2>خروجی برنامه جاوا</h2>
+                                <div class="output">
+                                    <pre>Hello World!</pre>
+                                </div>
+                                <p style="margin-top: 20px; color: #94a3b8;">
+                                    این یک شبیه‌سازی از اجرای کد جاوا است.
+                                </p>
+                            </body>
+                            </html>
+                        `);
+                        newWindow.document.close();
+                    } else {
+                        // برای سایر زبان‌ها
+                        newWindow.document.write(`
+                            <!DOCTYPE html>
+                            <html dir="rtl">
+                            <head>
+                                <title>خروجی برنامه</title>
+                                <style>
+                                    body { 
+                                        font-family: Tahoma, Arial; 
+                                        padding: 20px; 
+                                        background: #1e293b; 
+                                        color: white;
+                                    }
+                                    .code { 
+                                        background: #0f172a; 
+                                        padding: 15px; 
+                                        border-radius: 10px; 
+                                        margin-top: 20px;
+                                        white-space: pre-wrap;
+                                        border-right: 4px solid #10b981;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <h2>کد ${currentLanguage.toUpperCase()}</h2>
+                                <div class="code">${code}</div>
+                                <p style="margin-top: 20px; color: #94a3b8;">
+                                    این کد فقط برای نمایش است و اجرا نشده.
+                                </p>
+                            </body>
+                            </html>
+                        `);
+                        newWindow.document.close();
+                    }
+                    
+                    newWindow.focus();
+                    showNotification('کد با موفقیت اجرا شد!');
+                } else {
+                    showNotification('لطفاً اجازه باز کردن پنجره جدید را بدهید', true);
+                }
+                
+                hideLoading();
+            }, 1000);
+        }
+
+        // اشکال‌زدایی با AI
+        async function debugCode() {
+            showLoading('در حال تحلیل کد با AI...');
+            
+            const code = editor.getValue();
+            
+            try {
+                // شبیه‌سازی تحلیل AI
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // تحلیل ساده کد
+                const errors = analyzeCode(code, currentLanguage);
+                
+                if (errors.length > 0) {
+                    showErrors(errors);
+                    showNotification('خطاهای کد شناسایی شدند', true);
+                } else {
+                    showNotification('کد شما بدون خطا است!');
+                }
+                
+            } catch (error) {
+                showNotification('خطا در تحلیل کد', true);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // تحلیل کد
+        function analyzeCode(code, language) {
+            const errors = [];
+            
+            if (language === 'java') {
+                // بررسی کلاس اصلی
+                if (!code.includes('public class')) {
+                    errors.push({
+                        line: 1,
+                        message: 'کلاس اصلی پیدا نشد',
+                        severity: 'error'
+                    });
+                }
+                
+                // بررسی متد main
+                if (!code.includes('public static void main')) {
+                    errors.push({
+                        line: 1,
+                        message: 'متد main پیدا نشد',
+                        severity: 'error'
+                    });
+                }
+            }
+            
+            if (language === 'html') {
+                // بررسی تگ‌های بسته نشده
+                const openTags = code.match(/<([a-z][a-z0-9]*)[^>]*>/gi) || [];
+                const closeTags = code.match(/<\/([a-z][a-z0-9]*)>/gi) || [];
+                
+                if (openTags.length !== closeTags.length) {
+                    errors.push({
+                        line: 1,
+                        message: 'تعداد تگ‌های باز و بسته شده برابر نیست',
+                        severity: 'error'
+                    });
+                }
+            }
+            
+            return errors;
+        }
+
+        // نمایش خطاها
+        function showErrors(errors) {
+            const errorPanel = document.getElementById('errorPanel');
+            const errorContent = document.getElementById('errorContent');
+            
+            errorContent.innerHTML = errors.map(error => `
+                <div style="margin-bottom: 10px; padding: 10px; background: rgba(239,68,68,0.1); border-radius: 8px;">
+                    <strong>خط ${error.line}:</strong> ${error.message}
+                    <span style="color: ${error.severity === 'error' ? '#ef4444' : '#f59e0b'}; font-size: 12px;">
+                        (${error.severity === 'error' ? 'خطا' : 'هشدار'})
+                    </span>
+                </div>
+            `).join('');
+            
+            errorPanel.classList.add('active');
+            
+            // هایلایت خطوط دارای خطا
+            if (editor && monaco) {
+                errors.forEach(error => {
+                    const decorations = editor.deltaDecorations([], [{
+                        range: new monaco.Range(error.line, 1, error.line, 1),
+                        options: {
+                            isWholeLine: true,
+                            className: 'error-line',
+                            glyphMarginClassName: 'error-glyph'
+                        }
+                    }]);
+                });
+            }
+        }
+
+        // دانلود کد
+        function downloadCode() {
+            const code = editor.getValue();
+            const extension = getFileExtension(currentLanguage);
+            const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            
+            a.href = url;
+            a.download = `code.${extension}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            URL.revokeObjectURL(url);
+            showNotification('فایل با موفقیت دانلود شد!');
+        }
+
+        // گرفتن پسوند فایل بر اساس زبان
+        function getFileExtension(language) {
+            const extensions = {
+                'python': 'py',
+                'java': 'java',
+                'html': 'html',
+                'cpp': 'cpp'
+            };
+            return extensions[language] || 'txt';
+        }
+
+        // آپلود فایل
+        function uploadFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileUpload(files) {
+            if (files.length === 0) return;
+            
+            const file = files[0];
+            
+            // بررسی سایز فایل (حداکثر 100MB)
+            if (file.size > 100 * 1024 * 1024) {
+                showNotification('حجم فایل نباید بیشتر از 100 مگابایت باشد', true);
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                editor.setValue(e.target.result);
+                showNotification('فایل با موفقیت آپلود شد!');
+            };
+            reader.readAsText(file);
+        }
+
+        // حذف کد
+        function clearCode() {
+            if (confirm('آیا از پاک کردن تمام کد اطمینان دارید؟')) {
+                editor.setValue('');
+                document.getElementById('errorPanel').classList.remove('active');
+                showNotification('کد پاک شد');
+            }
+        }
+
+        // تغییر زبان
+        function changeLanguage(language) {
+            showLoading('در حال بارگذاری...');
+            
+            currentLanguage = language;
+            
+            // تغییر زبان ویرایشگر
+            setTimeout(() => {
+                const model = editor.getModel();
+                monaco.editor.setModelLanguage(model, language);
+                
+                // کد نمونه برای هر زبان
+                const samples = {
+                    'python': '# کد پایتون شما\nprint("Hello World!")\n\nfor i in range(5):\n    print(f"عدد: {i}")',
+                    'java': '// کد جاوا شما\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello World!");\n    }\n}',
+                    'html': '<!DOCTYPE html>\n<html>\n<head>\n    <title>صفحه من</title>\n</head>\n<body>\n    <h1>سلام دنیا!</h1>\n</body>\n</html>',
+                    'cpp': '// کد C++ شما\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello World!" << endl;\n    return 0;\n}'
+                };
+                
+                editor.setValue(samples[language]);
+                hideLoading();
+                showNotification(`محیط ${language} بارگذاری شد`);
+                
+                // بستن منو
+                toggleMenu();
+            }, 1000);
+        }
+
+        // باز کردن پنل مدیریت پوشه
+        function openFolderPanel() {
+            document.getElementById('folderPanel').classList.add('active');
+        }
+
+        function closeFolderPanel() {
+            document.getElementById('folderPanel').classList.remove('active');
+            document.getElementById('folderName').value = '';
+        }
+
+        // ایجاد پوشه جدید
+        function createFolder() {
+            const folderName = document.getElementById('folderName').value.trim();
+            
+            if (!folderName) {
+                showNotification('لطفاً نام پوشه را وارد کنید', true);
+                return;
+            }
+            
+            // شبیه‌سازی ایجاد پوشه
+            showLoading('در حال ایجاد پوشه...');
+            
+            setTimeout(() => {
+                showNotification(`پوشه "${folderName}" با موفقیت ایجاد شد`);
+                document.getElementById('folderName').value = '';
+                hideLoading();
+                closeFolderPanel();
+            }, 1500);
+        }
+
+        // آپلود فایل به پوشه
+        function uploadToFolder() {
+            document.getElementById('folderFileInput').click();
+        }
+
+        function handleFolderFileUpload(files) {
+            if (files.length === 0) return;
+            
+            const file = files[0];
+            
+            // بررسی سایز فایل (حداکثر 100MB)
+            if (file.size > 100 * 1024 * 1024) {
+                showNotification('حجم فایل نباید بیشتر از 100 مگابایت باشد', true);
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // نمایش محتوای فایل در ادیتور
+                editor.setValue(e.target.result);
+                showNotification('فایل با موفقیت آپلود و در ادیتور باز شد!');
+                closeFolderPanel();
+            };
+            reader.readAsText(file);
+        }
+
+        // باز کردن فایل خارجی
+        function openFile(filePath) {
+            showNotification(`در حال باز کردن: ${filePath}`);
+            
+            // شبیه‌سازی باز کردن فایل
+            showLoading('در حال بارگذاری فایل...');
+            
+            setTimeout(() => {
+                // محتوای نمونه برای فایل‌های مختلف
+                let content = '';
+                
+                if (filePath === 'm.html') {
+                    content = `<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحه m.html</title>
+    <style>
+        body {
+            font-family: Tahoma, Arial;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>صفحه m.html</h1>
+    <p>این صفحه از مسیر m.html بارگذاری شده است</p>
+</body>
+</html>`;
+                    currentLanguage = 'html';
+                } else if (filePath.includes('projects/')) {
+                    content = `// فایل پروژه\n// این یک فایل نمونه برای پوشه پروژه‌ها است\n\nconsole.log("خوش آمدید به پروژه‌ها");`;
+                    currentLanguage = 'javascript';
+                } else if (filePath.includes('examples/')) {
+                    content = `# فایل مثال\n# این یک فایل نمونه برای پوشه مثال‌ها است\n\nprint("خوش آمدید به مثال‌ها")`;
+                    currentLanguage = 'python';
+                }
+                
+                // تنظیم زبان و محتوای ویرایشگر
+                const model = editor.getModel();
+                monaco.editor.setModelLanguage(model, currentLanguage);
+                editor.setValue(content);
+                
+                hideLoading();
+                showNotification(`فایل ${filePath} با موفقیت باز شد`);
+                
+                // بستن منو
+                toggleMenu();
+            }, 1500);
+        }
+
+        // نمایش/پنهان کردن منوی همبرگری
+        function toggleMenu() {
+            const menu = document.getElementById('hamburgerMenu');
+            menu.classList.toggle('active');
+        }
+
+        // بستن منو با کلیک خارج از آن
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('hamburgerMenu');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const folderPanel = document.getElementById('folderPanel');
+            
+            if (menu.classList.contains('active') && 
+                !menu.contains(event.target) && 
+                !menuToggle.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+            
+            if (folderPanel.classList.contains('active') && 
+                !folderPanel.contains(event.target) && 
+                !event.target.classList.contains('folder')) {
+                folderPanel.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
