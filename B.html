@@ -1,45 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>بازی قهرمان من</title>
+    <title>بازی جنگنده آهنی</title>
     <style>
-        body {
-            background: linear-gradient(to bottom, #87CEEB, #1E90FF);
-            text-align: center;
-            font-family: Arial, sans-serif;
+        #warrior {
+            width: 150px; 
+            height: 150px; 
+            background: silver; 
+            border: 3px solid black;
         }
-        
-        #game-container {
-            margin: 50px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            width: 80%;
-        }
-        
-        #start-btn {
-            background: #4CAF50;
-            color: white;
-            padding: 15px 30px;
-            font-size: 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #w {
-           width: 100px;
-           height: 150px;
-           background: silver;    /* رنگ آهنی */
-           border: 3px solid black;
-      }
     </style>
 </head>
 <body>
     <div id="game-container">
         <h1>🚀 بازی ماجراجویی</h1>
         <p>قهرمان تو آماده adventures!</p>
-        <button id="start-btn" onclick="m1()">شروع بازی</button>
+        <button onclick="m1()">شروع بازی</button>
+        <div id="warrior"></div>
         <p id="game-status">برای شروع دکمه رو بزن</p>
     </div>
 
@@ -48,10 +25,15 @@
         let j = 40;
         let u = 20;
         let n = 10;
-      function m1() {
-      document.getElementById("w").innerHTML = 
-    "سلامت: " + m + "<br>قدرت: " + j;
-      }
-   </script>
-   </body>
+        
+        function m1() {
+            // نمایش جنگنده روی صفحه
+            document.getElementById("warrior").innerHTML = 
+                "سلامت: " + m + "<br>قدرت: " + j + "<br>سرعت: " + u;
+            
+            document.getElementById("game-status").innerHTML = 
+                "جنگنده آهنی ساخته شد!";
+        }
+    </script>
+</body>
 </html>
