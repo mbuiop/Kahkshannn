@@ -16,16 +16,16 @@
         }
 
         :root {
-            --primary: #2E7D32; /* سبز تیره */
-            --secondary: #4CAF50; /* سبز متوسط */
-            --accent: #8BC34A; /* سبز پسته */
+            --primary: #2E7D32;
+            --secondary: #4CAF50;
+            --accent: #8BC34A;
             --success: #388E3C;
             --warning: #F57C00;
             --danger: #D32F2F;
-            --dark: #1A1A1A; /* مشکی */
+            --dark: #1A1A1A;
             --light: #F5F5F5;
             --surface: rgba(255, 255, 255, 0.95);
-            --card-bg: #1A1A1A; /* مشکی برای کارت‌ها */
+            --card-bg: #1A1A1A;
         }
 
         body {
@@ -95,11 +95,11 @@
             font-weight: 700;
         }
 
-        /* منوی همبرگر - انتقال به سمت چپ */
+        /* منوی همبرگر */
         .hamburger-btn {
             position: absolute;
             top: 40px;
-            left: 15px; /* تغییر از right به left */
+            left: 15px;
             width: 40px;
             height: 40px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -143,38 +143,16 @@
             overflow: hidden;
             position: relative;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            background: var(--card-bg); /* پس‌زمینه مشکی */
+            background-size: cover;
+            background-position: center;
         }
 
-        .top-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(46, 125, 50, 0.7), rgba(139, 195, 74, 0.7));
-            z-index: 1;
+        .top-card:nth-child(1) {
+            background-image: url('m1.jpg');
         }
 
-        .card-content {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            color: white;
-            z-index: 2;
-            text-align: right;
-        }
-
-        .card-title {
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 3px;
-        }
-
-        .card-subtitle {
-            font-size: 11px;
-            opacity: 0.9;
+        .top-card:nth-child(2) {
+            background-image: url('m2.jpg');
         }
 
         /* محتوای اصلی */
@@ -185,7 +163,7 @@
             padding-bottom: 70px;
         }
 
-        /* ۶ دکمه در ۳ ردیف - با رنگ‌بندی جدید */
+        /* ۶ دکمه در ۳ ردیف */
         .buttons-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -194,7 +172,7 @@
         }
 
         .grid-btn {
-            background: var(--card-bg); /* پس‌زمینه مشکی */
+            background: var(--card-bg);
             backdrop-filter: blur(20px);
             border: 1.5px solid rgba(255,255,255,0.1);
             border-radius: 16px;
@@ -206,7 +184,7 @@
             align-items: center;
             gap: 8px;
             text-decoration: none;
-            color: white; /* متن سفید برای کنتراست بهتر */
+            color: white;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
@@ -243,7 +221,7 @@
 
         .btn-icon {
             font-size: 24px;
-            color: var(--accent); /* آیکون سبز پسته */
+            color: var(--accent);
             transition: all 0.2s ease;
         }
 
@@ -254,11 +232,11 @@
             line-height: 1.3;
         }
 
-        /* منوی کشویی - بهبود یافته */
+        /* منوی کشویی */
         .slide-menu {
             position: fixed;
             top: 0;
-            left: -100%; /* تغییر از right به left */
+            left: -100%;
             width: 85%;
             height: 100%;
             background: var(--surface);
@@ -266,7 +244,7 @@
             box-shadow: 8px 0 30px rgba(0,0,0,0.15);
             z-index: 99;
             transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 80px 20px 90px; /* افزایش padding پایین برای فاصله از ناوبری */
+            padding: 80px 20px 90px;
             overflow-y: auto;
         }
 
@@ -324,7 +302,7 @@
             font-size: 14px;
         }
 
-        /* ناوبری پایین - بهبود یافته */
+        /* ناوبری پایین */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -336,7 +314,7 @@
             padding: 12px 15px;
             display: flex;
             justify-content: space-around;
-            z-index: 101; /* افزایش z-index برای نمایش روی منو */
+            z-index: 101;
             box-shadow: 0 -3px 12px rgba(0,0,0,0.2);
         }
 
@@ -436,6 +414,106 @@
             text-align: center;
         }
 
+        /* پیام همگانی */
+        .announcement-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2001;
+            padding: 20px;
+        }
+
+        .announcement-modal.active {
+            display: flex;
+        }
+
+        .announcement-card {
+            background: var(--surface);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .announcement-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .announcement-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .announcement-subtitle {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .announcement-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .announcement-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .announcement-message {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+
+        .announcement-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .announcement-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .announcement-btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .announcement-btn-primary:active {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+        }
+
+        .announcement-btn-secondary {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--dark);
+        }
+
+        .announcement-btn-secondary:active {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
         /* جلوگیری از زوم */
         @media (max-width: 768px) {
             body {
@@ -443,7 +521,7 @@
             }
             
             .slide-menu {
-                padding-bottom: 100px; /* فاصله بیشتر در موبایل */
+                padding-bottom: 100px;
             }
         }
 
@@ -524,10 +602,34 @@
     </style>
 </head>
 <body>
+    <!-- صداها -->
+    <audio id="startupSound" src="m1.mp3" preload="auto"></audio>
+    <audio id="buttonSound" src="m5.mp3" preload="auto"></audio>
+
     <!-- لودینگ رنگین‌کمانی -->
     <div class="rainbow-loading" id="rainbowLoading">
         <div class="rainbow-spinner"></div>
         <div class="loading-text">سیستم مدیریت مالی در حال بارگذاری...</div>
+    </div>
+
+    <!-- پیام همگانی -->
+    <div class="announcement-modal" id="announcementModal">
+        <div class="announcement-card">
+            <div class="announcement-header">
+                <div class="announcement-title">پیام همگانی</div>
+                <div class="announcement-subtitle">به روزرسانی سیستم</div>
+            </div>
+            <div class="announcement-body">
+                <div class="announcement-icon">📢</div>
+                <div class="announcement-message">
+                    سیستم مدیریت مالی نسخه ۲.۰ با امکانات جدید و رابط کاربری بهبود یافته در دسترس است. برای اطلاعات بیشتر و مشاهده تغییرات، بخش راهنمایی را بررسی کنید.
+                </div>
+                <div class="announcement-actions">
+                    <button class="announcement-btn announcement-btn-secondary" id="announcementLater">بعداً</button>
+                    <button class="announcement-btn announcement-btn-primary" id="announcementClose">متوجه شدم</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- کانتینر اصلی -->
@@ -556,18 +658,8 @@
 
             <!-- قالب‌های بالایی -->
             <div class="top-cards">
-                <div class="top-card slide-up delay-2">
-                    <div class="card-content">
-                        <div class="card-title">تحلیل مالی</div>
-                        <div class="card-subtitle">گزارش‌های پیشرفته</div>
-                    </div>
-                </div>
-                <div class="top-card slide-up delay-3">
-                    <div class="card-content">
-                        <div class="card-title">مدیریت سرمایه</div>
-                        <div class="card-subtitle">بهینه‌سازی دارایی‌ها</div>
-                    </div>
-                </div>
+                <div class="top-card slide-up delay-2"></div>
+                <div class="top-card slide-up delay-3"></div>
             </div>
         </header>
 
@@ -575,27 +667,27 @@
         <main class="app-content">
             <!-- ۶ دکمه در ۳ ردیف -->
             <div class="buttons-grid">
-                <a href="m.html" class="grid-btn slide-up delay-1" onclick="showRainbowLoading(event)">
+                <a href="m.html" class="grid-btn slide-up delay-1" onclick="handleButtonClick(event)">
                     <div class="btn-icon">💰</div>
                     <div class="btn-text">مدیریت مالی</div>
                 </a>
-                <a href="m.html" class="grid-btn slide-up delay-2" onclick="showRainbowLoading(event)">
+                <a href="m.html" class="grid-btn slide-up delay-2" onclick="handleButtonClick(event)">
                     <div class="btn-icon">📊</div>
                     <div class="btn-text">گزارش‌ها</div>
                 </a>
-                <a href="m.html" class="grid-btn slide-up delay-3" onclick="showRainbowLoading(event)">
+                <a href="m.html" class="grid-btn slide-up delay-3" onclick="handleButtonClick(event)">
                     <div class="btn-icon">👥</div>
                     <div class="btn-text">کارمندان</div>
                 </a>
-                <a href="m.html" class="grid-btn slide-up delay-4" onclick="showRainbowLoading(event)">
+                <a href="m.html" class="grid-btn slide-up delay-4" onclick="handleButtonClick(event)">
                     <div class="btn-icon">🧮</div>
                     <div class="btn-text">مالیات</div>
                 </a>
-                <a href="m.html" class="grid-btn slide-up delay-5" onclick="showRainbowLoading(event)">
+                <a href="m.html" class="grid-btn slide-up delay-5" onclick="handleButtonClick(event)">
                     <div class="btn-icon">📄</div>
                     <div class="btn-text">فاکتور</div>
                 </a>
-                <a href="m.html" class="grid-btn slide-up delay-6" onclick="showRainbowLoading(event)">
+                <a href="m.html" class="grid-btn slide-up delay-6" onclick="handleButtonClick(event)">
                     <div class="btn-icon">₿</div>
                     <div class="btn-text">ارز دیجیتال</div>
                 </a>
@@ -604,15 +696,15 @@
 
         <!-- ناوبری پایین -->
         <nav class="bottom-nav">
-            <a href="m.html" class="nav-btn active" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="nav-btn active" onclick="handleButtonClick(event)">
                 <div class="nav-icon">🏠</div>
                 <div class="nav-label">خانه</div>
             </a>
-            <a href="m.html" class="nav-btn" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="nav-btn" onclick="handleButtonClick(event)">
                 <div class="nav-icon">📈</div>
                 <div class="nav-label">گزارش</div>
             </a>
-            <a href="m.html" class="nav-btn" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="nav-btn" onclick="handleButtonClick(event)">
                 <div class="nav-icon">⚙️</div>
                 <div class="nav-label">تنظیمات</div>
             </a>
@@ -622,39 +714,39 @@
     <!-- منوی کشویی - اکنون از سمت چپ باز می‌شود -->
     <div class="slide-menu" id="slideMenu">
         <div class="menu-items">
-            <a href="m.html" class="menu-item" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
                 <div class="menu-icon">👤</div>
                 <div class="menu-text">مدیریت کاربر</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
                 <div class="menu-icon">📄</div>
                 <div class="menu-text">ایجاد فاکتور</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
                 <div class="menu-icon">🏭</div>
                 <div class="menu-text">تولید</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
                 <div class="menu-icon">🧾</div>
                 <div class="menu-text">چک</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
                 <div class="menu-icon">₿</div>
                 <div class="menu-text">سبد خرید ارز</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
                 <div class="menu-icon">💸</div>
                 <div class="menu-text">راه کسب درآمد</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
                 <div class="menu-icon">💼</div>
                 <div class="menu-text">گاو صندوق دارایی</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
                 <div class="menu-icon">❓</div>
                 <div class="menu-text">راهنمایی</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="showRainbowLoading(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
                 <div class="menu-icon">🔔</div>
                 <div class="menu-text">یادآوری</div>
             </a>
@@ -664,15 +756,26 @@
     <script>
         // مدیریت لودینگ اولیه
         window.addEventListener('load', function() {
+            // پخش صدای شروع
+            const startupSound = document.getElementById('startupSound');
+            startupSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
+            
             setTimeout(() => {
                 document.getElementById('rainbowLoading').classList.remove('active');
+                checkAnnouncement();
             }, 2000);
         });
 
-        // نمایش لودینگ رنگین‌کمانی
-        function showRainbowLoading(event) {
+        // مدیریت کلیک روی دکمه‌ها
+        function handleButtonClick(event) {
             event.preventDefault();
             
+            // پخش صدای دکمه
+            const buttonSound = document.getElementById('buttonSound');
+            buttonSound.currentTime = 0;
+            buttonSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
+            
+            // نمایش لودینگ
             const loading = document.getElementById('rainbowLoading');
             loading.classList.add('active');
             
@@ -713,6 +816,11 @@
 
         hamburgerBtn.addEventListener('click', function() {
             slideMenu.classList.toggle('active');
+            
+            // پخش صدای دکمه برای منوی همبرگر
+            const buttonSound = document.getElementById('buttonSound');
+            buttonSound.currentTime = 0;
+            buttonSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
         });
 
         // بستن منو با کلیک خارج
@@ -730,6 +838,42 @@
                 });
                 this.classList.add('active');
             });
+        });
+
+        // مدیریت پیام همگانی
+        function checkAnnouncement() {
+            const lastShown = localStorage.getItem('announcementLastShown');
+            const now = new Date().getTime();
+            const oneDay = 24 * 60 * 60 * 1000; // 24 ساعت به میلی‌ثانیه
+            
+            // اگر قبلاً نمایش داده نشده یا 24 ساعت گذشته
+            if (!lastShown || (now - parseInt(lastShown)) > oneDay) {
+                setTimeout(() => {
+                    document.getElementById('announcementModal').classList.add('active');
+                }, 500);
+            }
+        }
+
+        // بستن پیام همگانی
+        document.getElementById('announcementClose').addEventListener('click', function() {
+            document.getElementById('announcementModal').classList.remove('active');
+            localStorage.setItem('announcementLastShown', new Date().getTime().toString());
+            
+            // پخش صدای دکمه
+            const buttonSound = document.getElementById('buttonSound');
+            buttonSound.currentTime = 0;
+            buttonSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
+        });
+
+        document.getElementById('announcementLater').addEventListener('click', function() {
+            document.getElementById('announcementModal').classList.remove('active');
+            // برای دکمه "بعداً" هم زمان را ذخیره می‌کنیم تا 24 ساعت بعد نمایش داده شود
+            localStorage.setItem('announcementLastShown', new Date().getTime().toString());
+            
+            // پخش صدای دکمه
+            const buttonSound = document.getElementById('buttonSound');
+            buttonSound.currentTime = 0;
+            buttonSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
         });
 
         // جلوگیری از زوم
