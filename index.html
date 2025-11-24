@@ -133,12 +133,12 @@
             display: flex;
             gap: 12px;
             padding: 0 15px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .top-card {
             flex: 1;
-            height: 100px;
+            height: 80px;
             border-radius: 16px;
             overflow: hidden;
             position: relative;
@@ -167,8 +167,8 @@
         .buttons-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .grid-btn {
@@ -176,18 +176,19 @@
             backdrop-filter: blur(20px);
             border: 1.5px solid rgba(255,255,255,0.1);
             border-radius: 16px;
-            padding: 18px 10px;
+            padding: 15px 8px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             text-decoration: none;
             color: white;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
+            min-height: 80px;
         }
 
         .grid-btn::before {
@@ -220,14 +221,14 @@
         }
 
         .btn-icon {
-            font-size: 24px;
+            font-size: 22px;
             color: var(--accent);
             transition: all 0.2s ease;
         }
 
         .btn-text {
             font-weight: 700;
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
             line-height: 1.3;
         }
@@ -255,14 +256,14 @@
         .menu-items {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .menu-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 14px;
+            padding: 12px;
             border-radius: 12px;
             background: rgba(46, 125, 50, 0.08);
             cursor: pointer;
@@ -280,13 +281,13 @@
         }
 
         .menu-icon {
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 15px;
             background: rgba(255,255,255,0.9);
             color: var(--primary);
             transition: all 0.2s ease;
@@ -299,7 +300,7 @@
 
         .menu-text {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         /* ناوبری پایین */
@@ -311,7 +312,7 @@
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255,255,255,0.1);
-            padding: 12px 15px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-around;
             z-index: 101;
@@ -321,17 +322,17 @@
         .nav-btn {
             background: none;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             text-decoration: none;
             color: #BDBDBD;
-            min-width: 60px;
+            min-width: 55px;
         }
 
         .nav-btn.active {
@@ -345,11 +346,11 @@
         }
 
         .nav-icon {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .nav-label {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
         }
 
@@ -374,8 +375,8 @@
         }
 
         .rainbow-spinner {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: conic-gradient(
                 var(--primary),
@@ -395,8 +396,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 50%;
         }
@@ -408,9 +409,9 @@
 
         .loading-text {
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            margin-top: 15px;
+            margin-top: 12px;
             text-align: center;
         }
 
@@ -426,7 +427,7 @@
             align-items: center;
             justify-content: center;
             z-index: 2001;
-            padding: 20px;
+            padding: 15px;
         }
 
         .announcement-modal.active {
@@ -435,9 +436,9 @@
 
         .announcement-card {
             background: var(--surface);
-            border-radius: 20px;
+            border-radius: 18px;
             width: 100%;
-            max-width: 400px;
+            max-width: 350px;
             overflow: hidden;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.4s ease-out;
@@ -445,54 +446,55 @@
 
         .announcement-header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             color: white;
         }
 
         .announcement-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .announcement-subtitle {
-            font-size: 13px;
+            font-size: 12px;
             opacity: 0.9;
         }
 
         .announcement-body {
-            padding: 20px;
+            padding: 15px;
             text-align: center;
         }
 
         .announcement-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
+            font-size: 40px;
+            margin-bottom: 10px;
             color: var(--primary);
         }
 
         .announcement-message {
-            font-size: 15px;
-            line-height: 1.6;
+            font-size: 13px;
+            line-height: 1.5;
             color: var(--dark);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .announcement-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .announcement-btn {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             font-family: inherit;
+            font-size: 12px;
         }
 
         .announcement-btn-primary {
@@ -521,7 +523,7 @@
             }
             
             .slide-menu {
-                padding-bottom: 100px;
+                padding-bottom: 90px;
             }
         }
 
@@ -550,26 +552,26 @@
         
         /* استایل‌های جدید برای بهبود ظاهر */
         .header-content {
-            margin-top: 8px;
+            margin-top: 5px;
             text-align: center;
-            padding: 0 40px;
+            padding: 0 35px;
         }
         
         .app-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--dark);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         
         .app-subtitle {
-            font-size: 13px;
+            font-size: 12px;
             color: #64748b;
         }
         
         /* بهبود اسکرول */
         .app-content::-webkit-scrollbar {
-            width: 4px;
+            width: 3px;
         }
         
         .app-content::-webkit-scrollbar-track {
@@ -587,7 +589,7 @@
         }
         
         .slide-menu::-webkit-scrollbar {
-            width: 4px;
+            width: 3px;
         }
         
         .slide-menu::-webkit-scrollbar-track {
@@ -599,12 +601,21 @@
             background: rgba(76, 175, 80, 0.5);
             border-radius: 2px;
         }
+
+        /* تنظیمات فونت برای نمایش بهتر */
+        .menu-text, .btn-text, .nav-label {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        }
     </style>
 </head>
 <body>
     <!-- صداها -->
-    <audio id="startupSound" src="m1.mp3" preload="auto"></audio>
-    <audio id="buttonSound" src="m5.mp3" preload="auto"></audio>
+    <audio id="startupSound" preload="auto">
+        <source src="m1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="buttonSound" preload="auto">
+        <source src="m5.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- لودینگ رنگین‌کمانی -->
     <div class="rainbow-loading" id="rainbowLoading">
@@ -622,7 +633,7 @@
             <div class="announcement-body">
                 <div class="announcement-icon">📢</div>
                 <div class="announcement-message">
-                    سیستم مدیریت مالی نسخه ۲.۰ با امکانات جدید و رابط کاربری بهبود یافته در دسترس است. برای اطلاعات بیشتر و مشاهده تغییرات، بخش راهنمایی را بررسی کنید.
+                    سیستم مدیریت مالی نسخه ۲.۰ با امکانات جدید و رابط کاربری بهبود یافته در دسترس است.
                 </div>
                 <div class="announcement-actions">
                     <button class="announcement-btn announcement-btn-secondary" id="announcementLater">بعداً</button>
@@ -667,27 +678,27 @@
         <main class="app-content">
             <!-- ۶ دکمه در ۳ ردیف -->
             <div class="buttons-grid">
-                <a href="m4.html" class="grid-btn slide-up delay-1" onclick="handleButtonClick(event)">
+                <a href="m4.html" class="grid-btn slide-up delay-1" onclick="handleButtonClick(event, 'm4.html')">
                     <div class="btn-icon">💰</div>
                     <div class="btn-text">مدیریت مالی</div>
                 </a>
-                <a href="m2.html" class="grid-btn slide-up delay-2" onclick="handleButtonClick(event)">
+                <a href="m2.html" class="grid-btn slide-up delay-2" onclick="handleButtonClick(event, 'm2.html')">
                     <div class="btn-icon">⏳️</div>
                     <div class="btn-text">تولید</div>
                 </a>
-                <a href="m3.html" class="grid-btn slide-up delay-3" onclick="handleButtonClick(event)">
+                <a href="m3.html" class="grid-btn slide-up delay-3" onclick="handleButtonClick(event, 'm3.html')">
                     <div class="btn-icon">👥</div>
                     <div class="btn-text">کارمندان</div>
                 </a>
-                <a href="m5.html" class="grid-btn slide-up delay-4" onclick="handleButtonClick(event)">
+                <a href="m5.html" class="grid-btn slide-up delay-4" onclick="handleButtonClick(event, 'm5.html')">
                     <div class="btn-icon">🧮</div>
                     <div class="btn-text">مالیات</div>
                 </a>
-                <a href="m6.html" class="grid-btn slide-up delay-5" onclick="handleButtonClick(event)">
+                <a href="m6.html" class="grid-btn slide-up delay-5" onclick="handleButtonClick(event, 'm6.html')">
                     <div class="btn-icon">📄</div>
                     <div class="btn-text">فاکتور</div>
                 </a>
-                <a href="m7.html" class="grid-btn slide-up delay-6" onclick="handleButtonClick(event)">
+                <a href="m7.html" class="grid-btn slide-up delay-6" onclick="handleButtonClick(event, 'm7.html')">
                     <div class="btn-icon">📝</div>
                     <div class="btn-text">مدریت چک</div>
                 </a>
@@ -696,15 +707,15 @@
 
         <!-- ناوبری پایین -->
         <nav class="bottom-nav">
-            <a href="m8.html" class="nav-btn active" onclick="handleButtonClick(event)">
+            <a href="m8.html" class="nav-btn active" onclick="handleButtonClick(event, 'm8.html')">
                 <div class="nav-icon">💵</div>
                 <div class="nav-label">سیگنال ترید</div>
             </a>
-            <a href="m.html" class="nav-btn" onclick="handleButtonClick(event)">
+            <a href="m.html" class="nav-btn" onclick="handleButtonClick(event, 'm.html')">
                 <div class="nav-icon">📈</div>
                 <div class="nav-label">گزارش</div>
             </a>
-            <a href="m.html" class="nav-btn" onclick="handleButtonClick(event)">
+            <a href="m.html" class="nav-btn" onclick="handleButtonClick(event, 'm.html')">
                 <div class="nav-icon">🎖</div>
                 <div class="nav-label">بازی</div>
             </a>
@@ -714,39 +725,39 @@
     <!-- منوی کشویی - اکنون از سمت چپ باز می‌شود -->
     <div class="slide-menu" id="slideMenu">
         <div class="menu-items">
-            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event, 'm.html')">
                 <div class="menu-icon">👤</div>
                 <div class="menu-text">مدیریت کاربر</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event, 'm.html')">
                 <div class="menu-icon">📄</div>
                 <div class="menu-text">ایجاد فاکتور</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event, 'm.html')">
                 <div class="menu-icon">🏭</div>
                 <div class="menu-text">تولید</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event, 'm.html')">
                 <div class="menu-icon">🧾</div>
                 <div class="menu-text">چک</div>
             </a>
-            <a href="m9.html" class="menu-item" onclick="handleButtonClick(event)">
+            <a href="m9.html" class="menu-item" onclick="handleButtonClick(event, 'm9.html')">
                 <div class="menu-icon">₿</div>
                 <div class="menu-text">سبد خرید ارز</div>
             </a>
-            <a href="m10.html" class="menu-item" onclick="handleButtonClick(event)">
+            <a href="m10.html" class="menu-item" onclick="handleButtonClick(event, 'm10.html')">
                 <div class="menu-icon">💸</div>
                 <div class="menu-text">راه کسب درآمد</div>
             </a>
-            <a href="https://hyperdash.info/?utm_source=chatgpt.com" class="menu-item" onclick="handleButtonClick(event)">
+            <a href="https://hyperdash.info/?utm_source=chatgpt.com" class="menu-item" onclick="handleButtonClick(event, 'https://hyperdash.info/?utm_source=chatgpt.com')">
                 <div class="menu-icon">🐳</div>
                 <div class="menu-text">نهنگ ارزدیجتال</div>
             </a>
-            <a href="https://www.toobit.com/fa/register?invite_code=5EQpCT" class="menu-item" onclick="handleButtonClick(event)">
+            <a href="https://www.toobit.com/fa/register?invite_code=5EQpCT" class="menu-item" onclick="handleButtonClick(event, 'https://www.toobit.com/fa/register?invite_code=5EQpCT')">
                 <div class="menu-icon">📥📤</div>
                 <div class="menu-text">صرافی</div>
             </a>
-            <a href="m.html" class="menu-item" onclick="handleButtonClick(event)">
+            <a href="m.html" class="menu-item" onclick="handleButtonClick(event, 'm.html')">
                 <div class="menu-icon">❓️</div>
                 <div class="menu-text">راهنمایی</div>
             </a>
@@ -758,7 +769,14 @@
         window.addEventListener('load', function() {
             // پخش صدای شروع
             const startupSound = document.getElementById('startupSound');
-            startupSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
+            try {
+                startupSound.volume = 0.7;
+                startupSound.play().catch(e => {
+                    console.log('پخش خودکار صدا مسدود شده، کاربر باید با صفحه تعامل کند');
+                });
+            } catch (error) {
+                console.log('خطا در پخش صدا:', error);
+            }
             
             setTimeout(() => {
                 document.getElementById('rainbowLoading').classList.remove('active');
@@ -767,13 +785,20 @@
         });
 
         // مدیریت کلیک روی دکمه‌ها
-        function handleButtonClick(event) {
+        function handleButtonClick(event, targetUrl) {
             event.preventDefault();
             
             // پخش صدای دکمه
             const buttonSound = document.getElementById('buttonSound');
-            buttonSound.currentTime = 0;
-            buttonSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
+            try {
+                buttonSound.currentTime = 0;
+                buttonSound.volume = 0.7;
+                buttonSound.play().catch(e => {
+                    console.log('پخش صدا مسدود شده');
+                });
+            } catch (error) {
+                console.log('خطا در پخش صدای دکمه:', error);
+            }
             
             // نمایش لودینگ
             const loading = document.getElementById('rainbowLoading');
@@ -781,8 +806,16 @@
             
             setTimeout(() => {
                 loading.classList.remove('active');
-                window.location.href = 'm.html';
-            }, 2000);
+                
+                // بررسی نوع لینک
+                if (targetUrl.startsWith('http')) {
+                    // لینک خارجی - باز کردن در تب جدید
+                    window.open(targetUrl, '_blank');
+                } else {
+                    // لینک داخلی - هدایت در همین پنجره
+                    window.location.href = targetUrl;
+                }
+            }, 1500);
         }
 
         // مدیریت زمان و تاریخ
@@ -819,8 +852,15 @@
             
             // پخش صدای دکمه برای منوی همبرگر
             const buttonSound = document.getElementById('buttonSound');
-            buttonSound.currentTime = 0;
-            buttonSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
+            try {
+                buttonSound.currentTime = 0;
+                buttonSound.volume = 0.7;
+                buttonSound.play().catch(e => {
+                    console.log('پخش صدا مسدود شده');
+                });
+            } catch (error) {
+                console.log('خطا در پخش صدای دکمه:', error);
+            }
         });
 
         // بستن منو با کلیک خارج
@@ -861,8 +901,15 @@
             
             // پخش صدای دکمه
             const buttonSound = document.getElementById('buttonSound');
-            buttonSound.currentTime = 0;
-            buttonSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
+            try {
+                buttonSound.currentTime = 0;
+                buttonSound.volume = 0.7;
+                buttonSound.play().catch(e => {
+                    console.log('پخش صدا مسدود شده');
+                });
+            } catch (error) {
+                console.log('خطا در پخش صدای دکمه:', error);
+            }
         });
 
         document.getElementById('announcementLater').addEventListener('click', function() {
@@ -872,8 +919,35 @@
             
             // پخش صدای دکمه
             const buttonSound = document.getElementById('buttonSound');
-            buttonSound.currentTime = 0;
-            buttonSound.play().catch(e => console.log('اتوماتیک پلی بلاک شده'));
+            try {
+                buttonSound.currentTime = 0;
+                buttonSound.volume = 0.7;
+                buttonSound.play().catch(e => {
+                    console.log('پخش صدا مسدود شده');
+                });
+            } catch (error) {
+                console.log('خطا در پخش صدای دکمه:', error);
+            }
+        });
+
+        // فعال کردن صداها با اولین تعامل کاربر
+        document.addEventListener('click', function enableAudio() {
+            const startupSound = document.getElementById('startupSound');
+            const buttonSound = document.getElementById('buttonSound');
+            
+            // تلاش برای پخش و توقف سریع برای فعال کردن صداها
+            startupSound.play().then(() => {
+                startupSound.pause();
+                startupSound.currentTime = 0;
+            }).catch(e => {});
+            
+            buttonSound.play().then(() => {
+                buttonSound.pause();
+                buttonSound.currentTime = 0;
+            }).catch(e => {});
+            
+            // حذف event listener پس از اولین اجرا
+            document.removeEventListener('click', enableAudio);
         });
 
         // جلوگیری از زوم
