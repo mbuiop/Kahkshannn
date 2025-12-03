@@ -1752,8 +1752,9 @@
             // محدود کردن بازیکن به مرزهای جهان
             const margin = 100;
             بازیکن.x = Math.max(b
-                                            بازیکن.width / 2 + margin,
-                Math.min(تنظیمات_بازی.اندازه_جهان - بازیکن.width / 2 - margin, بازیکن.x)
+            بازیکن.width / 2 
+            + margin,
+            Math.min(تنظیمات_بازی.اندازه_جهان - بازیکن.width / 2 - margin, بازیکن.x)
             );
             بازیکن.y = Math.max(
                 بازیکن.height / 2 + margin,
