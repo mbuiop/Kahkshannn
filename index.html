@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>داشبورد — دفتر حساب</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="dashboard" data-title="داشبورد" data-sub="نمای کلی وضعیت مالی">
+<div class="app-shell">
+  <aside class="sidebar" id="sidebarNav"></aside>
+  <main class="main">
+    <div class="topbar" id="topbar"></div>
+
+    <div class="cards" id="kpiCards"></div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h2>روند درآمد و هزینه (۶ ماه اخیر)</h2>
+        <canvas id="trendChart" width="480" height="240"></canvas>
+      </div>
+      <div class="panel">
+        <h2>هزینه به تفکیک دسته (این ماه)</h2>
+        <div class="chart-box" id="pieBox"></div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h2>چک‌های نزدیک به سررسید</h2>
+        <div id="chequeAlerts"></div>
+      </div>
+      <div class="panel">
+        <h2>آخرین تراکنش‌ها</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>تاریخ</th><th>دسته</th><th>مبلغ</th></tr></thead>
+            <tbody id="recentBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-note" id="recentEmpty" style="display:none;">هنوز تراکنشی ثبت نشده.</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/db.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/nav.js"></script>
+<script>
+function monthLabel(jy,jm){ return jMonths[jm-1].slice(0,3)+' '+toFa(jy); }
+
+function renderKPIs(){
+  var txns = DB.getTransactions();
+  var cheques = DB.getCheques();
+  var t0 = todayJalali();
+  var mKey = jalaliKey(t0[0],t0[1]);
+
+  var balance=0, mIncome=0, mExpense=0;
+  txns.forEach(function(t){
+    balance += (t.type==='income'? t.amount : -t.amount);
+    if(jalaliKey(t.jy,t.jm)===mKey){
+      if(t.type==='income') mIncome+=t.amount; else mExpense+=t.amount;
+    }
+  });
+
+  var pendingReceived = cheques.filter(function(c){ return c.type==='received' && (c.status==='hand'||c.status==='bank'); })
+    .reduce(function(s,c){ return s+c.amount; },0);
+  var pendingIssued = cheques.filter(function(c){ return c.type==='issued' && (c.status==='hand'||c.status==='bank'); })
+    .reduce(function(s,c){ return s+c.amount; },0);
+
+  var cards = [
+    { cls:'c-gold', label:'موجودی نقدی', value: fmtMoney(balance), note:'مجموع کل تراکنش‌ها' },
+    { cls:'c-green', label:'درآمد این ماه', value: fmtMoney(mIncome), note:monthLabel(t0[0],t0[1]) },
+    { cls:'c-red', label:'هزینه این ماه', value: fmtMoney(mExpense), note:monthLabel(t0[0],t0[1]) },
+    { cls:'c-blue', label:'چک‌های در جریان', value: fmtMoney(pendingReceived-pendingIssued), note:'دریافتی منهای پرداختی معوق' }
+  ];
+  document.getElementById('kpiCards').innerHTML = cards.map(function(c){
+    return '<div class="card '+c.cls+'"><div class="label">'+c.label+'</div><div class="value">'+c.value+'</div><div class="foot-note">'+c.note+'</div></div>';
+  }).join('');
+}
+
+function renderTrend(){
+  var txns = DB.getTransactions();
+  var t0 = todayJalali();
+  var months = [];
+  for(var i=5;i>=0;i--){
+    var jy=t0[0], jm=t0[1]-i;
+    while(jm<1){ jm+=12; jy-=1; }
+    months.push([jy,jm]);
+  }
+  var incomeVals = months.map(function(){ return 0; });
+  var expenseVals = months.map(function(){ return 0; });
+  txns.forEach(function(t){
+    months.forEach(function(m,i){
+      if(m[0]===t.jy && m[1]===t.jm){
+        if(t.type==='income') incomeVals[i]+=t.amount; else expenseVals[i]+=t.amount;
+      }
+    });
+  });
+  var labels = months.map(function(m){ return monthLabel(m[0],m[1]); });
+  var canvas = document.getElementById('trendChart');
+  drawGroupedBar(canvas, labels, [
+    { name:'درآمد', color:'#4FA37E', values: incomeVals },
+    { name:'هزینه', color:'#C24A5D', values: expenseVals }
+  ]);
+}
+
+function renderPie(){
+  var txns = DB.getTransactions();
+  var t0 = todayJalali();
+  var mKey = jalaliKey(t0[0],t0[1]);
+  var byCat = {};
+  txns.forEach(function(t){
+    if(t.type==='expense' && jalaliKey(t.jy,t.jm)===mKey){
+      byCat[t.category]=(byCat[t.category]||0)+t.amount;
+    }
+  });
+  var cats = Object.keys(byCat).sort(function(a,b){ return byCat[b]-byCat[a]; });
+  var total = cats.reduce(function(s,c){ return s+byCat[c]; },0);
+  var box = document.getElementById('pieBox');
+  if(total===0){ box.innerHTML='<div class="empty-note">هنوز هزینه‌ای برای این ماه ثبت نشده</div>'; return; }
+  box.innerHTML = '<canvas id="pieCanvas" width="160" height="160"></canvas><div class="legend" id="pieLegend"></div>';
+  var data = cats.map(function(c,i){ return { label:c, value:byCat[c], color: PALETTE[i%PALETTE.length] }; });
+  drawPie(document.getElementById('pieCanvas'), data);
+  document.getElementById('pieLegend').innerHTML = data.map(function(d){
+    var pct = Math.round((d.value/total)*100);
+    return '<div class="item"><span class="dot" style="background:'+d.color+'"></span><span>'+d.label+'</span><span class="amt">'+toFa(pct)+'٪</span></div>';
+  }).join('');
+}
+
+function renderChequeAlerts(){
+  var upcoming = DB.upcomingCheques(14).slice(0,6);
+  var box = document.getElementById('chequeAlerts');
+  if(upcoming.length===0){ box.innerHTML='<div class="empty-note">چک نزدیک به سررسیدی وجود ندارد</div>'; return; }
+  var t = todayJDN();
+  box.innerHTML = upcoming.map(function(c){
+    var d = gDateToJDN(c.dueDate);
+    var diff = d-t;
+    var when = diff<0 ? 'گذشته از سررسید' : (diff===0? 'امروز' : diff+' روز مانده');
+    var j = gDateToJalali(c.dueDate);
+    var name = c.party || DB.contactName(c.contactId);
+    return '<div class="alert-item"><div><div class="who">'+name+' — '+(c.type==='received'?'دریافتی':'پرداختی')+'</div>'+
+      '<div class="when">سررسید: '+jalaliStr(j[0],j[1],j[2])+' · '+when+'</div></div><div class="amt-cell '+c.type+'">'+fmtMoney(c.amount)+'</div></div>';
+  }).join('');
+}
+
+function renderRecent(){
+  var txns = DB.getTransactions().slice().sort(function(a,b){
+    return (b.jy-a.jy)||(b.jm-a.jm)||(b.jd-a.jd);
+  }).slice(0,8);
+  var body = document.getElementById('recentBody');
+  document.getElementById('recentEmpty').style.display = txns.length===0 ? 'block':'none';
+  body.innerHTML = txns.map(function(t){
+    return '<tr><td>'+jalaliStr(t.jy,t.jm,t.jd)+'</td><td><span class="tag">'+t.category+'</span></td>'+
+      '<td class="amt-cell '+t.type+'">'+(t.type==='income'?'+':'−')+' '+fmtMoney(t.amount)+'</td></tr>';
+  }).join('');
+}
+
+renderKPIs(); renderTrend(); renderPie(); renderChequeAlerts(); renderRecent();
+</script>
+</body>
+</html>
