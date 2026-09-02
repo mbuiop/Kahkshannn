@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>پلتفرم سیگنال | داشبورد کریپتو</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!--
+  ═══════════════════════════════════════════════════════════════
+  راهنمای فایل‌های رسانه‌ای — این فایل‌ها را کنار همین html بگذارید:
+    m1.jpg  → کارت سیگنال ۱      m1.mp4  → ویدیوی ۱
+    m2.jpg  → کارت سیگنال ۲      m2.mp4  → ویدیوی ۲
+    m3.jpg  → کارت سیگنال ۳
+    m4.jpg  → کارت سیگنال ۴
+    m9.jpg  → تصویر پس‌زمینه
+
+  به‌روزرسانی زنده‌ی تصاویر: هر ۲ ثانیه اپ به‌صورت خودکار فایل‌ها را
+  با یک پارامتر ضدکش (cache-bust) دوباره می‌خواند، پس اگر فایل m1.jpg
+  را با فایل جدیدی (با همان نام) جایگزین کنید، بدون رفرش صفحه در
+  اپ به‌روزرسانی می‌شود.
+  ═══════════════════════════════════════════════════════════════
+-->
+
+<style>
+  :root{
+    --bg:#0A0B08;
+    --bg2:#0F110C;
+    --surface:rgba(255,255,255,0.045);
+    --surface-2:rgba(255,255,255,0.075);
+    --border:rgba(255,255,255,0.09);
+    --text:#F4F6EF;
+    --text-soft:rgba(244,246,239,0.58);
+    --text-dim:rgba(244,246,239,0.38);
+    --pesteh:#8FCB5E;
+    --pesteh-dark:#4E7A31;
+    --pesteh-soft:rgba(143,203,94,0.16);
+    --ghermez:#FF5C5C;
+    --ghermez-dark:#B23434;
+    --ghermez-soft:rgba(255,92,92,0.16);
+    --radius-lg:26px;
+    --radius-md:18px;
+    --radius-sm:12px;
+    --shadow-deep: 0 24px 60px rgba(0,0,0,0.55);
+    --shadow-soft: 0 8px 22px rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; width:100%; overflow-x:hidden; background:var(--bg);}
+  body{
+    font-family:'Vazirmatn', sans-serif;
+    color:var(--text);
+    min-height:100vh; min-height:100dvh;
+  }
+  button{font-family:inherit; border:none; outline:none; background:none; cursor:pointer;}
+  img,video{display:block; max-width:100%;}
+  ::selection{background:var(--pesteh-soft);}
+  ::-webkit-scrollbar{width:0; height:0;}
+
+  /* ---------- Background layer ---------- */
+  .bg-wrap{ position:fixed; inset:0; z-index:0; overflow:hidden; perspective:1200px; }
+  .bg-img{
+    position:absolute; inset:-8%;
+    background-image:url('m9.jpg');
+    background-size:cover; background-position:center;
+    filter:blur(28px) saturate(1.1) brightness(0.42);
+    transform:scale(1.2);
+    transition:transform .4s ease-out;
+    will-change:transform;
+  }
+  .bg-tint{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(120% 85% at 50% -10%, rgba(10,11,8,0.25) 0%, rgba(10,11,8,0.78) 55%, rgba(10,11,8,0.96) 100%),
+      linear-gradient(180deg, rgba(143,203,94,0.05), rgba(255,92,92,0.05));
+  }
+  .bg-vignette{ position:absolute; inset:0; box-shadow: inset 0 0 160px 50px rgba(0,0,0,0.55); }
+  .bg-noise{
+    position:absolute; inset:0; opacity:.035; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- App shell ---------- */
+  .app{
+    position:relative; z-index:1;
+    max-width:480px; margin:0 auto;
+    min-height:100vh; min-height:100dvh;
+    display:flex; flex-direction:column;
+    padding:16px 14px calc(94px + env(safe-area-inset-bottom)) 14px;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:42px; height:42px; border-radius:13px;
+    background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 16px rgba(143,203,94,0.28);
+  }
+  .brand-mark svg{width:21px; height:21px;}
+  .brand-text h1{margin:0; font-size:15.5px; font-weight:800;}
+  .brand-text p{margin:0; font-size:11px; color:var(--text-soft); font-weight:500;}
+  .status-pill{
+    display:flex; align-items:center; gap:6px;
+    background:var(--surface); backdrop-filter:blur(14px);
+    border:1px solid var(--border);
+    padding:7px 12px; border-radius:100px;
+    font-size:11px; font-weight:600; color:var(--pesteh);
+  }
+  .status-dot{width:6px; height:6px; border-radius:50%; background:var(--pesteh); box-shadow:0 0 0 4px var(--pesteh-soft);}
+
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin:4px 2px 12px 2px; }
+  .section-head h2{margin:0; font-size:15px; font-weight:800;}
+  .section-head span{font-size:11px; color:var(--text-dim); font-weight:500;}
+
+  /* ---------- Signal grid — image only, no labels ---------- */
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .card{
+    position:relative; border-radius:var(--radius-lg); overflow:hidden;
+    aspect-ratio:3/4;
+    background:var(--surface);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow-soft);
+    transition:transform .18s ease;
+  }
+  .card:active{ transform:scale(0.955); }
+  .card .media{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .card .media-fallback{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(160deg, rgba(143,203,94,0.10), rgba(255,92,92,0.08));
+    color:var(--text-dim);
+  }
+  .card .media-fallback svg{width:30px; height:30px; opacity:.5;}
+  .card .edge-glow{ position:absolute; inset:0; border-radius:inherit; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 -40px 50px -20px rgba(0,0,0,0.55); pointer-events:none; }
+  .card .play-icon{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:48px; height:48px; border-radius:50%;
+    background:rgba(10,11,8,0.55); backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.18);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 20px rgba(0,0,0,0.4);
+  }
+  .card .play-icon svg{width:18px; height:18px; margin-inline-start:2px; fill:#fff;}
+
+  /* ---------- Bottom nav ---------- */
+  .navbar{ position:fixed; bottom:14px; left:0; right:0; display:flex; justify-content:center; z-index:40; padding-bottom:env(safe-area-inset-bottom); }
+  .navbar-inner{
+    display:flex; align-items:center; gap:5px;
+    background:rgba(18,20,15,0.72);
+    backdrop-filter:blur(22px) saturate(1.5);
+    -webkit-backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid rgba(255,255,255,0.09);
+    border-radius:100px; padding:6px;
+    box-shadow:0 16px 40px rgba(0,0,0,0.5);
+    width:calc(100% - 28px); max-width:452px;
+  }
+  .nav-btn{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:2px; padding:9px 4px 8px 4px; border-radius:100px;
+    color:var(--text-soft); font-size:10.5px; font-weight:700;
+    transition:all .22s ease;
+  }
+  .nav-btn svg{width:19px; height:19px; transition:all .22s ease;}
+  .nav-btn.active{ color:#0A0B08; }
+  .nav-btn[data-tab="signal"].active{ background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark)); box-shadow:0 8px 18px rgba(143,203,94,0.3);}
+  .nav-btn[data-tab="chart"].active{ background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark)); box-shadow:0 8px 18px rgba(143,203,94,0.3);}
+  .nav-btn[data-tab="guide"].active{ background:linear-gradient(135deg,var(--ghermez),var(--ghermez-dark)); box-shadow:0 8px 18px rgba(255,92,92,0.3);}
+  .nav-btn:not(.active):active{ background:rgba(255,255,255,0.06); }
+
+  /* ---------- Modal shell ---------- */
+  .modal{ position:fixed; inset:0; z-index:100; display:none; background:var(--bg); flex-direction:column; }
+  .modal.open{ display:flex; }
+  .modal-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 16px; background:rgba(15,17,12,0.9); backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border); flex-shrink:0;
+  }
+  .modal-header h3{margin:0; font-size:14.5px; font-weight:800;}
+  .close-btn{
+    width:32px; height:32px; border-radius:50%; background:var(--surface-2);
+    display:flex; align-items:center; justify-content:center; color:var(--text);
+  }
+  .close-btn svg{width:15px; height:15px;}
+  .close-btn:active{background:rgba(255,255,255,0.14);}
+
+  /* ---------- Chart modal — compact dark ---------- */
+  .chart-toolbar{
+    display:flex; gap:8px; padding:10px 14px; background:#0C0E09;
+    border-bottom:1px solid var(--border); flex-shrink:0; align-items:center;
+  }
+  .symbol-select-wrap{ position:relative; flex:1.3; min-width:0; }
+  .symbol-select-wrap svg.chev{ position:absolute; top:50%; inset-inline-start:12px; transform:translateY(-50%); width:13px; height:13px; pointer-events:none; color:var(--text-soft); }
+  select#symbolSelect{
+    width:100%; appearance:none; -webkit-appearance:none;
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    font-family:inherit; font-weight:700; font-size:12px;
+    padding:10px 32px 10px 12px; border-radius:var(--radius-sm);
+  }
+  .tf-group{ display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); padding:3px; border-radius:var(--radius-sm); flex-shrink:0; }
+  .tf-btn{ padding:7px 8px; border-radius:9px; font-size:10.5px; font-weight:700; color:var(--text-soft); }
+  .tf-btn.active{ background:var(--pesteh); color:#0A0B08; }
+  #chartContainer{ flex:1; width:100%; background:#0C0E09; min-height:0; }
+
+  /* ---------- Premium fullscreen lightbox ---------- */
+  .lightbox{ position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; }
+  .lightbox.open{ display:flex; }
+  .lightbox-bg{ position:absolute; inset:0; background-size:cover; background-position:center; filter:blur(46px) brightness(0.32) saturate(1.2); transform:scale(1.3); }
+  .lightbox-bg2{ position:absolute; inset:0; background:radial-gradient(80% 60% at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%); }
+  .lightbox-noise{ position:absolute; inset:0; opacity:.04; mix-blend-mode:overlay; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .lightbox-stage{
+    position:relative; z-index:3; width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    padding:0; perspective:1400px;
+  }
+  .lightbox-frame{
+    position:relative; max-width:100%; max-height:100%;
+    border-radius:0; overflow:hidden;
+    box-shadow:var(--shadow-deep);
+    opacity:0; transform:scale(0.88) rotateX(6deg) translateY(18px);
+    transition:opacity .42s cubic-bezier(.2,.8,.2,1), transform .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .lightbox.open .lightbox-frame{ opacity:1; transform:scale(1) rotateX(0) translateY(0); }
+  .lightbox-frame img{ width:100vw; height:100dvh; object-fit:contain; background:#000; }
+  .lightbox-frame video{ width:100vw; height:100dvh; object-fit:contain; background:#000; }
+  .lightbox-frame::after{
+    content:''; position:absolute; inset:0; pointer-events:none;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  .lightbox-close{
+    position:fixed; top:18px; inset-inline-start:18px; z-index:6;
+    width:40px; height:40px; border-radius:50%;
+    background:rgba(255,255,255,0.1); backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,0.16);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 20px rgba(0,0,0,0.4);
+  }
+  .lightbox-close svg{width:16px; height:16px;}
+  .lightbox-hint{
+    position:fixed; bottom:22px; left:0; right:0; text-align:center; z-index:6;
+    font-size:11px; color:rgba(255,255,255,0.55); font-weight:600;
+    pointer-events:none;
+  }
+
+  /* ---------- Guide — rich professional content ---------- */
+  .guide-scroll{ flex:1; overflow-y:auto; padding:16px 14px 44px 14px; }
+  .guide-intro{
+    background:linear-gradient(135deg, rgba(143,203,94,0.12), rgba(255,92,92,0.08));
+    border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:18px;
+  }
+  .guide-intro b{font-size:14px; display:block; margin-bottom:5px;}
+  .guide-intro span{font-size:12px; color:var(--text-soft); line-height:2;}
+
+  .guide-cat{ margin-bottom:22px; }
+  .guide-cat-head{ display:flex; align-items:center; gap:9px; margin-bottom:11px; padding:0 2px; }
+  .guide-cat-icon{
+    width:32px; height:32px; border-radius:10px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .guide-cat-icon svg{width:16px; height:16px;}
+  .guide-cat-head h3{ margin:0; font-size:13.5px; font-weight:800; }
+  .guide-cat-head span{ font-size:10.5px; color:var(--text-dim); font-weight:600; }
+
+  .guide-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md);
+    padding:13px 14px; margin-bottom:9px;
+    border-inline-start:3px solid transparent;
+    display:flex; gap:11px; align-items:flex-start;
+  }
+  .guide-card .gn{
+    flex-shrink:0; width:24px; height:24px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:800; margin-top:1px;
+  }
+  .guide-card .gt{ flex:1; min-width:0; }
+  .guide-card .gt b{ display:block; font-size:12.8px; font-weight:700; margin-bottom:3px; color:var(--text); }
+  .guide-card .gt p{ margin:0; font-size:11.8px; line-height:1.9; color:var(--text-soft); }
+
+  @media (max-width:360px){ .app{ padding-inline:11px; } .grid{ gap:9px; } }
+</style>
+</head>
+<body>
+
+  <div class="bg-wrap">
+    <div class="bg-img" id="bgImg"></div>
+    <div class="bg-tint"></div>
+    <div class="bg-vignette"></div>
+    <div class="bg-noise"></div>
+  </div>
+
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A0B08" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h7v7"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>پلتفرم سیگنال</h1>
+          <p>تحلیل و آموزش بازار کریپتو</p>
+        </div>
+      </div>
+      <div class="status-pill"><span class="status-dot"></span> بازار باز</div>
+    </div>
+
+    <div class="section-head"><h2>سیگنال‌های امروز</h2><span>۶ مورد</span></div>
+
+    <div class="grid" id="signalGrid">
+      <div class="card" data-type="image" data-src="m1.jpg">
+        <img class="media" data-base="m1.jpg" data-live src="m1.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="edge-glow"></div>
+      </div>
+      <div class="card" data-type="image" data-src="m2.jpg">
+        <img class="media" data-base="m2.jpg" data-live src="m2.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="edge-glow"></div>
+      </div>
+      <div class="card" data-type="image" data-src="m3.jpg">
+        <img class="media" data-base="m3.jpg" data-live src="m3.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="edge-glow"></div>
+      </div>
+      <div class="card" data-type="image" data-src="m4.jpg">
+        <img class="media" data-base="m4.jpg" data-live src="m4.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="edge-glow"></div>
+      </div>
+      <div class="card" data-type="video" data-src="m1.mp4">
+        <video class="media" data-base="m1.mp4" src="m1.mp4" muted preload="metadata"></video>
+        <div class="edge-glow"></div>
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+      </div>
+      <div class="card" data-type="video" data-src="m2.mp4">
+        <video class="media" data-base="m2.mp4" src="m2.mp4" muted preload="metadata"></video>
+        <div class="edge-glow"></div>
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <button class="nav-btn active" data-tab="signal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l2-7 4 14 3-10 2 6h5"/></svg>
+        سیگنال
+      </button>
+      <button class="nav-btn" data-tab="chart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        چارت
+      </button>
+      <button class="nav-btn" data-tab="guide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        راهنمایی
+      </button>
+    </div>
+  </div>
+
+  <!-- Chart modal -->
+  <div class="modal" id="chartModal">
+    <div class="modal-header">
+      <h3>چارت زنده</h3>
+      <button class="close-btn" data-close="chart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="chart-toolbar">
+      <div class="symbol-select-wrap">
+        <select id="symbolSelect"></select>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="tf-group" id="tfGroup">
+        <button class="tf-btn" data-tf="1">1m</button>
+        <button class="tf-btn" data-tf="15">15m</button>
+        <button class="tf-btn active" data-tf="60">1h</button>
+        <button class="tf-btn" data-tf="240">4h</button>
+        <button class="tf-btn" data-tf="D">1D</button>
+      </div>
+    </div>
+    <div id="chartContainer"></div>
+  </div>
+
+  <!-- Guide modal -->
+  <div class="modal" id="guideModal">
+    <div class="modal-header">
+      <h3>راهنمای ترید</h3>
+      <button class="close-btn" data-close="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="guide-scroll" id="guideScroll">
+      <div class="guide-intro">
+        <b>راهنمای جامع معامله‌گری در بازار کریپتو</b>
+        <span>این راهنما حاصل جمع‌بندی اصول پایه‌ی مدیریت ریسک، روانشناسی معاملاتی و تحلیل بازار است. پیش از هر معامله، مرور این نکات می‌تواند از تصمیمات هیجانی جلوگیری کند.</span>
+      </div>
+      <div id="guideCats"></div>
+    </div>
+  </div>
+
+  <!-- Fullscreen lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-bg" id="lightboxBg"></div>
+    <div class="lightbox-bg2"></div>
+    <div class="lightbox-noise"></div>
+    <button class="lightbox-close" id="lightboxClose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="lightbox-stage">
+      <div class="lightbox-frame" id="lightboxFrame"></div>
+    </div>
+    <div class="lightbox-hint">برای بستن، لمس کنید</div>
+  </div>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+(function(){
+
+  /* ================= Background parallax ================= */
+  var bgImg = document.getElementById('bgImg');
+  window.addEventListener('scroll', function(){
+    var y = window.scrollY || 0;
+    bgImg.style.transform = 'scale(1.2) translateY(' + (y*0.04) + 'px)';
+  }, {passive:true});
+  window.addEventListener('deviceorientation', function(e){
+    if(e.gamma == null) return;
+    var ry = Math.max(-8, Math.min(8, e.gamma/6));
+    bgImg.style.transform = 'scale(1.22) rotateY(' + (ry*0.4) + 'deg)';
+  });
+
+  /* ================= Live asset refresh (cache-busting watcher) =================
+     چون این صفحه به‌صورت محلی اجرا می‌شود، امکان "file watch" واقعی وجود ندارد؛
+     بنابراین هر ۲ ثانیه منابع تصویری با یک نسخه‌ی جدید (querystring) دوباره از
+     روی دیسک خوانده می‌شوند تا در صورت جایگزینی فایل، نسخه‌ی تازه فوراً نمایش
+     داده شود — بدون نیاز به رفرش دستی صفحه. ویدیوهایی که در حال پخش نیستند نیز
+     به همین شکل تازه‌سازی می‌شوند تا فریم پیش‌نمایش‌شان به‌روز بماند. */
+  function bust(url){ return url + '?v=' + Date.now(); }
+  function refreshAssets(){
+    bgImg.style.backgroundImage = "url('" + bust('m9.jpg') + "')";
+    document.querySelectorAll('img[data-live]').forEach(function(img){
+      img.src = bust(img.dataset.base);
+    });
+    document.querySelectorAll('video.media').forEach(function(v){
+      if(v.paused){ v.src = bust(v.dataset.base); }
+    });
+  }
+  setInterval(refreshAssets, 2000);
+
+  /* ================= Tabs / navigation ================= */
+  var navBtns = document.querySelectorAll('.nav-btn');
+  var chartModal = document.getElementById('chartModal');
+  var guideModal = document.getElementById('guideModal');
+  var chartInited = false;
+
+  function setActive(tab){ navBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.tab === tab); }); }
+
+  navBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var tab = btn.dataset.tab;
+      setActive(tab);
+      if(tab === 'signal'){
+        chartModal.classList.remove('open'); guideModal.classList.remove('open');
+        window.scrollTo({top:0, behavior:'smooth'});
+      } else if(tab === 'chart'){
+        guideModal.classList.remove('open'); chartModal.classList.add('open');
+        if(!chartInited){ initChart(); chartInited = true; }
+      } else if(tab === 'guide'){
+        chartModal.classList.remove('open'); guideModal.classList.add('open');
+      }
+    });
+  });
+  document.querySelectorAll('[data-close]').forEach(function(b){
+    b.addEventListener('click', function(){
+      chartModal.classList.remove('open'); guideModal.classList.remove('open'); setActive('signal');
+    });
+  });
+
+  /* ================= Crypto-only symbol list (200 coins) ================= */
+  var coins = ["BTC","ETH","BNB","XRP","SOL","ADA","DOGE","TRX","DOT","MATIC",
+  "LTC","AVAX","LINK","ATOM","UNI","XLM","ETC","FIL","APT","ARB",
+  "NEAR","OP","INJ","SUI","SHIB","ICP","HBAR","VET","ALGO","SAND",
+  "MANA","AXS","EGLD","FTM","THETA","XTZ","EOS","AAVE","MKR","GRT",
+  "CHZ","ENJ","ZEC","DASH","NEO","IOTA","KSM","RUNE","CAKE","CRV",
+  "COMP","SNX","YFI","1INCH","BAT","ZIL","ONE","HOT","ANKR","CELR",
+  "SKL","OCEAN","RSR","STORJ","BAND","KAVA","RVN","WAVES","QTUM","ICX",
+  "ONT","ZRX","KNC","LRC","REN","BAL","UMA","SUSHI","ALPHA","PERP",
+  "CVC","NKN","COTI","CTSI","DENT","DUSK","FET","GALA","GAL","GMT",
+  "GTC","HIGH","HOOK","IDEX","ILV","IMX","JASMY","JOE","KDA","KLAY",
+  "LDO","LEVER","LINA","LIT","LOOM","LPT","LQTY","LUNA","LUNC","MAGIC",
+  "MASK","MDT","MINA","MTL","MULTI","NMR","OGN","OMG","ORN","OXT",
+  "PAXG","PEOPLE","PHA","POLYX","PROM","PUNDIX","QUICK","RAD","RARE","RARI",
+  "RAY","REEF","REI","REQ","RGT","RLC","ROSE","RPL","SC","SFP",
+  "SLP","SNT","SPELL","SSV","STG","STMX","STPT","STRAX","STX","SUPER",
+  "SXP","SYS","TFUEL","TLM","TOMO","TRB","TRU","TVK","TWT","UNFI",
+  "UTK","VOXEL","VTHO","WAN","WING","WOO","XEC","XEM","XNO","XVS",
+  "YGG","ZEN","ZK","PEPE","WIF","BONK","FLOKI","TON","PYTH","JUP",
+  "STRK","TIA","SEI","ORDI","WLD","ENA","W","ETHFI","ONDO","NOT",
+  "RENDER","TAO","AR","KAS","BEAM","BLUR","CFX","GLMR","ASTR","CKB"];
+
+  var select = document.getElementById('symbolSelect');
+  coins.forEach(function(c){
+    var opt = document.createElement('option');
+    opt.value = 'BINANCE:' + c + 'USDT';
+    opt.textContent = c + ' / USDT';
+    select.appendChild(opt);
+  });
+  select.value = 'BINANCE:BTCUSDT';
+
+  var currentInterval = '60';
+  var tfBtns = document.querySelectorAll('.tf-btn');
+  tfBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      tfBtns.forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      currentInterval = b.dataset.tf;
+      initChart();
+    });
+  });
+
+  function initChart(){
+    document.getElementById('chartContainer').innerHTML = '';
+    new TradingView.widget({
+      autosize:true,
+      symbol: select.value,
+      interval: currentInterval,
+      timezone:'Asia/Tehran',
+      theme:'dark',
+      style:'1',
+      locale:'fa_IR',
+      backgroundColor:'#0C0E09',
+      gridColor:'rgba(255,255,255,0.06)',
+      toolbar_bg:'#0C0E09',
+      enable_publishing:false,
+      hide_top_toolbar:true,
+      hide_side_toolbar:true,
+      hide_legend:false,
+      withdateranges:false,
+      allow_symbol_change:false,
+      save_image:false,
+      container_id:'chartContainer'
+    });
+  }
+  select.addEventListener('change', function(){ initChart(); });
+
+  /* ================= Rich professional guide content ================= */
+  var categories = [
+    { title:'مدیریت ریسک و سرمایه', icon:'shield', color:'pesteh', items:[
+      ['تعیین حد ضرر پیش از ورود','هرگز وارد معامله نشوید مگر آنکه از قبل بدانید در چه قیمتی از آن خارج خواهید شد. حد ضرر باید بر اساس ساختار قیمت تعیین شود، نه یک عدد دلخواه.'],
+      ['محدودیت ریسک در هر معامله','به‌طور معمول بین یک تا دو درصد از کل سرمایه در هر معامله ریسک کنید تا چند ضرر متوالی حساب شما را از بین نبرد.'],
+      ['نسبت سود به ریسک مناسب','پیش از ورود بسنجید که آیا سود بالقوه حداقل دو تا سه برابر ریسک احتمالی است؛ در غیر این صورت از معامله صرف‌نظر کنید.'],
+      ['تنوع در دارایی‌ها','تمام سرمایه را روی یک ارز دیجیتال متمرکز نکنید؛ توزیع ریسک میان چند دارایی نوسانات حساب را کاهش می‌دهد.'],
+      ['مدیریت اهرم','استفاده از اهرم بالا سود و زیان را چند برابر می‌کند؛ برای اکثر معامله‌گران، اهرم پایین و کنترل‌شده منطقی‌تر است.'],
+      ['حفظ سرمایه در اولویت است','هدف اصلی هر معامله‌گر حرفه‌ای، حفظ سرمایه است نه کسب سود سریع؛ بدون سرمایه، فرصتی برای معامله باقی نمی‌ماند.'],
+      ['اجتناب از میانگین‌گیری نزولی بدون برنامه','افزودن به یک موقعیت زیان‌ده بدون تحلیل و حد ضرر مشخص، ریسک را به‌شدت افزایش می‌دهد.'],
+      ['تعیین سقف ضرر روزانه','برای خود یک سقف ضرر روزانه یا هفتگی تعیین کنید و در صورت رسیدن به آن، معاملات را متوقف کنید.'],
+      ['ذخیره‌ی مالی جدا از حساب معاملاتی','همیشه بخشی از سرمایه را خارج از بازار و به‌عنوان ذخیره‌ی اضطراری نگه دارید.'],
+      ['بازبینی دوره‌ای اندازه‌ی موقعیت','با رشد یا کاهش سرمایه، اندازه‌ی معاملات را متناسب با موجودی جدید تنظیم کنید.']
+    ]},
+    { title:'روانشناسی معامله‌گری', icon:'brain', color:'ghermez', items:[
+      ['کنترل ترس و طمع','این دو احساس بزرگ‌ترین دشمن تصمیم‌گیری منطقی هستند؛ تصمیمات را بر اساس برنامه بگیرید، نه هیجان لحظه‌ای.'],
+      ['پرهیز از معامله برای جبران ضرر','بعد از یک ضرر، تلاش برای جبران سریع معمولاً به تصمیمات پرریسک و ضررهای بزرگ‌تر منجر می‌شود.'],
+      ['پذیرش عدم قطعیت بازار','هیچ تحلیلی صد در صد درست نیست؛ معامله‌گری یعنی کار کردن با احتمالات، نه پیش‌بینی قطعی.'],
+      ['حفظ آرامش در نوسانات شدید','در روزهای پرنوسان، تصمیم‌گیری احساسی می‌تواند نتیجه‌ی ماه‌ها تحلیل درست را از بین ببرد.'],
+      ['فاصله گرفتن پس از ضررهای متوالی','اگر چند معامله پشت سر هم ضررده بود، استراحت کنید و شرایط ذهنی خود را بازیابی کنید.'],
+      ['اجتناب از اعتماد به نفس کاذب','چند سود متوالی می‌تواند باعث افزایش بی‌رویه ریسک شود؛ به برنامه‌ی خود پایبند بمانید.'],
+      ['ثبت احساسات در کنار معاملات','در دفترچه‌ی معاملاتی، حالت روانی خود هنگام ورود و خروج را نیز یادداشت کنید تا الگوهای رفتاری را بشناسید.'],
+      ['دوری از فومو (ترس از دست دادن فرصت)','ورود عجولانه به یک حرکت قیمتی بزرگ بدون تحلیل، یکی از رایج‌ترین اشتباهات معامله‌گران تازه‌کار است.'],
+      ['واقع‌بین بودن نسبت به بازدهی','انتظار سودهای غیرواقعی و سریع، مسیر را به سمت ریسک‌های غیرمنطقی سوق می‌دهد.'],
+      ['استراحت ذهنی منظم','خستگی ذهنی باعث کاهش تمرکز و افزایش خطا در تحلیل و اجرای معامله می‌شود.']
+    ]},
+    { title:'تحلیل تکنیکال', icon:'chart', color:'pesteh', items:[
+      ['شناخت روند اصلی بازار','پیش از هر تصمیم، مشخص کنید روند غالب صعودی، نزولی یا خنثی است و در جهت آن معامله کنید.'],
+      ['اهمیت سطوح حمایت و مقاومت','این سطوح نقاطی هستند که در گذشته واکنش قیمتی رخ داده و احتمال واکنش مجدد در آن‌ها بالاست.'],
+      ['تایید سیگنال در چند تایم‌فریم','یک سیگنال معتبرتر است وقتی در تایم‌فریم بالاتر و پایین‌تر هم‌راستا باشد.'],
+      ['توجه به حجم معاملات','افزایش حجم در جهت حرکت قیمت، اعتبار آن حرکت را تقویت می‌کند.'],
+      ['استفاده هدفمند از اندیکاتورها','اندیکاتورها ابزار کمکی برای تایید تحلیل هستند، نه منبع اصلی تصمیم‌گیری.'],
+      ['شناسایی الگوهای قیمتی','الگوهایی مانند مثلث، پرچم و سر و شانه می‌توانند نشانه‌ی ادامه یا بازگشت روند باشند.'],
+      ['بررسی نقاط نقدینگی بازار','بسیاری از حرکات ناگهانی قیمت، نتیجه‌ی جمع‌آوری نقدینگی در نزدیکی سطوح کلیدی است.'],
+      ['اهمیت کندل‌های تاییدی','پیش از ورود بر اساس یک سطح، منتظر بسته شدن کندل تاییدکننده در آن ناحیه بمانید.'],
+      ['دوری از تحلیل بیش از حد','بررسی هم‌زمان تعداد زیادی اندیکاتور می‌تواند باعث سردرگمی و تصمیم‌گیری تاخیری شود.'],
+      ['ثبت و بازبینی تحلیل‌های گذشته','مقایسه‌ی پیش‌بینی‌های قبلی با نتیجه‌ی واقعی بازار، دقت تحلیل شما را در طول زمان بهبود می‌دهد.']
+    ]},
+    { title:'استراتژی و برنامه‌ریزی', icon:'target', color:'ghermez', items:[
+      ['داشتن یک برنامه‌ی معاملاتی مکتوب','شرایط ورود، خروج، حد ضرر و حد سود را پیش از معامله به‌صورت مشخص و مکتوب تعیین کنید.'],
+      ['پایبندی به یک استراتژی مشخص','تغییر مداوم استراتژی بر اساس نتایج کوتاه‌مدت، مانع از سنجش واقعی عملکرد آن می‌شود.'],
+      ['تست استراتژی در حساب آزمایشی','پیش از استفاده از سرمایه‌ی واقعی، عملکرد استراتژی را در محیط آزمایشی بسنجید.'],
+      ['تعریف معیار موفقیت معامله','موفقیت یک معامله را بر اساس پایبندی به برنامه بسنجید، نه فقط نتیجه‌ی سود یا زیان آن.'],
+      ['برنامه‌ریزی برای سناریوهای مختلف','برای هر معامله سناریوی صعودی، نزولی و خنثی را از قبل در نظر بگیرید.'],
+      ['اهمیت زمان‌بندی بازار کریپتو','نوسانات بازار کریپتو در ساعات مختلف شبانه‌روز متفاوت است؛ زمان‌های پرحجم را بشناسید.'],
+      ['توجه به رویدادهای مهم بازار','اخبار کلان اقتصادی و رویدادهای مرتبط با پروژه‌ها می‌توانند نوسانات شدید ایجاد کنند.'],
+      ['بازبینی هفتگی عملکرد','در پایان هر هفته معاملات خود را مرور کنید تا نقاط قوت و ضعف استراتژی مشخص شود.'],
+      ['تعیین هدف بلندمدت','رشد سرمایه را در بازه‌ی زمانی بلندمدت بسنجید، نه بر اساس نتیجه‌ی یک یا چند معامله.'],
+      ['انعطاف‌پذیری در برابر شرایط جدید بازار','در صورت تغییر ساختار بازار، استراتژی را به‌صورت آگاهانه و بر اساس داده بازبینی کنید.']
+    ]},
+    { title:'اجرای معامله و مهارت‌های عملی', icon:'bolt', color:'pesteh', items:[
+      ['بررسی نقدینگی و اسپرد نماد','پیش از ورود به معامله، اسپرد و حجم معاملات نماد موردنظر را بررسی کنید تا از هزینه‌های اضافی جلوگیری شود.'],
+      ['استفاده از سفارش‌های محدود','در صورت امکان از سفارش‌های limit به‌جای market استفاده کنید تا نقطه‌ی ورود دقیق‌تری داشته باشید.'],
+      ['جابه‌جا نکردن حد ضرر پس از ورود','تغییر حد ضرر برای فرار از یک ضرر کوچک، معمولاً منجر به ضرر بزرگ‌تر می‌شود.'],
+      ['برداشت تدریجی سود','در معاملات سودده، بخشی از سود را در مسیر حرکت برداشت کنید تا ریسک بازگشت قیمت کاهش یابد.'],
+      ['استفاده از حد ضرر متحرک','در روندهای قوی، جابه‌جایی تدریجی حد ضرر در جهت سود می‌تواند بخشی از سود را قفل کند.'],
+      ['ثبت دقیق جزئیات هر معامله','نقطه‌ی ورود، خروج، دلیل معامله و نتیجه را برای تحلیل بعدی یادداشت کنید.'],
+      ['آگاهی از کارمزدها','در معاملات مکرر، کارمزد صرافی می‌تواند بخش قابل‌توجهی از سود را کاهش دهد.'],
+      ['امنیت حساب و کیف پول','همیشه از احراز هویت دو مرحله‌ای و ذخیره‌سازی امن دارایی دیجیتال اطمینان حاصل کنید.'],
+      ['اجتناب از معامله در شرایط خستگی','تصمیم‌گیری در حالت خستگی یا عجله، احتمال خطای اجرایی را افزایش می‌دهد.'],
+      ['یادگیری مستمر','بازار کریپتو دائم در حال تغییر است؛ به‌روز نگه داشتن دانش، مزیت رقابتی معامله‌گر را حفظ می‌کند.']
+    ]}
+  ];
+
+  var icons = {
+    shield:'<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/>',
+    brain:'<path d="M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-2 5v1a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/>',
+    chart:'<path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/>',
+    target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    bolt:'<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>'
+  };
+
+  var wrap = document.getElementById('guideCats');
+  categories.forEach(function(cat){
+    var section = document.createElement('div');
+    section.className = 'guide-cat';
+
+    var head = document.createElement('div');
+    head.className = 'guide-cat-head';
+    var iconBg = cat.color === 'pesteh' ? 'background:rgba(143,203,94,0.14); color:#8FCB5E;' : 'background:rgba(255,92,92,0.14); color:#FF5C5C;';
+    head.innerHTML =
+      '<div class="guide-cat-icon" style="' + iconBg + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + icons[cat.icon] + '</svg></div>' +
+      '<div><h3>' + cat.title + '</h3><span>' + cat.items.length + ' نکته</span></div>';
+    section.appendChild(head);
+
+    cat.items.forEach(function(item, i){
+      var card = document.createElement('div');
+      card.className = 'guide-card';
+      var borderColor = cat.color === 'pesteh' ? '#8FCB5E' : '#FF5C5C';
+      var numBg = cat.color === 'pesteh' ? 'background:rgba(143,203,94,0.14); color:#8FCB5E;' : 'background:rgba(255,92,92,0.14); color:#FF5C5C;';
+      card.style.borderInlineStartColor = borderColor;
+      card.innerHTML =
+        '<div class="gn" style="' + numBg + '">' + (i+1) + '</div>' +
+        '<div class="gt"><b>' + item[0] + '</b><p>' + item[1] + '</p></div>';
+      section.appendChild(card);
+    });
+
+    wrap.appendChild(section);
+  });
+
+  /* ================= Premium fullscreen lightbox ================= */
+  var lightbox = document.getElementById('lightbox');
+  var lbFrame = document.getElementById('lightboxFrame');
+  var lbBg = document.getElementById('lightboxBg');
+  var lbClose = document.getElementById('lightboxClose');
+
+  document.querySelectorAll('.card').forEach(function(card){
+    card.addEventListener('click', function(){
+      var type = card.dataset.type;
+      var src = card.dataset.src;
+      lbFrame.innerHTML = '';
+      if(type === 'image'){
+        lbBg.style.backgroundImage = "url('" + src + "')";
+        var img = document.createElement('img');
+        img.src = src;
+        lbFrame.appendChild(img);
+      } else {
+        lbBg.style.backgroundImage = "url('m9.jpg')";
+        var vid = document.createElement('video');
+        vid.src = src; vid.controls = true; vid.autoplay = true; vid.playsInline = true; vid.muted = false;
+        lbFrame.appendChild(vid);
+      }
+      lightbox.classList.add('open');
+    });
+  });
+
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    setTimeout(function(){
+      lbFrame.querySelectorAll('video').forEach(function(v){ v.pause(); });
+      lbFrame.innerHTML = '';
+    }, 300);
+  }
+  lbClose.addEventListener('click', function(e){ e.stopPropagation(); closeLightbox(); });
+  lightbox.addEventListener('click', function(e){
+    if(e.target.tagName === 'VIDEO') return;
+    closeLightbox();
+  });
+
+})();
+</script>
+</body>
+</html>
