@@ -11,272 +11,223 @@
 <!--
   ═══════════════════════════════════════════════════════════════
   راهنمای فایل‌های رسانه‌ای — این فایل‌ها را کنار همین html بگذارید:
-    m1.jpg  → کارت سیگنال ۱      m1.mp4  → ویدیوی ۱
-    m2.jpg  → کارت سیگنال ۲      m2.mp4  → ویدیوی ۲
-    m3.jpg  → کارت سیگنال ۳
-    m4.jpg  → کارت سیگنال ۴
-    m9.jpg  → تصویر پس‌زمینه
+    m1.jpg  m2.jpg  m3.jpg  m4.jpg   → کارت‌های سیگنال
+    m1.mp4  m2.mp4                   → ویدیوها
+    m9.jpg                           → تصویر پس‌زمینه
 
-  به‌روزرسانی زنده‌ی تصاویر: هر ۲ ثانیه اپ به‌صورت خودکار فایل‌ها را
-  با یک پارامتر ضدکش (cache-bust) دوباره می‌خواند، پس اگر فایل m1.jpg
-  را با فایل جدیدی (با همان نام) جایگزین کنید، بدون رفرش صفحه در
-  اپ به‌روزرسانی می‌شود.
+  آپدیت زنده تصاویر: هر ۲ ثانیه فایل‌ها با پارامتر ضدکش دوباره خوانده
+  می‌شوند، پس جایگزینی فایل با همان نام بلافاصله در اپ دیده می‌شود.
+
+  سیستم‌های اضافه‌شده در این نسخه:
+    • نوار قیمت زنده (از API عمومی بایننس)
+    • علاقه‌مندی‌ها (ذخیره محلی)
+    • یادداشت شخصی روی هر سیگنال (ذخیره محلی)
+    • هشدار قیمت داخل چارت (بر اساس قیمت لحظه‌ای)
+    • جست‌وجو در راهنما
+    • پنل تنظیمات
   ═══════════════════════════════════════════════════════════════
 -->
 
 <style>
   :root{
-    --bg:#0A0B08;
-    --bg2:#0F110C;
-    --surface:rgba(255,255,255,0.045);
-    --surface-2:rgba(255,255,255,0.075);
-    --border:rgba(255,255,255,0.09);
-    --text:#F4F6EF;
-    --text-soft:rgba(244,246,239,0.58);
-    --text-dim:rgba(244,246,239,0.38);
-    --pesteh:#8FCB5E;
-    --pesteh-dark:#4E7A31;
-    --pesteh-soft:rgba(143,203,94,0.16);
-    --ghermez:#FF5C5C;
-    --ghermez-dark:#B23434;
-    --ghermez-soft:rgba(255,92,92,0.16);
+    --pesteh:#7FAF5B;
+    --pesteh-dark:#5C8B3E;
+    --pesteh-soft:#DCEBC7;
+    --pesteh-soft2:#EEF5E2;
+    --ghermez:#E15252;
+    --ghermez-dark:#C23C3C;
+    --ghermez-soft:#FBDCDA;
+    --ink:#26301F;
+    --ink-soft:#5B6653;
+    --ink-dim:#8FA184;
+    --glass:rgba(255,255,255,0.64);
+    --glass-strong:rgba(255,255,255,0.88);
+    --line:rgba(38,48,31,0.09);
     --radius-lg:26px;
     --radius-md:18px;
     --radius-sm:12px;
-    --shadow-deep: 0 24px 60px rgba(0,0,0,0.55);
-    --shadow-soft: 0 8px 22px rgba(0,0,0,0.35);
+    --shadow-1: 0 10px 30px rgba(38,48,31,0.12);
+    --shadow-2: 0 4px 14px rgba(38,48,31,0.10);
+    --bg-base:#EFF3E8;
   }
 
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0; padding:0; width:100%; overflow-x:hidden; background:var(--bg);}
-  body{
-    font-family:'Vazirmatn', sans-serif;
-    color:var(--text);
-    min-height:100vh; min-height:100dvh;
-  }
+  html,body{ margin:0; padding:0; width:100%; overflow-x:hidden; font-family:'Vazirmatn', sans-serif; color:var(--ink); background:var(--bg-base); }
+  body{ min-height:100vh; min-height:100dvh; }
   button{font-family:inherit; border:none; outline:none; background:none; cursor:pointer;}
   img,video{display:block; max-width:100%;}
+  input,textarea{font-family:inherit;}
   ::selection{background:var(--pesteh-soft);}
-  ::-webkit-scrollbar{width:0; height:0;}
 
   /* ---------- Background layer ---------- */
-  .bg-wrap{ position:fixed; inset:0; z-index:0; overflow:hidden; perspective:1200px; }
+  .bg-wrap{ position:fixed; inset:0; z-index:0; overflow:hidden; perspective:1000px; }
   .bg-img{
-    position:absolute; inset:-8%;
-    background-image:url('m9.jpg');
-    background-size:cover; background-position:center;
-    filter:blur(28px) saturate(1.1) brightness(0.42);
-    transform:scale(1.2);
-    transition:transform .4s ease-out;
-    will-change:transform;
+    position:absolute; inset:-6%;
+    background-image:url('m9.jpg'); background-size:cover; background-position:center;
+    filter:blur(22px) saturate(1.15) brightness(0.94);
+    transform:scale(1.18); transition:transform .35s ease-out; will-change:transform;
   }
   .bg-tint{
     position:absolute; inset:0;
     background:
-      radial-gradient(120% 85% at 50% -10%, rgba(10,11,8,0.25) 0%, rgba(10,11,8,0.78) 55%, rgba(10,11,8,0.96) 100%),
-      linear-gradient(180deg, rgba(143,203,94,0.05), rgba(255,92,92,0.05));
+      radial-gradient(120% 90% at 50% 0%, rgba(239,243,232,0.15) 0%, rgba(239,243,232,0.55) 55%, rgba(239,243,232,0.9) 100%),
+      linear-gradient(180deg, rgba(127,175,91,0.14), rgba(225,82,82,0.10));
   }
-  .bg-vignette{ position:absolute; inset:0; box-shadow: inset 0 0 160px 50px rgba(0,0,0,0.55); }
-  .bg-noise{
-    position:absolute; inset:0; opacity:.035; mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+  .bg-vignette{ position:absolute; inset:0; box-shadow: inset 0 0 140px 40px rgba(20,26,14,0.25); }
 
   /* ---------- App shell ---------- */
-  .app{
-    position:relative; z-index:1;
-    max-width:480px; margin:0 auto;
-    min-height:100vh; min-height:100dvh;
-    display:flex; flex-direction:column;
-    padding:16px 14px calc(94px + env(safe-area-inset-bottom)) 14px;
-  }
+  .app{ position:relative; z-index:1; max-width:480px; margin:0 auto; min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; padding:16px 14px calc(94px + env(safe-area-inset-bottom)) 14px; }
 
   /* ---------- Header ---------- */
-  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-  .brand{ display:flex; align-items:center; gap:10px; }
-  .brand-mark{
-    width:42px; height:42px; border-radius:13px;
-    background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 6px 16px rgba(143,203,94,0.28);
-  }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:8px; }
+  .brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .brand-mark{ width:42px; height:42px; border-radius:13px; flex-shrink:0; background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark)); display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-2); }
   .brand-mark svg{width:21px; height:21px;}
-  .brand-text h1{margin:0; font-size:15.5px; font-weight:800;}
-  .brand-text p{margin:0; font-size:11px; color:var(--text-soft); font-weight:500;}
-  .status-pill{
-    display:flex; align-items:center; gap:6px;
-    background:var(--surface); backdrop-filter:blur(14px);
-    border:1px solid var(--border);
-    padding:7px 12px; border-radius:100px;
-    font-size:11px; font-weight:600; color:var(--pesteh);
+  .brand-text{min-width:0;}
+  .brand-text h1{margin:0; font-size:15px; font-weight:800; white-space:nowrap;}
+  .brand-text p{margin:0; font-size:10.5px; color:var(--ink-soft); font-weight:500; white-space:nowrap;}
+  .topbar-actions{ display:flex; align-items:center; gap:7px; flex-shrink:0; }
+  .icon-pill{
+    width:38px; height:38px; border-radius:50%; background:var(--glass-strong); backdrop-filter:blur(10px);
+    border:1px solid var(--line); box-shadow:var(--shadow-2);
+    display:flex; align-items:center; justify-content:center; color:var(--ink-soft);
   }
-  .status-dot{width:6px; height:6px; border-radius:50%; background:var(--pesteh); box-shadow:0 0 0 4px var(--pesteh-soft);}
+  .icon-pill svg{width:16px; height:16px;}
 
-  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin:4px 2px 12px 2px; }
+  /* ---------- Ticker marquee ---------- */
+  .ticker-bar{ overflow:hidden; white-space:nowrap; background:var(--glass-strong); backdrop-filter:blur(10px); border:1px solid var(--line); border-radius:100px; padding:10px 0; margin-bottom:12px; box-shadow:var(--shadow-2); }
+  .ticker-track{ display:inline-flex; animation:tickerScroll 32s linear infinite; }
+  .ticker-track:hover{ animation-play-state:paused; }
+  .ticker-item{ display:inline-flex; align-items:center; gap:6px; padding:0 18px; font-size:11.5px; font-weight:700; border-inline-end:1px solid var(--line); }
+  .ticker-item .sym{color:var(--ink);}
+  .ticker-item .px{color:var(--ink-soft); font-weight:600;}
+  .ticker-item .chg{ padding:2px 6px; border-radius:100px; font-size:10px; font-weight:800; }
+  .ticker-item .chg.up{ background:var(--pesteh-soft); color:var(--pesteh-dark); }
+  .ticker-item .chg.down{ background:var(--ghermez-soft); color:var(--ghermez-dark); }
+  @keyframes tickerScroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  /* ---------- Filter chips ---------- */
+  .filter-chips{ display:flex; gap:8px; margin-bottom:12px; }
+  .chip{ padding:8px 15px; border-radius:100px; font-size:11.5px; font-weight:700; background:var(--glass); border:1px solid var(--line); color:var(--ink-soft); transition:all .2s ease; }
+  .chip.active{ background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark)); color:#fff; border-color:transparent; box-shadow:0 6px 14px rgba(92,139,62,0.3); }
+
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin:2px 2px 12px 2px; }
   .section-head h2{margin:0; font-size:15px; font-weight:800;}
-  .section-head span{font-size:11px; color:var(--text-dim); font-weight:500;}
+  .section-head span{font-size:11px; color:var(--ink-dim); font-weight:500;}
 
-  /* ---------- Signal grid — image only, no labels ---------- */
-  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .card{
-    position:relative; border-radius:var(--radius-lg); overflow:hidden;
-    aspect-ratio:3/4;
-    background:var(--surface);
-    border:1px solid var(--border);
-    box-shadow:var(--shadow-soft);
-    transition:transform .18s ease;
-  }
-  .card:active{ transform:scale(0.955); }
+  /* ---------- Signal grid ---------- */
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+  .card{ position:relative; border-radius:var(--radius-lg); overflow:hidden; aspect-ratio:3/4; background:var(--glass); border:1px solid rgba(255,255,255,0.55); box-shadow:var(--shadow-1); transition:transform .18s ease; }
+  .card.hidden-card{ display:none; }
+  .card:active{ transform:scale(0.96); }
   .card .media{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  .card .media-fallback{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    background:linear-gradient(160deg, rgba(143,203,94,0.10), rgba(255,92,92,0.08));
-    color:var(--text-dim);
-  }
+  .card .media-fallback{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg,var(--pesteh-soft),var(--pesteh-soft2)); color:var(--pesteh-dark); }
   .card .media-fallback svg{width:30px; height:30px; opacity:.5;}
-  .card .edge-glow{ position:absolute; inset:0; border-radius:inherit; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 -40px 50px -20px rgba(0,0,0,0.55); pointer-events:none; }
-  .card .play-icon{
-    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    width:48px; height:48px; border-radius:50%;
-    background:rgba(10,11,8,0.55); backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,0.18);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 8px 20px rgba(0,0,0,0.4);
-  }
-  .card .play-icon svg{width:18px; height:18px; margin-inline-start:2px; fill:#fff;}
+  .card .scrim{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(20,26,14,0) 60%, rgba(15,20,10,0.42) 100%); pointer-events:none; }
+  .card .top-actions{ position:absolute; top:9px; left:9px; right:9px; display:flex; justify-content:space-between; z-index:2; }
+  .icon-btn{ width:29px; height:29px; border-radius:50%; background:rgba(255,255,255,0.88); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.16); }
+  .icon-btn svg{width:14px; height:14px; stroke:var(--ink-soft); transition:all .15s ease;}
+  .icon-btn.fav.active{ background:var(--ghermez); }
+  .icon-btn.fav.active svg{ fill:#fff; stroke:#fff; }
+  .icon-btn.note.has-note{ background:var(--pesteh); }
+  .icon-btn.note.has-note svg{ stroke:#fff; }
+  .card .play-icon{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,0.86); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,0.25); }
+  .card .play-icon svg{width:19px; height:19px; margin-inline-start:2px; fill:var(--ghermez);}
 
   /* ---------- Bottom nav ---------- */
   .navbar{ position:fixed; bottom:14px; left:0; right:0; display:flex; justify-content:center; z-index:40; padding-bottom:env(safe-area-inset-bottom); }
-  .navbar-inner{
-    display:flex; align-items:center; gap:5px;
-    background:rgba(18,20,15,0.72);
-    backdrop-filter:blur(22px) saturate(1.5);
-    -webkit-backdrop-filter:blur(22px) saturate(1.5);
-    border:1px solid rgba(255,255,255,0.09);
-    border-radius:100px; padding:6px;
-    box-shadow:0 16px 40px rgba(0,0,0,0.5);
-    width:calc(100% - 28px); max-width:452px;
-  }
-  .nav-btn{
-    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:2px; padding:9px 4px 8px 4px; border-radius:100px;
-    color:var(--text-soft); font-size:10.5px; font-weight:700;
-    transition:all .22s ease;
-  }
-  .nav-btn svg{width:19px; height:19px; transition:all .22s ease;}
-  .nav-btn.active{ color:#0A0B08; }
-  .nav-btn[data-tab="signal"].active{ background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark)); box-shadow:0 8px 18px rgba(143,203,94,0.3);}
-  .nav-btn[data-tab="chart"].active{ background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark)); box-shadow:0 8px 18px rgba(143,203,94,0.3);}
-  .nav-btn[data-tab="guide"].active{ background:linear-gradient(135deg,var(--ghermez),var(--ghermez-dark)); box-shadow:0 8px 18px rgba(255,92,92,0.3);}
-  .nav-btn:not(.active):active{ background:rgba(255,255,255,0.06); }
+  .navbar-inner{ display:flex; align-items:center; gap:6px; background:var(--glass-strong); backdrop-filter:blur(18px) saturate(1.4); -webkit-backdrop-filter:blur(18px) saturate(1.4); border:1px solid rgba(255,255,255,0.6); border-radius:100px; padding:7px; box-shadow:0 14px 34px rgba(38,48,31,0.22); width:calc(100% - 32px); max-width:448px; }
+  .nav-btn{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:10px 6px 9px 6px; border-radius:100px; color:var(--ink-soft); font-size:11px; font-weight:700; transition:all .22s ease; }
+  .nav-btn svg{width:20px; height:20px; transition:all .22s ease;}
+  .nav-btn.active{ background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark)); color:#fff; box-shadow:0 8px 18px rgba(92,139,62,0.38); }
+  .nav-btn[data-tab="guide"].active{ background:linear-gradient(135deg,var(--ghermez),var(--ghermez-dark)); box-shadow:0 8px 18px rgba(194,60,60,0.38); }
+  .nav-btn:not(.active):active{ background:rgba(38,48,31,0.06); }
 
   /* ---------- Modal shell ---------- */
-  .modal{ position:fixed; inset:0; z-index:100; display:none; background:var(--bg); flex-direction:column; }
+  .modal{ position:fixed; inset:0; z-index:100; display:none; background:var(--bg-base); flex-direction:column; }
   .modal.open{ display:flex; }
-  .modal-header{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 16px; background:rgba(15,17,12,0.9); backdrop-filter:blur(16px);
-    border-bottom:1px solid var(--border); flex-shrink:0;
-  }
-  .modal-header h3{margin:0; font-size:14.5px; font-weight:800;}
-  .close-btn{
-    width:32px; height:32px; border-radius:50%; background:var(--surface-2);
-    display:flex; align-items:center; justify-content:center; color:var(--text);
-  }
-  .close-btn svg{width:15px; height:15px;}
-  .close-btn:active{background:rgba(255,255,255,0.14);}
+  .modal-header{ display:flex; align-items:center; justify-content:space-between; padding:16px 16px 12px 16px; background:var(--glass-strong); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); flex-shrink:0; }
+  .modal-header h3{margin:0; font-size:15.5px; font-weight:800;}
+  .close-btn{ width:34px; height:34px; border-radius:50%; background:rgba(38,48,31,0.06); display:flex; align-items:center; justify-content:center; }
+  .close-btn svg{width:16px; height:16px;}
+  .close-btn:active{background:rgba(38,48,31,0.12);}
 
-  /* ---------- Chart modal — compact dark ---------- */
-  .chart-toolbar{
-    display:flex; gap:8px; padding:10px 14px; background:#0C0E09;
-    border-bottom:1px solid var(--border); flex-shrink:0; align-items:center;
-  }
-  .symbol-select-wrap{ position:relative; flex:1.3; min-width:0; }
-  .symbol-select-wrap svg.chev{ position:absolute; top:50%; inset-inline-start:12px; transform:translateY(-50%); width:13px; height:13px; pointer-events:none; color:var(--text-soft); }
-  select#symbolSelect{
-    width:100%; appearance:none; -webkit-appearance:none;
-    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
-    font-family:inherit; font-weight:700; font-size:12px;
-    padding:10px 32px 10px 12px; border-radius:var(--radius-sm);
-  }
-  .tf-group{ display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); padding:3px; border-radius:var(--radius-sm); flex-shrink:0; }
-  .tf-btn{ padding:7px 8px; border-radius:9px; font-size:10.5px; font-weight:700; color:var(--text-soft); }
-  .tf-btn.active{ background:var(--pesteh); color:#0A0B08; }
+  /* ---------- Chart modal ---------- */
+  .chart-toolbar{ display:flex; gap:8px; padding:12px 16px; background:#fff; border-bottom:1px solid var(--line); flex-shrink:0; }
+  .symbol-select-wrap{ position:relative; flex:1; }
+  .symbol-select-wrap svg.chev{ position:absolute; top:50%; inset-inline-start:14px; transform:translateY(-50%); width:14px; height:14px; pointer-events:none; color:var(--ink-soft); }
+  select#symbolSelect{ width:100%; appearance:none; -webkit-appearance:none; background:var(--pesteh-soft2); border:1.5px solid var(--pesteh-soft); color:var(--ink); font-family:inherit; font-weight:700; font-size:13px; padding:11px 36px 11px 14px; border-radius:var(--radius-sm); }
+  .bell-btn{ width:44px; height:44px; border-radius:var(--radius-sm); background:var(--pesteh-soft2); border:1.5px solid var(--pesteh-soft); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; }
+  .bell-btn svg{width:18px; height:18px; color:var(--pesteh-dark);}
+  .bell-btn .dot{ position:absolute; top:6px; inset-inline-end:6px; width:8px; height:8px; border-radius:50%; background:var(--ghermez); display:none; }
+  .bell-btn.has-alerts .dot{ display:block; }
+  .alert-panel{ display:none; background:#fff; border-bottom:1px solid var(--line); padding:13px 16px; flex-shrink:0; }
+  .alert-panel.open{ display:block; }
+  .alert-row{ display:flex; gap:8px; margin-bottom:10px; }
+  .alert-row input{ flex:1; min-width:0; border:1.5px solid var(--pesteh-soft); background:var(--pesteh-soft2); border-radius:var(--radius-sm); padding:10px 12px; font-weight:700; font-size:13px; color:var(--ink); }
+  .alert-add-btn{ background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark)); color:#fff; font-weight:800; font-size:12px; padding:0 16px; border-radius:var(--radius-sm); flex-shrink:0; }
+  .alert-hint{ font-size:10.5px; color:var(--ink-dim); margin-bottom:8px; }
+  .alert-list{ display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto; }
+  .alert-chip{ display:flex; align-items:center; justify-content:space-between; background:var(--pesteh-soft2); border-radius:12px; padding:9px 11px; font-size:11.5px; font-weight:700; }
+  .alert-chip.triggered{ background:var(--ghermez-soft); }
+  .alert-chip button{ color:var(--ghermez-dark); font-size:17px; line-height:1; padding:2px 4px; }
   #chartContainer{ flex:1; width:100%; background:#0C0E09; min-height:0; }
 
   /* ---------- Premium fullscreen lightbox ---------- */
-  .lightbox{ position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; }
+  .lightbox{ position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; background:#000; }
   .lightbox.open{ display:flex; }
   .lightbox-bg{ position:absolute; inset:0; background-size:cover; background-position:center; filter:blur(46px) brightness(0.32) saturate(1.2); transform:scale(1.3); }
   .lightbox-bg2{ position:absolute; inset:0; background:radial-gradient(80% 60% at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%); }
-  .lightbox-noise{ position:absolute; inset:0; opacity:.04; mix-blend-mode:overlay; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-  .lightbox-stage{
-    position:relative; z-index:3; width:100%; height:100%;
-    display:flex; align-items:center; justify-content:center;
-    padding:0; perspective:1400px;
-  }
-  .lightbox-frame{
-    position:relative; max-width:100%; max-height:100%;
-    border-radius:0; overflow:hidden;
-    box-shadow:var(--shadow-deep);
-    opacity:0; transform:scale(0.88) rotateX(6deg) translateY(18px);
-    transition:opacity .42s cubic-bezier(.2,.8,.2,1), transform .5s cubic-bezier(.2,.8,.2,1);
-  }
+  .lightbox-stage{ position:relative; z-index:3; width:100%; height:100%; display:flex; align-items:center; justify-content:center; perspective:1400px; }
+  .lightbox-frame{ position:relative; max-width:100%; max-height:100%; overflow:hidden; opacity:0; transform:scale(0.88) rotateX(6deg) translateY(18px); transition:opacity .42s cubic-bezier(.2,.8,.2,1), transform .5s cubic-bezier(.2,.8,.2,1); }
   .lightbox.open .lightbox-frame{ opacity:1; transform:scale(1) rotateX(0) translateY(0); }
-  .lightbox-frame img{ width:100vw; height:100dvh; object-fit:contain; background:#000; }
-  .lightbox-frame video{ width:100vw; height:100dvh; object-fit:contain; background:#000; }
-  .lightbox-frame::after{
-    content:''; position:absolute; inset:0; pointer-events:none;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-  }
-  .lightbox-close{
-    position:fixed; top:18px; inset-inline-start:18px; z-index:6;
-    width:40px; height:40px; border-radius:50%;
-    background:rgba(255,255,255,0.1); backdrop-filter:blur(16px);
-    border:1px solid rgba(255,255,255,0.16);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 8px 20px rgba(0,0,0,0.4);
-  }
+  .lightbox-frame img, .lightbox-frame video{ width:100vw; height:100dvh; object-fit:contain; background:#000; }
+  .lightbox-close{ position:fixed; top:18px; inset-inline-start:18px; z-index:6; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.1); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.16); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(0,0,0,0.4); }
   .lightbox-close svg{width:16px; height:16px;}
-  .lightbox-hint{
-    position:fixed; bottom:22px; left:0; right:0; text-align:center; z-index:6;
-    font-size:11px; color:rgba(255,255,255,0.55); font-weight:600;
-    pointer-events:none;
-  }
+  .lightbox-hint{ position:fixed; bottom:22px; left:0; right:0; text-align:center; z-index:6; font-size:11px; color:rgba(255,255,255,0.55); font-weight:600; pointer-events:none; }
 
-  /* ---------- Guide — rich professional content ---------- */
+  /* ---------- Guide ---------- */
+  .guide-search-wrap{ padding:12px 16px 0 16px; background:var(--glass-strong); border-bottom:1px solid var(--line); flex-shrink:0; }
+  .guide-search{ position:relative; margin-bottom:12px; }
+  .guide-search svg{ position:absolute; top:50%; inset-inline-start:13px; transform:translateY(-50%); width:15px; height:15px; color:var(--ink-dim); }
+  .guide-search input{ width:100%; background:#fff; border:1.5px solid var(--line); border-radius:var(--radius-sm); padding:11px 38px 11px 14px; font-size:12.5px; font-weight:600; color:var(--ink); }
   .guide-scroll{ flex:1; overflow-y:auto; padding:16px 14px 44px 14px; }
-  .guide-intro{
-    background:linear-gradient(135deg, rgba(143,203,94,0.12), rgba(255,92,92,0.08));
-    border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:18px;
-  }
+  .guide-intro{ background:linear-gradient(135deg,var(--pesteh-soft2),var(--pesteh-soft)); border-radius:var(--radius-md); padding:16px; margin-bottom:18px; border:1px solid var(--pesteh-soft); }
   .guide-intro b{font-size:14px; display:block; margin-bottom:5px;}
-  .guide-intro span{font-size:12px; color:var(--text-soft); line-height:2;}
-
-  .guide-cat{ margin-bottom:22px; }
-  .guide-cat-head{ display:flex; align-items:center; gap:9px; margin-bottom:11px; padding:0 2px; }
-  .guide-cat-icon{
-    width:32px; height:32px; border-radius:10px; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-  }
+  .guide-intro span{font-size:12px; color:var(--ink-soft); line-height:2;}
+  .guide-cat{ margin-bottom:20px; }
+  .guide-cat-head{ display:flex; align-items:center; gap:9px; margin-bottom:10px; padding:0 2px; }
+  .guide-cat-icon{ width:32px; height:32px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
   .guide-cat-icon svg{width:16px; height:16px;}
   .guide-cat-head h3{ margin:0; font-size:13.5px; font-weight:800; }
-  .guide-cat-head span{ font-size:10.5px; color:var(--text-dim); font-weight:600; }
-
-  .guide-card{
-    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md);
-    padding:13px 14px; margin-bottom:9px;
-    border-inline-start:3px solid transparent;
-    display:flex; gap:11px; align-items:flex-start;
-  }
-  .guide-card .gn{
-    flex-shrink:0; width:24px; height:24px; border-radius:8px;
-    display:flex; align-items:center; justify-content:center;
-    font-size:11px; font-weight:800; margin-top:1px;
-  }
+  .guide-cat-head span{ font-size:10.5px; color:var(--ink-dim); font-weight:600; }
+  .guide-card{ background:#fff; border:1px solid var(--line); border-radius:var(--radius-md); padding:13px 14px; margin-bottom:9px; border-inline-start:3px solid transparent; display:flex; gap:11px; align-items:flex-start; box-shadow:var(--shadow-2); }
+  .guide-card.dim{ display:none; }
+  .guide-card .gn{ flex-shrink:0; width:24px; height:24px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; margin-top:1px; }
   .guide-card .gt{ flex:1; min-width:0; }
-  .guide-card .gt b{ display:block; font-size:12.8px; font-weight:700; margin-bottom:3px; color:var(--text); }
-  .guide-card .gt p{ margin:0; font-size:11.8px; line-height:1.9; color:var(--text-soft); }
+  .guide-card .gt b{ display:block; font-size:12.8px; font-weight:700; margin-bottom:3px; color:var(--ink); }
+  .guide-card .gt p{ margin:0; font-size:11.8px; line-height:1.9; color:var(--ink-soft); }
+  .guide-empty{ display:none; text-align:center; padding:40px 20px; color:var(--ink-dim); font-size:12.5px; font-weight:600; }
+
+  /* ---------- Bottom sheets (note / settings) ---------- */
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(20,26,14,0.45); z-index:220; display:none; align-items:flex-end; justify-content:center; }
+  .sheet-overlay.open{ display:flex; }
+  .sheet{ width:100%; max-width:480px; background:#fff; border-radius:26px 26px 0 0; padding:14px 18px calc(22px + env(safe-area-inset-bottom)) 18px; box-shadow:0 -14px 40px rgba(0,0,0,0.25); transform:translateY(100%); transition:transform .32s cubic-bezier(.2,.8,.2,1); }
+  .sheet-overlay.open .sheet{ transform:translateY(0); }
+  .sheet-handle{ width:40px; height:4px; background:var(--line); border-radius:100px; margin:0 auto 16px auto; }
+  .sheet h4{ margin:0 0 4px 0; font-size:14.5px; font-weight:800; }
+  .sheet p.sub{ margin:0 0 14px 0; font-size:11.5px; color:var(--ink-soft); }
+  .sheet textarea{ width:100%; min-height:110px; border:1.5px solid var(--line); border-radius:var(--radius-sm); padding:12px; font-size:13px; line-height:1.8; color:var(--ink); resize:none; margin-bottom:12px; }
+  .sheet-btn{ width:100%; background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark)); color:#fff; font-weight:800; font-size:13px; padding:13px; border-radius:var(--radius-sm); }
+  .setting-row{ display:flex; align-items:center; justify-content:space-between; padding:13px 2px; border-bottom:1px solid var(--line); }
+  .setting-row:last-of-type{ border-bottom:none; }
+  .setting-row b{ display:block; font-size:12.8px; font-weight:700; }
+  .setting-row span{ display:block; font-size:10.5px; color:var(--ink-dim); margin-top:2px; }
+  .switch{ position:relative; width:44px; height:26px; border-radius:100px; background:var(--line); flex-shrink:0; transition:background .2s; }
+  .switch.on{ background:var(--pesteh); }
+  .switch::after{ content:''; position:absolute; top:3px; inset-inline-start:3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.25); transition:inset-inline-start .2s; }
+  .switch.on::after{ inset-inline-start:21px; }
+  .danger-btn{ width:100%; margin-top:8px; background:var(--ghermez-soft); color:var(--ghermez-dark); font-weight:800; font-size:12.5px; padding:12px; border-radius:var(--radius-sm); }
 
   @media (max-width:360px){ .app{ padding-inline:11px; } .grid{ gap:9px; } }
 </style>
@@ -287,59 +238,90 @@
     <div class="bg-img" id="bgImg"></div>
     <div class="bg-tint"></div>
     <div class="bg-vignette"></div>
-    <div class="bg-noise"></div>
   </div>
 
   <div class="app">
     <div class="topbar">
       <div class="brand">
         <div class="brand-mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0A0B08" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h7v7"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h7v7"/></svg>
         </div>
-        <div class="brand-text">
-          <h1>پلتفرم سیگنال</h1>
-          <p>تحلیل و آموزش بازار کریپتو</p>
-        </div>
+        <div class="brand-text"><h1>پلتفرم سیگنال</h1><p>تحلیل بازار کریپتو</p></div>
       </div>
-      <div class="status-pill"><span class="status-dot"></span> بازار باز</div>
+      <div class="topbar-actions">
+        <button class="icon-pill" id="settingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      </div>
     </div>
 
-    <div class="section-head"><h2>سیگنال‌های امروز</h2><span>۶ مورد</span></div>
+    <div class="ticker-bar"><div class="ticker-track" id="tickerTrack"></div></div>
+
+    <div class="filter-chips">
+      <button class="chip active" data-filter="all">همه سیگنال‌ها</button>
+      <button class="chip" data-filter="fav">
+        <span id="favCountWrap">علاقه‌مندی‌ها</span>
+      </button>
+    </div>
+
+    <div class="section-head"><h2>سیگنال‌های امروز</h2><span id="gridCount">۶ مورد</span></div>
 
     <div class="grid" id="signalGrid">
-      <div class="card" data-type="image" data-src="m1.jpg">
+      <div class="card" data-id="m1" data-type="image" data-src="m1.jpg">
         <img class="media" data-base="m1.jpg" data-live src="m1.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-        <div class="edge-glow"></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="m1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="m1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
       </div>
-      <div class="card" data-type="image" data-src="m2.jpg">
+      <div class="card" data-id="m2" data-type="image" data-src="m2.jpg">
         <img class="media" data-base="m2.jpg" data-live src="m2.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-        <div class="edge-glow"></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="m2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="m2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
       </div>
-      <div class="card" data-type="image" data-src="m3.jpg">
+      <div class="card" data-id="m3" data-type="image" data-src="m3.jpg">
         <img class="media" data-base="m3.jpg" data-live src="m3.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-        <div class="edge-glow"></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="m3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="m3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
       </div>
-      <div class="card" data-type="image" data-src="m4.jpg">
+      <div class="card" data-id="m4" data-type="image" data-src="m4.jpg">
         <img class="media" data-base="m4.jpg" data-live src="m4.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-        <div class="edge-glow"></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="m4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="m4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
       </div>
-      <div class="card" data-type="video" data-src="m1.mp4">
+      <div class="card" data-id="v1" data-type="video" data-src="m1.mp4">
         <video class="media" data-base="m1.mp4" src="m1.mp4" muted preload="metadata"></video>
-        <div class="edge-glow"></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="v1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="v1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
         <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
       </div>
-      <div class="card" data-type="video" data-src="m2.mp4">
+      <div class="card" data-id="v2" data-type="video" data-src="m2.mp4">
         <video class="media" data-base="m2.mp4" src="m2.mp4" muted preload="metadata"></video>
-        <div class="edge-glow"></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="v2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="v2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
         <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
       </div>
     </div>
+
+    <div class="guide-empty" id="gridEmpty">هنوز سیگنالی را به علاقه‌مندی‌ها اضافه نکرده‌اید.</div>
   </div>
 
   <div class="navbar">
@@ -370,13 +352,15 @@
         <select id="symbolSelect"></select>
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      <div class="tf-group" id="tfGroup">
-        <button class="tf-btn" data-tf="1">1m</button>
-        <button class="tf-btn" data-tf="15">15m</button>
-        <button class="tf-btn active" data-tf="60">1h</button>
-        <button class="tf-btn" data-tf="240">4h</button>
-        <button class="tf-btn" data-tf="D">1D</button>
+      <button class="bell-btn" id="bellBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></button>
+    </div>
+    <div class="alert-panel" id="alertPanel">
+      <div class="alert-hint">هشدار قیمت برای نماد انتخاب‌شده — به‌محض رسیدن قیمت لحظه‌ای به عدد هدف، به شما اطلاع داده می‌شود.</div>
+      <div class="alert-row">
+        <input type="number" id="alertPriceInput" placeholder="قیمت هدف (دلار)">
+        <button class="alert-add-btn" id="alertAddBtn">افزودن هشدار</button>
       </div>
+      <div class="alert-list" id="alertList"></div>
     </div>
     <div id="chartContainer"></div>
   </div>
@@ -387,12 +371,19 @@
       <h3>راهنمای ترید</h3>
       <button class="close-btn" data-close="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
+    <div class="guide-search-wrap">
+      <div class="guide-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="guideSearch" placeholder="جست‌وجو در نکات راهنما...">
+      </div>
+    </div>
     <div class="guide-scroll" id="guideScroll">
       <div class="guide-intro">
         <b>راهنمای جامع معامله‌گری در بازار کریپتو</b>
         <span>این راهنما حاصل جمع‌بندی اصول پایه‌ی مدیریت ریسک، روانشناسی معاملاتی و تحلیل بازار است. پیش از هر معامله، مرور این نکات می‌تواند از تصمیمات هیجانی جلوگیری کند.</span>
       </div>
       <div id="guideCats"></div>
+      <div class="guide-empty" id="guideNoResult" style="display:none;">نتیجه‌ای یافت نشد.</div>
     </div>
   </div>
 
@@ -400,49 +391,78 @@
   <div class="lightbox" id="lightbox">
     <div class="lightbox-bg" id="lightboxBg"></div>
     <div class="lightbox-bg2"></div>
-    <div class="lightbox-noise"></div>
-    <button class="lightbox-close" id="lightboxClose">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
-    <div class="lightbox-stage">
-      <div class="lightbox-frame" id="lightboxFrame"></div>
-    </div>
+    <button class="lightbox-close" id="lightboxClose"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div class="lightbox-stage"><div class="lightbox-frame" id="lightboxFrame"></div></div>
     <div class="lightbox-hint">برای بستن، لمس کنید</div>
+  </div>
+
+  <!-- Note sheet -->
+  <div class="sheet-overlay" id="noteOverlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h4>یادداشت شخصی</h4>
+      <p class="sub">تحلیل یا دلیل ورود به این سیگنال را برای خودتان ثبت کنید.</p>
+      <textarea id="noteTextarea" placeholder="مثلاً: ورود در ناحیه حمایت، حد ضرر روی..."></textarea>
+      <button class="sheet-btn" id="noteSaveBtn">ذخیره یادداشت</button>
+    </div>
+  </div>
+
+  <!-- Settings sheet -->
+  <div class="sheet-overlay" id="settingsOverlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h4>تنظیمات</h4>
+      <p class="sub">مدیریت اپ و داده‌های ذخیره‌شده روی این دستگاه.</p>
+      <div class="setting-row">
+        <div><b>به‌روزرسانی زنده تصاویر</b><span>هر ۲ ثانیه فایل‌های m1.jpg تا m9.jpg دوباره بارگذاری شوند</span></div>
+        <div class="switch on" id="switchLive"></div>
+      </div>
+      <div class="setting-row">
+        <div><b>اعلان مرورگر برای هشدار قیمت</b><span>در صورت فعال بودن، هنگام رسیدن به قیمت هدف نوتیفیکیشن نمایش داده می‌شود</span></div>
+        <div class="switch" id="switchNotif"></div>
+      </div>
+      <button class="danger-btn" id="clearDataBtn">پاک‌کردن علاقه‌مندی‌ها، یادداشت‌ها و هشدارها</button>
+    </div>
   </div>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
 (function(){
 
+  /* ================= Local storage helpers ================= */
+  function lget(k, def){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } }
+  function lset(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+  var favorites = lget('sg_favorites', []);
+  var notes = lget('sg_notes', {});
+  var alerts = lget('sg_alerts', []);
+  var settings = lget('sg_settings', { liveRefresh:true, notifications:false });
+
   /* ================= Background parallax ================= */
   var bgImg = document.getElementById('bgImg');
   window.addEventListener('scroll', function(){
     var y = window.scrollY || 0;
-    bgImg.style.transform = 'scale(1.2) translateY(' + (y*0.04) + 'px)';
+    bgImg.style.transform = 'scale(1.18) translateY(' + (y*0.04) + 'px)';
   }, {passive:true});
   window.addEventListener('deviceorientation', function(e){
     if(e.gamma == null) return;
     var ry = Math.max(-8, Math.min(8, e.gamma/6));
-    bgImg.style.transform = 'scale(1.22) rotateY(' + (ry*0.4) + 'deg)';
+    bgImg.style.transform = 'scale(1.2) rotateY(' + (ry*0.4) + 'deg)';
   });
 
-  /* ================= Live asset refresh (cache-busting watcher) =================
-     چون این صفحه به‌صورت محلی اجرا می‌شود، امکان "file watch" واقعی وجود ندارد؛
-     بنابراین هر ۲ ثانیه منابع تصویری با یک نسخه‌ی جدید (querystring) دوباره از
-     روی دیسک خوانده می‌شوند تا در صورت جایگزینی فایل، نسخه‌ی تازه فوراً نمایش
-     داده شود — بدون نیاز به رفرش دستی صفحه. ویدیوهایی که در حال پخش نیستند نیز
-     به همین شکل تازه‌سازی می‌شوند تا فریم پیش‌نمایش‌شان به‌روز بماند. */
+  /* ================= Live asset refresh ================= */
   function bust(url){ return url + '?v=' + Date.now(); }
+  var liveTimer = null;
   function refreshAssets(){
     bgImg.style.backgroundImage = "url('" + bust('m9.jpg') + "')";
-    document.querySelectorAll('img[data-live]').forEach(function(img){
-      img.src = bust(img.dataset.base);
-    });
-    document.querySelectorAll('video.media').forEach(function(v){
-      if(v.paused){ v.src = bust(v.dataset.base); }
-    });
+    document.querySelectorAll('img[data-live]').forEach(function(img){ img.src = bust(img.dataset.base); });
+    document.querySelectorAll('video.media').forEach(function(v){ if(v.paused){ v.src = bust(v.dataset.base); } });
   }
-  setInterval(refreshAssets, 2000);
+  function setLiveRefresh(on){
+    if(liveTimer){ clearInterval(liveTimer); liveTimer = null; }
+    if(on){ liveTimer = setInterval(refreshAssets, 2000); }
+  }
+  setLiveRefresh(settings.liveRefresh);
 
   /* ================= Tabs / navigation ================= */
   var navBtns = document.querySelectorAll('.nav-btn');
@@ -461,16 +481,14 @@
         window.scrollTo({top:0, behavior:'smooth'});
       } else if(tab === 'chart'){
         guideModal.classList.remove('open'); chartModal.classList.add('open');
-        if(!chartInited){ initChart(); chartInited = true; }
+        if(!chartInited){ initChart(); chartInited = true; renderAlerts(); }
       } else if(tab === 'guide'){
         chartModal.classList.remove('open'); guideModal.classList.add('open');
       }
     });
   });
   document.querySelectorAll('[data-close]').forEach(function(b){
-    b.addEventListener('click', function(){
-      chartModal.classList.remove('open'); guideModal.classList.remove('open'); setActive('signal');
-    });
+    b.addEventListener('click', function(){ chartModal.classList.remove('open'); guideModal.classList.remove('open'); setActive('signal'); });
   });
 
   /* ================= Crypto-only symbol list (200 coins) ================= */
@@ -498,47 +516,216 @@
   var select = document.getElementById('symbolSelect');
   coins.forEach(function(c){
     var opt = document.createElement('option');
-    opt.value = 'BINANCE:' + c + 'USDT';
+    opt.value = c + 'USDT';
     opt.textContent = c + ' / USDT';
     select.appendChild(opt);
   });
-  select.value = 'BINANCE:BTCUSDT';
-
-  var currentInterval = '60';
-  var tfBtns = document.querySelectorAll('.tf-btn');
-  tfBtns.forEach(function(b){
-    b.addEventListener('click', function(){
-      tfBtns.forEach(function(x){ x.classList.remove('active'); });
-      b.classList.add('active');
-      currentInterval = b.dataset.tf;
-      initChart();
-    });
-  });
+  select.value = 'BTCUSDT';
 
   function initChart(){
     document.getElementById('chartContainer').innerHTML = '';
     new TradingView.widget({
       autosize:true,
-      symbol: select.value,
-      interval: currentInterval,
+      symbol:'BINANCE:' + select.value,
+      interval:'60',
       timezone:'Asia/Tehran',
       theme:'dark',
       style:'1',
       locale:'fa_IR',
       backgroundColor:'#0C0E09',
-      gridColor:'rgba(255,255,255,0.06)',
       toolbar_bg:'#0C0E09',
       enable_publishing:false,
-      hide_top_toolbar:true,
-      hide_side_toolbar:true,
+      hide_top_toolbar:false,
+      hide_side_toolbar:false,
       hide_legend:false,
-      withdateranges:false,
+      withdateranges:true,
       allow_symbol_change:false,
-      save_image:false,
+      details:true,
+      studies:['MASimple@tv-basicstudies'],
       container_id:'chartContainer'
     });
   }
-  select.addEventListener('change', function(){ initChart(); });
+  select.addEventListener('change', function(){ initChart(); renderAlerts(); });
+
+  /* ================= Live price ticker (Binance public API) ================= */
+  var tickerCoins = ['BTC','ETH','BNB','SOL','XRP','DOGE','ADA','TON','TRX','LINK','AVAX','LTC','PEPE','WIF','SUI'];
+  var lastPrices = {};
+
+  function fmtPrice(p){
+    p = parseFloat(p);
+    if(p >= 1000) return p.toLocaleString('en-US', {maximumFractionDigits:0});
+    if(p >= 1) return p.toLocaleString('en-US', {maximumFractionDigits:2});
+    return p.toLocaleString('en-US', {maximumFractionDigits:6});
+  }
+
+  function renderTicker(data){
+    var track = document.getElementById('tickerTrack');
+    var html = '';
+    var build = function(){
+      var out = '';
+      data.forEach(function(d){
+        var up = parseFloat(d.priceChangePercent) >= 0;
+        out += '<span class="ticker-item"><span class="sym">' + d.symbol.replace('USDT','') + '</span>' +
+               '<span class="px">$' + fmtPrice(d.lastPrice) + '</span>' +
+               '<span class="chg ' + (up?'up':'down') + '">' + (up?'▲':'▼') + ' ' + Math.abs(parseFloat(d.priceChangePercent)).toFixed(1) + '%</span></span>';
+      });
+      return out;
+    };
+    html = build() + build();
+    track.innerHTML = html;
+  }
+
+  function fetchTicker(){
+    var symbols = tickerCoins.map(function(c){ return c + 'USDT'; });
+    var url = 'https://api.binance.com/api/v3/ticker/24hr?symbols=' + encodeURIComponent(JSON.stringify(symbols));
+    fetch(url).then(function(r){ return r.json(); }).then(function(data){
+      if(Array.isArray(data) && data.length){ renderTicker(data); }
+    }).catch(function(){ /* آفلاین یا بدون دسترسی شبکه — نادیده گرفته می‌شود */ });
+  }
+  fetchTicker();
+  setInterval(fetchTicker, 20000);
+
+  /* ================= Price alerts ================= */
+  var bellBtn = document.getElementById('bellBtn');
+  var alertPanel = document.getElementById('alertPanel');
+  bellBtn.addEventListener('click', function(){ alertPanel.classList.toggle('open'); });
+
+  function updateBellDot(){
+    bellBtn.classList.toggle('has-alerts', alerts.length > 0);
+  }
+
+  function renderAlerts(){
+    var list = document.getElementById('alertList');
+    list.innerHTML = '';
+    var symAlerts = alerts.filter(function(a){ return a.symbol === select.value; });
+    symAlerts.forEach(function(a){
+      var chip = document.createElement('div');
+      chip.className = 'alert-chip' + (a.triggered ? ' triggered' : '');
+      chip.innerHTML = '<span>' + a.symbol.replace('USDT','') + ' در $' + a.target + (a.triggered ? ' (فعال شد)' : '') + '</span>';
+      var rm = document.createElement('button');
+      rm.textContent = '×';
+      rm.addEventListener('click', function(){
+        alerts = alerts.filter(function(x){ return x.id !== a.id; });
+        lset('sg_alerts', alerts); updateBellDot(); renderAlerts();
+      });
+      chip.appendChild(rm);
+      list.appendChild(chip);
+    });
+    updateBellDot();
+  }
+
+  document.getElementById('alertAddBtn').addEventListener('click', function(){
+    var input = document.getElementById('alertPriceInput');
+    var val = parseFloat(input.value);
+    if(!val || val <= 0) return;
+    alerts.push({ id:'a'+Date.now(), symbol:select.value, target:val, triggered:false });
+    lset('sg_alerts', alerts);
+    input.value = '';
+    renderAlerts();
+    if(settings.notifications && 'Notification' in window && Notification.permission !== 'granted'){
+      Notification.requestPermission();
+    }
+  });
+
+  function checkAlerts(){
+    if(!alerts.length) return;
+    var symbols = Array.from(new Set(alerts.map(function(a){ return a.symbol; })));
+    Promise.all(symbols.map(function(s){
+      return fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + s).then(function(r){ return r.json(); }).catch(function(){ return null; });
+    })).then(function(results){
+      var changed = false;
+      results.forEach(function(r){
+        if(!r || !r.price) return;
+        var price = parseFloat(r.price);
+        alerts.forEach(function(a){
+          if(a.symbol === r.symbol && !a.triggered){
+            var crossed = (price >= a.target);
+            if(crossed){
+              a.triggered = true; changed = true;
+              if(settings.notifications && 'Notification' in window && Notification.permission === 'granted'){
+                new Notification('هشدار قیمت', { body: a.symbol.replace('USDT','') + ' به قیمت $' + a.target + ' رسید.' });
+              }
+            }
+          }
+        });
+      });
+      if(changed){ lset('sg_alerts', alerts); renderAlerts(); }
+    });
+  }
+  setInterval(checkAlerts, 8000);
+
+  /* ================= Favorites & notes on signal cards ================= */
+  function updateFavCount(){
+    var wrap = document.getElementById('favCountWrap');
+    wrap.textContent = 'علاقه‌مندی‌ها' + (favorites.length ? ' (' + favorites.length + ')' : '');
+  }
+  function applyCardStates(){
+    document.querySelectorAll('.icon-btn.fav').forEach(function(btn){
+      btn.classList.toggle('active', favorites.indexOf(btn.dataset.id) > -1);
+    });
+    document.querySelectorAll('.icon-btn.note').forEach(function(btn){
+      btn.classList.toggle('has-note', !!(notes[btn.dataset.id] && notes[btn.dataset.id].trim()));
+    });
+    updateFavCount();
+  }
+  applyCardStates();
+
+  document.querySelectorAll('.icon-btn.fav').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var id = btn.dataset.id;
+      var i = favorites.indexOf(id);
+      if(i > -1){ favorites.splice(i,1); } else { favorites.push(id); }
+      lset('sg_favorites', favorites);
+      applyCardStates();
+      applyFilter();
+    });
+  });
+
+  var noteOverlay = document.getElementById('noteOverlay');
+  var noteTextarea = document.getElementById('noteTextarea');
+  var activeNoteId = null;
+  document.querySelectorAll('.icon-btn.note').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      activeNoteId = btn.dataset.id;
+      noteTextarea.value = notes[activeNoteId] || '';
+      noteOverlay.classList.add('open');
+    });
+  });
+  document.getElementById('noteSaveBtn').addEventListener('click', function(){
+    if(activeNoteId){
+      notes[activeNoteId] = noteTextarea.value;
+      lset('sg_notes', notes);
+      applyCardStates();
+    }
+    noteOverlay.classList.remove('open');
+  });
+  noteOverlay.addEventListener('click', function(e){ if(e.target === noteOverlay) noteOverlay.classList.remove('open'); });
+
+  /* ================= Filter chips ================= */
+  var chips = document.querySelectorAll('.chip');
+  var currentFilter = 'all';
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      chips.forEach(function(x){ x.classList.remove('active'); });
+      c.classList.add('active');
+      currentFilter = c.dataset.filter;
+      applyFilter();
+    });
+  });
+  function applyFilter(){
+    var cards = document.querySelectorAll('.card');
+    var shown = 0;
+    cards.forEach(function(card){
+      var show = currentFilter === 'all' || (currentFilter === 'fav' && favorites.indexOf(card.dataset.id) > -1);
+      card.classList.toggle('hidden-card', !show);
+      if(show) shown++;
+    });
+    document.getElementById('gridCount').textContent = shown + ' مورد';
+    document.getElementById('gridEmpty').style.display = (shown === 0) ? 'block' : 'none';
+  }
+  applyFilter();
 
   /* ================= Rich professional guide content ================= */
   var categories = [
@@ -612,14 +799,15 @@
     bolt:'<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>'
   };
 
-  var wrap = document.getElementById('guideCats');
-  categories.forEach(function(cat){
+  var guideWrap = document.getElementById('guideCats');
+  categories.forEach(function(cat, ci){
     var section = document.createElement('div');
     section.className = 'guide-cat';
+    section.dataset.cat = ci;
 
     var head = document.createElement('div');
     head.className = 'guide-cat-head';
-    var iconBg = cat.color === 'pesteh' ? 'background:rgba(143,203,94,0.14); color:#8FCB5E;' : 'background:rgba(255,92,92,0.14); color:#FF5C5C;';
+    var iconBg = cat.color === 'pesteh' ? 'background:var(--pesteh-soft2); color:var(--pesteh-dark);' : 'background:var(--ghermez-soft); color:var(--ghermez-dark);';
     head.innerHTML =
       '<div class="guide-cat-icon" style="' + iconBg + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + icons[cat.icon] + '</svg></div>' +
       '<div><h3>' + cat.title + '</h3><span>' + cat.items.length + ' نکته</span></div>';
@@ -628,16 +816,31 @@
     cat.items.forEach(function(item, i){
       var card = document.createElement('div');
       card.className = 'guide-card';
-      var borderColor = cat.color === 'pesteh' ? '#8FCB5E' : '#FF5C5C';
-      var numBg = cat.color === 'pesteh' ? 'background:rgba(143,203,94,0.14); color:#8FCB5E;' : 'background:rgba(255,92,92,0.14); color:#FF5C5C;';
+      card.dataset.text = (item[0] + ' ' + item[1]).toLowerCase();
+      var borderColor = cat.color === 'pesteh' ? 'var(--pesteh)' : 'var(--ghermez)';
+      var numBg = cat.color === 'pesteh' ? 'background:var(--pesteh-soft2); color:var(--pesteh-dark);' : 'background:var(--ghermez-soft); color:var(--ghermez-dark);';
       card.style.borderInlineStartColor = borderColor;
-      card.innerHTML =
-        '<div class="gn" style="' + numBg + '">' + (i+1) + '</div>' +
-        '<div class="gt"><b>' + item[0] + '</b><p>' + item[1] + '</p></div>';
+      card.innerHTML = '<div class="gn" style="' + numBg + '">' + (i+1) + '</div><div class="gt"><b>' + item[0] + '</b><p>' + item[1] + '</p></div>';
       section.appendChild(card);
     });
+    guideWrap.appendChild(section);
+  });
 
-    wrap.appendChild(section);
+  var guideSearch = document.getElementById('guideSearch');
+  guideSearch.addEventListener('input', function(){
+    var q = guideSearch.value.trim().toLowerCase();
+    var anyVisible = false;
+    document.querySelectorAll('.guide-cat').forEach(function(sec){
+      var visibleInSec = 0;
+      sec.querySelectorAll('.guide-card').forEach(function(card){
+        var match = !q || card.dataset.text.indexOf(q) > -1;
+        card.classList.toggle('dim', !match);
+        if(match) visibleInSec++;
+      });
+      sec.style.display = visibleInSec ? '' : 'none';
+      if(visibleInSec) anyVisible = true;
+    });
+    document.getElementById('guideNoResult').style.display = anyVisible ? 'none' : 'block';
   });
 
   /* ================= Premium fullscreen lightbox ================= */
@@ -647,14 +850,14 @@
   var lbClose = document.getElementById('lightboxClose');
 
   document.querySelectorAll('.card').forEach(function(card){
-    card.addEventListener('click', function(){
+    card.addEventListener('click', function(e){
+      if(e.target.closest('.icon-btn')) return;
       var type = card.dataset.type;
       var src = card.dataset.src;
       lbFrame.innerHTML = '';
       if(type === 'image'){
         lbBg.style.backgroundImage = "url('" + src + "')";
-        var img = document.createElement('img');
-        img.src = src;
+        var img = document.createElement('img'); img.src = src;
         lbFrame.appendChild(img);
       } else {
         lbBg.style.backgroundImage = "url('m9.jpg')";
@@ -665,18 +868,44 @@
       lightbox.classList.add('open');
     });
   });
-
   function closeLightbox(){
     lightbox.classList.remove('open');
-    setTimeout(function(){
-      lbFrame.querySelectorAll('video').forEach(function(v){ v.pause(); });
-      lbFrame.innerHTML = '';
-    }, 300);
+    setTimeout(function(){ lbFrame.querySelectorAll('video').forEach(function(v){ v.pause(); }); lbFrame.innerHTML=''; }, 300);
   }
   lbClose.addEventListener('click', function(e){ e.stopPropagation(); closeLightbox(); });
-  lightbox.addEventListener('click', function(e){
-    if(e.target.tagName === 'VIDEO') return;
-    closeLightbox();
+  lightbox.addEventListener('click', function(e){ if(e.target.tagName === 'VIDEO') return; closeLightbox(); });
+
+  /* ================= Settings sheet ================= */
+  var settingsBtn = document.getElementById('settingsBtn');
+  var settingsOverlay = document.getElementById('settingsOverlay');
+  var switchLive = document.getElementById('switchLive');
+  var switchNotif = document.getElementById('switchNotif');
+  switchLive.classList.toggle('on', settings.liveRefresh);
+  switchNotif.classList.toggle('on', settings.notifications);
+
+  settingsBtn.addEventListener('click', function(){ settingsOverlay.classList.add('open'); });
+  settingsOverlay.addEventListener('click', function(e){ if(e.target === settingsOverlay) settingsOverlay.classList.remove('open'); });
+
+  switchLive.addEventListener('click', function(){
+    settings.liveRefresh = !settings.liveRefresh;
+    switchLive.classList.toggle('on', settings.liveRefresh);
+    lset('sg_settings', settings);
+    setLiveRefresh(settings.liveRefresh);
+  });
+  switchNotif.addEventListener('click', function(){
+    settings.notifications = !settings.notifications;
+    switchNotif.classList.toggle('on', settings.notifications);
+    lset('sg_settings', settings);
+    if(settings.notifications && 'Notification' in window && Notification.permission === 'default'){
+      Notification.requestPermission();
+    }
+  });
+  document.getElementById('clearDataBtn').addEventListener('click', function(){
+    if(!confirm('همه‌ی علاقه‌مندی‌ها، یادداشت‌ها و هشدارهای قیمت پاک شوند؟')) return;
+    favorites = []; notes = {}; alerts = [];
+    lset('sg_favorites', favorites); lset('sg_notes', notes); lset('sg_alerts', alerts);
+    applyCardStates(); applyFilter(); renderAlerts();
+    settingsOverlay.classList.remove('open');
   });
 
 })();
