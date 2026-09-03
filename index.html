@@ -8,238 +8,230 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== CSS Variables & Reset ===== */
+  /* ===== Reset & Variables ===== */
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   :root{
     --pesteh:#7FAF5B;
     --pesteh-dark:#5C8B3E;
     --pesteh-soft:#DCEBC7;
-    --pesteh-soft2:#EEF5E2;
-    --ghermez:#E15252;
-    --ghermez-dark:#C23C3C;
-    --ghermez-soft:#FBDCDA;
     --ink:#26301F;
     --ink-soft:#5B6653;
     --ink-dim:#8FA184;
-    --glass:rgba(255,255,255,0.64);
-    --glass-strong:rgba(255,255,255,0.88);
+    --glass:rgba(255,255,255,0.75);
+    --glass-strong:rgba(255,255,255,0.92);
     --line:rgba(38,48,31,0.09);
-    --radius-lg:26px;
-    --radius-md:18px;
-    --radius-sm:12px;
-    --shadow-1:0 10px 30px rgba(38,48,31,0.12);
-    --shadow-2:0 4px 14px rgba(38,48,31,0.10);
+    --radius-lg:18px;
+    --radius-md:12px;
+    --shadow:0 6px 20px rgba(38,48,31,0.10);
     --bg-base:#EFF3E8;
     --font-base:'Vazirmatn', sans-serif;
-    --transition-speed:0.25s;
-    --header-height:60px;
-    --nav-height:72px;
+    --header-height:56px;
+    --nav-height:68px;
   }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
   html,body{width:100%;overflow-x:hidden;font-family:var(--font-base);color:var(--ink);background:var(--bg-base);}
-  body{min-height:100vh;min-height:100dvh;}
+  body{min-height:100vh;min-height:100dvh;background:var(--bg-base);}
   button{font-family:inherit;border:none;outline:none;background:none;cursor:pointer;}
   img,video{display:block;max-width:100%;}
-  input,textarea{font-family:inherit;}
   ::selection{background:var(--pesteh-soft);}
 
-  /* ===== Background ===== */
-  .bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;perspective:1000px;}
-  .bg-img{position:absolute;inset:-6%;background-image:url('m9.jpg');background-size:cover;background-position:center;filter:blur(22px) saturate(1.15) brightness(0.94);transform:scale(1.18);will-change:transform;}
-  .bg-tint{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 0%, rgba(239,243,232,0.15) 0%, rgba(239,243,232,0.55) 55%, rgba(239,243,232,0.9) 100%),linear-gradient(180deg, rgba(127,175,91,0.14), rgba(225,82,82,0.10));}
-  .bg-vignette{position:absolute;inset:0;box-shadow:inset 0 0 140px 40px rgba(20,26,14,0.25);}
+  /* ===== Simple Background ===== */
+  .bg-wrap{position:fixed;inset:0;z-index:0;background:var(--bg-base);}
+  .bg-wrap::after{
+    content:'';
+    position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 0%, rgba(127,175,91,0.12) 0%, transparent 70%);
+    pointer-events:none;
+  }
 
   /* ===== App Shell ===== */
-  .app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding:10px 12px calc(var(--nav-height) + 20px) 12px;}
+  .app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding:8px 12px calc(var(--nav-height) + 16px) 12px;}
 
   /* ===== Header ===== */
-  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:6px;height:var(--header-height);}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:6px;height:var(--header-height);}
   .brand{display:flex;align-items:center;gap:8px;min-width:0;}
-  .brand-mark{width:36px;height:36px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-2);}
-  .brand-mark svg{width:17px;height:17px;}
-  .brand-text{min-width:0;}
-  .brand-text h1{margin:0;font-size:13px;font-weight:800;white-space:nowrap;}
-  .brand-text p{margin:0;font-size:9.5px;color:var(--ink-soft);font-weight:500;white-space:nowrap;}
-  .topbar-actions{display:flex;align-items:center;gap:5px;flex-shrink:0;}
-  .icon-pill{width:34px;height:34px;border-radius:50%;background:var(--glass-strong);backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:var(--shadow-2);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);position:relative;}
-  .icon-pill svg{width:14px;height:14px;}
+  .brand-mark{width:34px;height:34px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);}
+  .brand-mark svg{width:16px;height:16px;}
+  .brand-text h1{font-size:12px;font-weight:800;white-space:nowrap;}
+  .brand-text p{font-size:9px;color:var(--ink-soft);font-weight:500;white-space:nowrap;}
+  .topbar-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+  .icon-pill{width:32px;height:32px;border-radius:50%;background:var(--glass-strong);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);}
   .icon-pill:active{transform:scale(0.92);}
+  .icon-pill svg{width:14px;height:14px;}
 
   /* ===== Hamburger Menu ===== */
-  .hamburger-menu{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.3);display:none;align-items:flex-start;justify-content:flex-end;backdrop-filter:blur(4px);}
+  .hamburger-menu{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.25);display:none;align-items:flex-start;justify-content:flex-end;}
   .hamburger-menu.open{display:flex;}
-  .menu-panel{width:76%;max-width:340px;height:100%;background:var(--glass-strong);backdrop-filter:blur(24px);padding:18px 16px;box-shadow:-8px 0 40px rgba(0,0,0,0.18);display:flex;flex-direction:column;gap:4px;animation:slideIn .22s cubic-bezier(.2,.8,.2,1);overflow-y:auto;}
-  @keyframes slideIn{from{transform:translateX(30px);opacity:0;}to{transform:translateX(0);opacity:1;}}
-  .menu-close{display:flex;justify-content:flex-end;margin-bottom:6px;}
-  .menu-close button{width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;}
-  .menu-close svg{width:15px;height:15px;}
-  .menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.3);border:1px solid var(--line);font-weight:700;font-size:12.5px;color:var(--ink);transition:all .15s;text-decoration:none;}
+  .menu-panel{width:72%;max-width:300px;height:100%;background:var(--glass-strong);padding:16px 14px;box-shadow:-6px 0 30px rgba(0,0,0,0.12);display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
+  .menu-close{display:flex;justify-content:flex-end;margin-bottom:4px;}
+  .menu-close button{width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;}
+  .menu-close svg{width:14px;height:14px;}
+  .menu-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius-md);background:rgba(255,255,255,0.4);border:1px solid var(--line);font-weight:700;font-size:12px;color:var(--ink);transition:all .12s;text-decoration:none;}
   .menu-item:active{transform:scale(.96);background:var(--pesteh-soft);}
-  .menu-item svg{width:16px;height:16px;color:var(--pesteh-dark);flex-shrink:0;}
+  .menu-item svg{width:15px;height:15px;color:var(--pesteh-dark);flex-shrink:0;}
   .menu-divider{height:1px;background:var(--line);margin:3px 0;}
-  .lang-selector{display:flex;gap:5px;flex-wrap:wrap;padding:4px 0;}
-  .lang-btn{padding:5px 10px;border-radius:100px;font-size:10.5px;font-weight:700;background:rgba(255,255,255,0.4);border:1px solid var(--line);color:var(--ink-soft);transition:all .15s;}
+  .lang-selector{display:flex;gap:4px;flex-wrap:wrap;padding:4px 0;}
+  .lang-btn{padding:4px 10px;border-radius:100px;font-size:10px;font-weight:700;background:rgba(255,255,255,0.4);border:1px solid var(--line);color:var(--ink-soft);}
   .lang-btn.active{background:var(--pesteh);color:#fff;border-color:var(--pesteh);}
   .lang-btn:active{transform:scale(0.94);}
 
   /* ===== Ticker ===== */
-  .ticker-bar{overflow:hidden;white-space:nowrap;background:var(--glass-strong);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:100px;padding:6px 0;margin-bottom:10px;box-shadow:var(--shadow-2);}
+  .ticker-bar{overflow:hidden;white-space:nowrap;background:var(--glass-strong);border:1px solid var(--line);border-radius:100px;padding:5px 0;margin-bottom:8px;box-shadow:var(--shadow);}
   .ticker-track{display:inline-flex;animation:tickerScroll 32s linear infinite;}
-  .ticker-track:hover{animation-play-state:paused;}
-  .ticker-item{display:inline-flex;align-items:center;gap:4px;padding:0 12px;font-size:10px;font-weight:700;border-inline-end:1px solid var(--line);}
+  .ticker-item{display:inline-flex;align-items:center;gap:4px;padding:0 10px;font-size:9.5px;font-weight:700;border-inline-end:1px solid var(--line);}
   .ticker-item .sym{color:var(--ink);}
   .ticker-item .px{color:var(--ink-soft);font-weight:600;}
-  .ticker-item .chg{padding:1px 5px;border-radius:100px;font-size:8.5px;font-weight:800;}
+  .ticker-item .chg{padding:1px 5px;border-radius:100px;font-size:8px;font-weight:800;}
   .ticker-item .chg.up{background:var(--pesteh-soft);color:var(--pesteh-dark);}
-  .ticker-item .chg.down{background:var(--ghermez-soft);color:var(--ghermez-dark);}
+  .ticker-item .chg.down{background:#FBDCDA;color:#C23C3C;}
   @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
   /* ===== User Notice ===== */
-  .user-notice{background:linear-gradient(135deg,#fff7e6,#ffe6cc);border:1px solid #ffd699;border-radius:var(--radius-md);padding:12px 14px;margin-bottom:10px;display:none;gap:8px;align-items:flex-start;box-shadow:0 2px 8px rgba(255,150,50,0.12);}
-  .user-notice svg{flex-shrink:0;width:18px;height:18px;color:#e67300;margin-top:2px;}
+  .user-notice{background:#FFF8E7;border:1px solid #FFD699;border-radius:var(--radius-md);padding:10px 12px;margin-bottom:8px;display:none;gap:6px;align-items:flex-start;box-shadow:0 2px 8px rgba(255,150,50,0.10);}
+  .user-notice svg{flex-shrink:0;width:16px;height:16px;color:#CC7A00;margin-top:1px;}
   .user-notice-content{flex:1;}
-  .user-notice-content strong{display:block;font-size:11.5px;font-weight:800;color:#663d00;}
-  .user-notice-content p{margin:2px 0 0;font-size:10.5px;color:#664d33;line-height:1.6;}
-  .user-notice .notice-dismiss{background:none;border:none;color:#b37a3a;font-size:15px;padding:0 3px;cursor:pointer;flex-shrink:0;}
+  .user-notice-content strong{display:block;font-size:11px;font-weight:800;color:#5C3D00;}
+  .user-notice-content p{margin:1px 0 0;font-size:10px;color:#664D33;line-height:1.5;}
+  .notice-dismiss{background:none;border:none;color:#B37A3A;font-size:16px;padding:0 2px;cursor:pointer;flex-shrink:0;}
 
   /* ===== Filter Chips ===== */
-  .filter-chips{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;}
-  .chip{padding:5px 12px;border-radius:100px;font-size:10px;font-weight:700;background:var(--glass);border:1px solid var(--line);color:var(--ink-soft);transition:all .2s;}
-  .chip.active{background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(92,139,62,0.28);}
+  .filter-chips{display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;}
+  .chip{padding:4px 12px;border-radius:100px;font-size:9.5px;font-weight:700;background:var(--glass);border:1px solid var(--line);color:var(--ink-soft);transition:all .15s;}
+  .chip.active{background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;border-color:transparent;box-shadow:0 3px 8px rgba(92,139,62,0.25);}
   .chip:active{transform:scale(0.94);}
 
   /* ===== Section Head ===== */
-  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 8px 2px;}
-  .section-head h2{margin:0;font-size:13.5px;font-weight:800;}
-  .section-head span{font-size:9.5px;color:var(--ink-dim);font-weight:500;}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 6px 2px;}
+  .section-head h2{font-size:13px;font-weight:800;}
+  .section-head span{font-size:9px;color:var(--ink-dim);font-weight:500;}
 
   /* ===== Signal Grid ===== */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .card{position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:3/4;background:var(--glass);border:1px solid rgba(255,255,255,0.55);box-shadow:var(--shadow-1);transition:transform .18s;will-change:transform;}
+  .card{position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:3/4;background:var(--glass);border:1px solid rgba(255,255,255,0.5);box-shadow:var(--shadow);transition:transform .15s;will-change:transform;}
   .card.hidden-card{display:none;}
-  .card:active{transform:scale(0.95);}
+  .card:active{transform:scale(0.96);}
   .card .media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  .card .media-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--pesteh-soft),var(--pesteh-soft2));color:var(--pesteh-dark);}
-  .card .media-fallback svg{width:26px;height:26px;opacity:.5;}
-  .card .scrim{position:absolute;inset:0;background:linear-gradient(180deg, rgba(20,26,14,0) 60%, rgba(15,20,10,0.42) 100%);pointer-events:none;}
-  .card .top-actions{position:absolute;top:6px;left:6px;right:6px;display:flex;justify-content:space-between;z-index:2;}
-  .icon-btn{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.88);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,0.14);}
-  .icon-btn svg{width:11px;height:11px;stroke:var(--ink-soft);transition:all .15s;}
-  .icon-btn.fav.active{background:var(--ghermez);}
+  .card .media-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--pesteh-soft),#EEF5E2);color:var(--pesteh-dark);}
+  .card .media-fallback svg{width:24px;height:24px;opacity:.5;}
+  .card .scrim{position:absolute;inset:0;background:linear-gradient(180deg, rgba(20,26,14,0) 55%, rgba(15,20,10,0.35) 100%);pointer-events:none;}
+  .card .top-actions{position:absolute;top:5px;left:5px;right:5px;display:flex;justify-content:space-between;z-index:2;}
+  .icon-btn{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.10);}
+  .icon-btn svg{width:10px;height:10px;stroke:var(--ink-soft);}
+  .icon-btn.fav.active{background:#E15252;}
   .icon-btn.fav.active svg{fill:#fff;stroke:#fff;}
   .icon-btn.note.has-note{background:var(--pesteh);}
   .icon-btn.note.has-note svg{stroke:#fff;}
-  .card .play-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.86);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
-  .card .play-icon svg{width:15px;height:15px;margin-inline-start:2px;fill:var(--ghermez);}
+  .card .play-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.15);}
+  .card .play-icon svg{width:13px;height:13px;margin-inline-start:2px;fill:#E15252;}
 
   /* ===== Bottom Nav ===== */
-  .navbar{position:fixed;bottom:10px;left:0;right:0;display:flex;justify-content:center;z-index:40;padding-bottom:env(safe-area-inset-bottom);}
-  .navbar-inner{display:flex;align-items:center;gap:3px;background:var(--glass-strong);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(255,255,255,0.6);border-radius:100px;padding:4px;box-shadow:0 10px 28px rgba(38,48,31,0.18);width:calc(100% - 20px);max-width:448px;height:var(--nav-height);}
-  .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px 5px;border-radius:100px;color:var(--ink-soft);font-size:9.5px;font-weight:700;transition:all .22s;}
-  .nav-btn svg{width:17px;height:17px;transition:all .22s;}
-  .nav-btn.active{background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;box-shadow:0 5px 12px rgba(92,139,62,0.30);}
-  .nav-btn[data-tab="guide"].active{background:linear-gradient(135deg,var(--ghermez),var(--ghermez-dark));box-shadow:0 5px 12px rgba(194,60,60,0.30);}
+  .navbar{position:fixed;bottom:8px;left:0;right:0;display:flex;justify-content:center;z-index:40;padding-bottom:env(safe-area-inset-bottom);}
+  .navbar-inner{display:flex;align-items:center;gap:2px;background:var(--glass-strong);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.6);border-radius:100px;padding:3px;box-shadow:0 8px 24px rgba(38,48,31,0.14);width:calc(100% - 16px);max-width:448px;height:var(--nav-height);}
+  .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:5px 2px 4px;border-radius:100px;color:var(--ink-soft);font-size:9px;font-weight:700;transition:all .18s;}
+  .nav-btn svg{width:16px;height:16px;}
+  .nav-btn.active{background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;box-shadow:0 4px 10px rgba(92,139,62,0.25);}
+  .nav-btn[data-tab="guide"].active{background:linear-gradient(135deg,#E15252,#C23C3C);box-shadow:0 4px 10px rgba(194,60,60,0.25);}
   .nav-btn:active:not(.active){transform:scale(0.92);}
 
   /* ===== Modals ===== */
   .modal{position:fixed;inset:0;z-index:100;display:none;background:var(--bg-base);flex-direction:column;}
   .modal.open{display:flex;}
-  .modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;background:var(--glass-strong);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);flex-shrink:0;min-height:52px;}
-  .modal-header h3{margin:0;font-size:13.5px;font-weight:800;}
-  .close-btn{width:30px;height:30px;border-radius:50%;background:rgba(38,48,31,0.06);display:flex;align-items:center;justify-content:center;}
-  .close-btn svg{width:14px;height:14px;}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--glass-strong);border-bottom:1px solid var(--line);flex-shrink:0;min-height:48px;}
+  .modal-header h3{font-size:13px;font-weight:800;}
+  .close-btn{width:28px;height:28px;border-radius:50%;background:rgba(38,48,31,0.06);display:flex;align-items:center;justify-content:center;}
+  .close-btn svg{width:13px;height:13px;}
   .close-btn:active{background:rgba(38,48,31,0.12);}
 
   /* ===== Chart ===== */
-  .chart-toolbar{display:flex;gap:5px;padding:8px 12px;background:#fff;border-bottom:1px solid var(--line);flex-shrink:0;}
+  .chart-toolbar{display:flex;gap:4px;padding:6px 10px;background:#fff;border-bottom:1px solid var(--line);flex-shrink:0;}
   .symbol-select-wrap{position:relative;flex:1;}
-  .symbol-select-wrap svg.chev{position:absolute;top:50%;inset-inline-start:8px;transform:translateY(-50%);width:11px;height:11px;pointer-events:none;color:var(--ink-soft);}
-  select#symbolSelect{width:100%;appearance:none;-webkit-appearance:none;background:var(--pesteh-soft2);border:1.5px solid var(--pesteh-soft);color:var(--ink);font-family:inherit;font-weight:700;font-size:11.5px;padding:8px 28px 8px 8px;border-radius:var(--radius-sm);}
-  .bell-btn{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--pesteh-soft2);border:1.5px solid var(--pesteh-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
-  .bell-btn svg{width:15px;height:15px;color:var(--pesteh-dark);}
-  .bell-btn .dot{position:absolute;top:4px;inset-inline-end:4px;width:6px;height:6px;border-radius:50%;background:var(--ghermez);display:none;}
+  .symbol-select-wrap svg.chev{position:absolute;top:50%;inset-inline-start:6px;transform:translateY(-50%);width:10px;height:10px;pointer-events:none;color:var(--ink-soft);}
+  select#symbolSelect{width:100%;appearance:none;-webkit-appearance:none;background:var(--pesteh-soft2);border:1.5px solid var(--pesteh-soft);color:var(--ink);font-family:inherit;font-weight:700;font-size:11px;padding:7px 24px 7px 7px;border-radius:var(--radius-md);}
+  .bell-btn{width:34px;height:34px;border-radius:var(--radius-md);background:var(--pesteh-soft2);border:1.5px solid var(--pesteh-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+  .bell-btn svg{width:14px;height:14px;color:var(--pesteh-dark);}
+  .bell-btn .dot{position:absolute;top:3px;inset-inline-end:3px;width:5px;height:5px;border-radius:50%;background:#E15252;display:none;}
   .bell-btn.has-alerts .dot{display:block;}
-  .alert-panel{display:none;background:#fff;border-bottom:1px solid var(--line);padding:8px 12px;flex-shrink:0;}
+  .alert-panel{display:none;background:#fff;border-bottom:1px solid var(--line);padding:6px 10px;flex-shrink:0;}
   .alert-panel.open{display:block;}
-  .alert-row{display:flex;gap:5px;margin-bottom:6px;}
-  .alert-row input{flex:1;min-width:0;border:1.5px solid var(--pesteh-soft);background:var(--pesteh-soft2);border-radius:var(--radius-sm);padding:7px 8px;font-weight:700;font-size:11.5px;color:var(--ink);}
-  .alert-add-btn{background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;font-weight:800;font-size:10.5px;padding:0 12px;border-radius:var(--radius-sm);flex-shrink:0;}
-  .alert-hint{font-size:9.5px;color:var(--ink-dim);margin-bottom:5px;}
-  .alert-list{display:flex;flex-direction:column;gap:3px;max-height:90px;overflow-y:auto;}
-  .alert-chip{display:flex;align-items:center;justify-content:space-between;background:var(--pesteh-soft2);border-radius:8px;padding:6px 8px;font-size:10px;font-weight:700;}
-  .alert-chip.triggered{background:var(--ghermez-soft);}
-  .alert-chip button{color:var(--ghermez-dark);font-size:15px;line-height:1;padding:0 2px;}
+  .alert-row{display:flex;gap:4px;margin-bottom:4px;}
+  .alert-row input{flex:1;min-width:0;border:1.5px solid var(--pesteh-soft);background:var(--pesteh-soft2);border-radius:var(--radius-md);padding:6px 8px;font-weight:700;font-size:11px;color:var(--ink);}
+  .alert-add-btn{background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;font-weight:800;font-size:10px;padding:0 12px;border-radius:var(--radius-md);flex-shrink:0;}
+  .alert-hint{font-size:9px;color:var(--ink-dim);margin-bottom:4px;}
+  .alert-list{display:flex;flex-direction:column;gap:2px;max-height:80px;overflow-y:auto;}
+  .alert-chip{display:flex;align-items:center;justify-content:space-between;background:var(--pesteh-soft2);border-radius:6px;padding:5px 8px;font-size:10px;font-weight:700;}
+  .alert-chip.triggered{background:#FBDCDA;}
+  .alert-chip button{color:#C23C3C;font-size:14px;line-height:1;padding:0 2px;}
   #chartContainer{flex:1;width:100%;background:#0C0E09;min-height:0;}
 
   /* ===== Lightbox ===== */
-  .lightbox{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:#000;}
+  .lightbox{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);}
   .lightbox.open{display:flex;}
-  .lightbox-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(46px) brightness(0.32) saturate(1.2);transform:scale(1.3);}
-  .lightbox-bg2{position:absolute;inset:0;background:radial-gradient(80% 60% at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%);}
-  .lightbox-stage{position:relative;z-index:3;width:100%;height:100%;display:flex;align-items:center;justify-content:center;perspective:1400px;}
-  .lightbox-frame{position:relative;max-width:100%;max-height:100%;overflow:hidden;opacity:0;transform:scale(0.88) rotateX(6deg) translateY(18px);transition:opacity .4s cubic-bezier(.2,.8,.2,1), transform .45s cubic-bezier(.2,.8,.2,1);}
-  .lightbox.open .lightbox-frame{opacity:1;transform:scale(1) rotateX(0) translateY(0);}
-  .lightbox-frame img,.lightbox-frame video{width:100vw;height:100dvh;object-fit:contain;background:#000;}
-  .lightbox-close{position:fixed;top:12px;inset-inline-start:12px;z-index:6;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.1);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.16);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,0.4);}
-  .lightbox-close svg{width:14px;height:14px;}
-  .lightbox-hint{position:fixed;bottom:16px;left:0;right:0;text-align:center;z-index:6;font-size:9.5px;color:rgba(255,255,255,0.45);font-weight:600;pointer-events:none;}
+  .lightbox-stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+  .lightbox-frame{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+  .lightbox-frame img,.lightbox-frame video{width:100%;height:100%;object-fit:contain;background:#000;}
+  .lightbox-close{position:fixed;top:12px;inset-inline-start:12px;z-index:6;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;color:#fff;}
+  .lightbox-close svg{width:14px;height:14px;stroke:#fff;}
+  .lightbox-hint{position:fixed;bottom:14px;left:0;right:0;text-align:center;z-index:6;font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;pointer-events:none;}
 
   /* ===== Guide ===== */
-  .guide-search-wrap{padding:8px 12px 0;background:var(--glass-strong);border-bottom:1px solid var(--line);flex-shrink:0;}
-  .guide-search{position:relative;margin-bottom:8px;}
-  .guide-search svg{position:absolute;top:50%;inset-inline-start:10px;transform:translateY(-50%);width:13px;height:13px;color:var(--ink-dim);}
-  .guide-search input{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:8px 32px 8px 10px;font-size:11.5px;font-weight:600;color:var(--ink);}
-  .guide-scroll{flex:1;overflow-y:auto;padding:12px 10px 24px;}
-  .guide-intro{background:linear-gradient(135deg,var(--pesteh-soft2),var(--pesteh-soft));border-radius:var(--radius-md);padding:12px 14px;margin-bottom:12px;border:1px solid var(--pesteh-soft);}
-  .guide-intro b{font-size:12.5px;display:block;margin-bottom:3px;}
-  .guide-intro span{font-size:10.5px;color:var(--ink-soft);line-height:1.8;}
-  .guide-cat{margin-bottom:14px;}
-  .guide-cat-head{display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:0 2px;}
-  .guide-cat-icon{width:26px;height:26px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-  .guide-cat-icon svg{width:13px;height:13px;}
-  .guide-cat-head h3{margin:0;font-size:12px;font-weight:800;}
-  .guide-cat-head span{font-size:9.5px;color:var(--ink-dim);font-weight:600;}
-  .guide-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);padding:10px 11px;margin-bottom:6px;border-inline-start:3px solid transparent;display:flex;gap:8px;align-items:flex-start;box-shadow:var(--shadow-2);}
+  .guide-search-wrap{padding:6px 12px 0;background:var(--glass-strong);border-bottom:1px solid var(--line);flex-shrink:0;}
+  .guide-search{position:relative;margin-bottom:6px;}
+  .guide-search svg{position:absolute;top:50%;inset-inline-start:8px;transform:translateY(-50%);width:12px;height:12px;color:var(--ink-dim);}
+  .guide-search input{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:var(--radius-md);padding:7px 30px 7px 8px;font-size:11px;font-weight:600;color:var(--ink);}
+  .guide-scroll{flex:1;overflow-y:auto;padding:10px 10px 20px;}
+  .guide-intro{background:linear-gradient(135deg,#EEF5E2,var(--pesteh-soft));border-radius:var(--radius-md);padding:10px 14px;margin-bottom:10px;border:1px solid var(--pesteh-soft);}
+  .guide-intro b{font-size:12px;display:block;margin-bottom:2px;}
+  .guide-intro span{font-size:10px;color:var(--ink-soft);line-height:1.7;}
+  .guide-cat{margin-bottom:12px;}
+  .guide-cat-head{display:flex;align-items:center;gap:6px;margin-bottom:4px;padding:0 2px;}
+  .guide-cat-icon{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .guide-cat-icon svg{width:12px;height:12px;}
+  .guide-cat-head h3{font-size:11.5px;font-weight:800;}
+  .guide-cat-head span{font-size:9px;color:var(--ink-dim);font-weight:600;}
+  .guide-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);padding:8px 10px;margin-bottom:4px;border-inline-start:3px solid transparent;display:flex;gap:6px;align-items:flex-start;box-shadow:var(--shadow);}
   .guide-card.dim{display:none;}
-  .guide-card .gn{flex-shrink:0;width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;margin-top:1px;}
+  .guide-card .gn{flex-shrink:0;width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;margin-top:1px;}
   .guide-card .gt{flex:1;min-width:0;}
-  .guide-card .gt b{display:block;font-size:11.5px;font-weight:700;margin-bottom:1px;color:var(--ink);}
-  .guide-card .gt p{margin:0;font-size:10.5px;line-height:1.7;color:var(--ink-soft);}
-  .guide-empty{display:none;text-align:center;padding:28px 14px;color:var(--ink-dim);font-size:11.5px;font-weight:600;}
+  .guide-card .gt b{display:block;font-size:11px;font-weight:700;margin-bottom:1px;color:var(--ink);}
+  .guide-card .gt p{margin:0;font-size:10px;line-height:1.6;color:var(--ink-soft);}
+  .guide-empty{display:none;text-align:center;padding:24px 14px;color:var(--ink-dim);font-size:11px;font-weight:600;}
 
   /* ===== Sheets ===== */
-  .sheet-overlay{position:fixed;inset:0;background:rgba(20,26,14,0.45);z-index:220;display:none;align-items:flex-end;justify-content:center;}
+  .sheet-overlay{position:fixed;inset:0;background:rgba(20,26,14,0.3);z-index:220;display:none;align-items:flex-end;justify-content:center;}
   .sheet-overlay.open{display:flex;}
-  .sheet{width:100%;max-width:480px;background:#fff;border-radius:24px 24px 0 0;padding:10px 14px calc(16px + env(safe-area-inset-bottom)) 14px;box-shadow:0 -10px 32px rgba(0,0,0,0.20);transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);}
+  .sheet{width:100%;max-width:480px;background:#fff;border-radius:20px 20px 0 0;padding:8px 14px calc(12px + env(safe-area-inset-bottom)) 14px;box-shadow:0 -8px 28px rgba(0,0,0,0.12);transform:translateY(100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);}
   .sheet-overlay.open .sheet{transform:translateY(0);}
-  .sheet-handle{width:32px;height:3.5px;background:var(--line);border-radius:100px;margin:0 auto 10px auto;}
-  .sheet h4{margin:0 0 2px;font-size:13px;font-weight:800;}
-  .sheet p.sub{margin:0 0 8px;font-size:10px;color:var(--ink-soft);}
-  .sheet textarea{width:100%;min-height:80px;border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:9px;font-size:11.5px;line-height:1.6;color:var(--ink);resize:none;margin-bottom:8px;}
-  .sheet-btn{width:100%;background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;font-weight:800;font-size:11.5px;padding:10px;border-radius:var(--radius-sm);}
-  .setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 2px;border-bottom:1px solid var(--line);}
+  .sheet-handle{width:28px;height:3px;background:var(--line);border-radius:100px;margin:0 auto 8px auto;}
+  .sheet h4{font-size:12.5px;font-weight:800;}
+  .sheet p.sub{font-size:10px;color:var(--ink-soft);margin-bottom:6px;}
+  .sheet textarea{width:100%;min-height:70px;border:1.5px solid var(--line);border-radius:var(--radius-md);padding:8px;font-size:11px;line-height:1.5;color:var(--ink);resize:none;margin-bottom:6px;}
+  .sheet-btn{width:100%;background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;font-weight:800;font-size:11px;padding:9px;border-radius:var(--radius-md);}
+  .setting-row{display:flex;align-items:center;justify-content:space-between;padding:8px 2px;border-bottom:1px solid var(--line);}
   .setting-row:last-of-type{border-bottom:none;}
-  .setting-row b{display:block;font-size:11.5px;font-weight:700;}
-  .setting-row span{display:block;font-size:9.5px;color:var(--ink-dim);margin-top:1px;}
-  .switch{position:relative;width:38px;height:22px;border-radius:100px;background:var(--line);flex-shrink:0;transition:background .2s;}
+  .setting-row b{display:block;font-size:11px;font-weight:700;}
+  .setting-row span{display:block;font-size:9px;color:var(--ink-dim);margin-top:1px;}
+  .switch{position:relative;width:36px;height:20px;border-radius:100px;background:var(--line);flex-shrink:0;transition:background .2s;}
   .switch.on{background:var(--pesteh);}
-  .switch::after{content:'';position:absolute;top:2.5px;inset-inline-start:2.5px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.18);transition:inset-inline-start .2s;}
-  .switch.on::after{inset-inline-start:18.5px;}
-  .danger-btn{width:100%;margin-top:4px;background:var(--ghermez-soft);color:var(--ghermez-dark);font-weight:800;font-size:11.5px;padding:9px;border-radius:var(--radius-sm);}
+  .switch::after{content:'';position:absolute;top:2px;inset-inline-start:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.12);transition:inset-inline-start .2s;}
+  .switch.on::after{inset-inline-start:18px;}
+  .danger-btn{width:100%;margin-top:4px;background:#FBDCDA;color:#C23C3C;font-weight:800;font-size:11px;padding:8px;border-radius:var(--radius-md);}
 
   /* ===== Scrollbar ===== */
-  ::-webkit-scrollbar{width:4px;}
+  ::-webkit-scrollbar{width:3px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--ink-dim);border-radius:100px;}
 
   /* ===== Responsive ===== */
-  @media(max-width:360px){.app{padding-inline:8px;}.grid{gap:7px;}.menu-panel{width:82%;}}
-  @media(min-width:768px){.app{max-width:520px;}}
+  @media(max-width:360px){.app{padding-inline:8px;}.grid{gap:6px;}}
 </style>
 </head>
 <body>
-<div class="bg-wrap"><div class="bg-img" id="bgImg"></div><div class="bg-tint"></div><div class="bg-vignette"></div></div>
 
+<!-- Background -->
+<div class="bg-wrap"></div>
+
+<!-- App -->
 <div class="app">
+
   <!-- Header -->
   <div class="topbar">
     <div class="brand">
@@ -248,7 +240,7 @@
     </div>
     <div class="topbar-actions">
       <button class="icon-pill" id="hamburgerBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-      <button class="icon-pill" id="settingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <button class="icon-pill" id="settingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </div>
   </div>
 
@@ -295,8 +287,9 @@
 
   <!-- Signal Grid -->
   <div class="grid" id="signalGrid">
-    <div class="card" data-id="m1" data-type="image" data-src="m1.jpg">
-      <img class="media" data-base="m1.jpg" data-live src="m1.png" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <!-- Card 1 -->
+    <div class="card" data-id="m1" data-type="image" data-src="m1.png">
+      <img class="media" src="m1.png" alt="Signal 1" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
       <div class="scrim"></div>
       <div class="top-actions">
@@ -304,8 +297,9 @@
         <button class="icon-btn fav" data-id="m1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
       </div>
     </div>
+    <!-- Card 2 -->
     <div class="card" data-id="m2" data-type="image" data-src="m2.png">
-      <img class="media" data-base="m2.jpg" data-live src="m2.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <img class="media" src="m2.png" alt="Signal 2" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
       <div class="scrim"></div>
       <div class="top-actions">
@@ -313,8 +307,9 @@
         <button class="icon-btn fav" data-id="m2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
       </div>
     </div>
+    <!-- Card 3 -->
     <div class="card" data-id="m3" data-type="image" data-src="m3.png">
-      <img class="media" data-base="m3.jpg" data-live src="m3.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <img class="media" src="m3.png" alt="Signal 3" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
       <div class="scrim"></div>
       <div class="top-actions">
@@ -322,8 +317,9 @@
         <button class="icon-btn fav" data-id="m3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
       </div>
     </div>
+    <!-- Card 4 -->
     <div class="card" data-id="m4" data-type="image" data-src="m4.png">
-      <img class="media" data-base="m4.jpg" data-live src="m4.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <img class="media" src="m4.png" alt="Signal 4" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
       <div class="scrim"></div>
       <div class="top-actions">
@@ -331,8 +327,9 @@
         <button class="icon-btn fav" data-id="m4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
       </div>
     </div>
-    <div class="card" data-id="v1" data-type="video" data-src="m1.mp4">
-      <video class="media" data-base="m1.mp4" src="m1.mp4" muted preload="metadata"></video>
+    <!-- Card 5 (Video) -->
+    <div class="card" data-id="v1" data-type="video" data-src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
+      <video class="media" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" muted preload="metadata" playsinline></video>
       <div class="scrim"></div>
       <div class="top-actions">
         <button class="icon-btn note" data-id="v1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
@@ -340,8 +337,9 @@
       </div>
       <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
     </div>
-    <div class="card" data-id="v2" data-type="video" data-src="m2.mp4">
-      <video class="media" data-base="m2.mp4" src="m2.mp4" muted preload="metadata"></video>
+    <!-- Card 6 (Video) -->
+    <div class="card" data-id="v2" data-type="video" data-src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4">
+      <video class="media" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" muted preload="metadata" playsinline></video>
       <div class="scrim"></div>
       <div class="top-actions">
         <button class="icon-btn note" data-id="v2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
@@ -390,7 +388,6 @@
 
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox">
-  <div class="lightbox-bg" id="lightboxBg"></div><div class="lightbox-bg2"></div>
   <button class="lightbox-close" id="lightboxClose"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
   <div class="lightbox-stage"><div class="lightbox-frame" id="lightboxFrame"></div></div>
   <div class="lightbox-hint">برای بستن، لمس کنید</div>
@@ -415,277 +412,128 @@
 (function(){
   'use strict';
 
-  // ============================================================
-  //  ENTERPRISE-GRADE CONFIGURATION
-  //  - Multi-language with complete translation for each section
-  //  - High-performance caching & optimization
-  //  - Scalable architecture for millions of users
-  // ============================================================
-
-  // ============================================================
-  //  📢 BROADCAST / PUBLIC ANNOUNCEMENT MESSAGES  (per language)
-  //  ------------------------------------------------------------
-  //  This is the ONLY place you need to edit the public notice
-  //  banner shown at the top of the app. Every language has its
-  //  own clearly separated block below — find it by its flag/
-  //  comment header and edit ONLY the "title" and "text" strings.
-  //  Nothing else in the code needs to change.
-  // ============================================================
   var BROADCAST = {
-
-    // ---------------- 🇮🇷 PERSIAN (فارسی) ----------------
-    fa: {
-      title: '📌 نکته مهم',
-      text: 'لطفاً قبل از هر معامله، بخش راهنمایی را مطالعه کنید. مدیریت ریسک کلید موفقیت است.'
-    },
-
-    // ---------------- 🇬🇧 ENGLISH ----------------
-    en: {
-      title: '📌 Important Note',
-      text: 'Please review the guide section before any trade. Risk management is key to success.'
-    },
-
-    // ---------------- 🇹🇷 TURKISH (Türkçe) ----------------
-    tr: {
-      title: '📌 Önemli Not',
-      text: 'Her işlem öncesi rehber bölümünü inceleyin. Risk yönetimi başarının anahtarıdır.'
-    },
-
-    // ---------------- 🇸🇦 ARABIC (العربية) ----------------
-    ar: {
-      title: '📌 ملاحظة مهمة',
-      text: 'يرجى مراجعة قسم الدليل قبل أي صفقة. إدارة المخاطر هي مفتاح النجاح.'
-    },
-
-    // ---------------- 🇷🇺 RUSSIAN (Русский) ----------------
-    ru: {
-      title: '📌 Важное примечание',
-      text: 'Пожалуйста, ознакомьтесь с разделом руководства перед любой сделкой. Управление рисками — ключ к успеху.'
-    }
-
+    fa: { title: '📌 نکته مهم', text: 'لطفاً قبل از هر معامله، بخش راهنمایی را مطالعه کنید. مدیریت ریسک کلید موفقیت است.' },
+    en: { title: '📌 Important Note', text: 'Please review the guide section before any trade. Risk management is key to success.' },
+    tr: { title: '📌 Önemli Not', text: 'Her işlem öncesi rehber bölümünü inceleyin. Risk yönetimi başarının anahtarıdır.' },
+    ar: { title: '📌 ملاحظة مهمة', text: 'يرجى مراجعة قسم الدليل قبل أي صفقة. إدارة المخاطر هي مفتاح النجاح.' },
+    ru: { title: '📌 Важное примечание', text: 'Пожалуйста, ознакомьтесь с разделом руководства перед любой сделкой. Управление рисками — ключ к успеху.' }
   };
-
-  // ============ TRANSLATIONS ============
-  // Each language has its own complete set of translations.
-  // To modify any text, edit the corresponding language block below.
-  // - fa: Persian (Farsi)
-  // - en: English
-  // - tr: Turkish
-  // - ar: Arabic
-  // - ru: Russian
 
   var LANG = {
     fa: {
-      brandTitle: 'پلتفرم سیگنال',
-      brandSub: 'تحلیل بازار کریپتو',
-      filterAll: 'همه سیگنال‌ها',
-      filterFav: 'علاقه‌مندی‌ها',
-      signalsTitle: 'سیگنال‌های امروز',
-      navSignal: 'سیگنال',
-      navChart: 'چارت',
-      navGuide: 'راهنمایی',
-      chartTitle: 'چارت زنده',
-      alertHint: 'هشدار قیمت برای نماد انتخاب‌شده — به‌محض رسیدن قیمت لحظه‌ای به عدد هدف، به شما اطلاع داده می‌شود.',
-      guideTitle: 'راهنمای ترید',
-      guideIntroTitle: 'راهنمای جامع معامله‌گری',
-      guideIntroText: 'این راهنما حاصل جمع‌بندی اصول پایه‌ی مدیریت ریسک، روانشناسی معاملاتی و تحلیل بازار است. پیش از هر معامله، مرور این نکات می‌تواند از تصمیمات هیجانی جلوگیری کند.',
-      noteTitle: 'یادداشت شخصی',
-      noteSub: 'تحلیل یا دلیل ورود به این سیگنال را برای خودتان ثبت کنید.',
-      settingsTitle: 'تنظیمات',
-      settingsSub: 'مدیریت اپ و داده‌های ذخیره‌شده روی این دستگاه.',
-      setLiveLabel: 'به‌روزرسانی زنده تصاویر',
-      setLiveDesc: 'هر ۲ ثانیه فایل‌ها دوباره بارگذاری شوند',
-      setNotifLabel: 'اعلان مرورگر برای هشدار قیمت',
-      setNotifDesc: 'در صورت فعال بودن، هنگام رسیدن به قیمت هدف نوتیفیکیشن نمایش داده می‌شود',
-      menuTelegram: 'عضویت در تلگرام',
-      menuInstagram: 'عضویت در اینستاگرام',
-      themeLabel: 'تم روشن',
-      gridEmpty: 'هنوز سیگنالی را به علاقه‌مندی‌ها اضافه نکرده‌اید.',
-      searchPlaceholder: 'جست‌وجو در نکات راهنما...',
-      alertAdd: 'افزودن هشدار',
-      alertPricePlaceholder: 'قیمت هدف (دلار)',
-      saveNote: 'ذخیره یادداشت',
-      clearData: 'پاک‌کردن علاقه‌مندی‌ها، یادداشت‌ها و هشدارها',
-      lightboxHint: 'برای بستن، لمس کنید',
-      tipsUnit: 'نکته',
-      itemsUnit: 'مورد',
-      alertAtWord: 'در $',
-      alertTriggeredWord: ' (فعال شد)',
-      confirmClear: 'همه‌ی داده‌ها پاک شوند؟',
-      notifTitle: 'هشدار قیمت',
-      notifBodySuffix: 'به قیمت هدف $'
+      brandTitle:'پلتفرم سیگنال', brandSub:'تحلیل بازار کریپتو',
+      filterAll:'همه سیگنال‌ها', filterFav:'علاقه‌مندی‌ها',
+      signalsTitle:'سیگنال‌های امروز', navSignal:'سیگنال', navChart:'چارت', navGuide:'راهنمایی',
+      chartTitle:'چارت زنده', alertHint:'هشدار قیمت برای نماد انتخاب‌شده',
+      guideTitle:'راهنمای ترید', guideIntroTitle:'راهنمای جامع معامله‌گری',
+      guideIntroText:'این راهنما حاصل جمع‌بندی اصول پایه‌ی مدیریت ریسک، روانشناسی معاملاتی و تحلیل بازار است.',
+      noteTitle:'یادداشت شخصی', noteSub:'تحلیل یا دلیل ورود به این سیگنال را ثبت کنید.',
+      settingsTitle:'تنظیمات', settingsSub:'مدیریت اپ و داده‌های ذخیره‌شده',
+      setLiveLabel:'به‌روزرسانی زنده تصاویر', setLiveDesc:'هر ۲ ثانیه',
+      setNotifLabel:'اعلان مرورگر', setNotifDesc:'نوتیفیکیشن هشدار قیمت',
+      menuTelegram:'عضویت در تلگرام', menuInstagram:'عضویت در اینستاگرام',
+      themeLabel:'تم روشن', gridEmpty:'هنوز سیگنالی را به علاقه‌مندی‌ها اضافه نکرده‌اید.',
+      searchPlaceholder:'جست‌وجو در نکات...', alertAdd:'افزودن',
+      alertPricePlaceholder:'قیمت هدف (دلار)', saveNote:'ذخیره یادداشت',
+      clearData:'پاک‌کردن علاقه‌مندی‌ها، یادداشت‌ها و هشدارها',
+      lightboxHint:'برای بستن، لمس کنید', tipsUnit:'نکته', itemsUnit:'مورد',
+      alertAtWord:'در $', alertTriggeredWord:' (فعال شد)',
+      confirmClear:'همه‌ی داده‌ها پاک شوند؟', notifTitle:'هشدار قیمت',
+      notifBodySuffix:'به قیمت هدف $'
     },
     en: {
-      brandTitle: 'Signal Platform',
-      brandSub: 'Crypto Market Analysis',
-      filterAll: 'All Signals',
-      filterFav: 'Favorites',
-      signalsTitle: 'Today\'s Signals',
-      navSignal: 'Signal',
-      navChart: 'Chart',
-      navGuide: 'Guide',
-      chartTitle: 'Live Chart',
-      alertHint: 'Price alert for selected symbol — you will be notified when the price reaches the target.',
-      guideTitle: 'Trading Guide',
-      guideIntroTitle: 'Comprehensive Trading Guide',
-      guideIntroText: 'This guide summarizes the basics of risk management, trading psychology, and market analysis. Reviewing these tips before any trade can prevent emotional decisions.',
-      noteTitle: 'Personal Note',
-      noteSub: 'Record your analysis or reason for entering this signal.',
-      settingsTitle: 'Settings',
-      settingsSub: 'Manage app and stored data on this device.',
-      setLiveLabel: 'Live Image Refresh',
-      setLiveDesc: 'Every 2 seconds reload files',
-      setNotifLabel: 'Browser Notifications for Price Alerts',
-      setNotifDesc: 'If enabled, a notification will be shown when target price is reached',
-      menuTelegram: 'Join Telegram',
-      menuInstagram: 'Join Instagram',
-      themeLabel: 'Light Theme',
-      gridEmpty: 'You haven\'t added any signals to favorites yet.',
-      searchPlaceholder: 'Search guide tips...',
-      alertAdd: 'Add Alert',
-      alertPricePlaceholder: 'Target Price (USD)',
-      saveNote: 'Save Note',
-      clearData: 'Clear Favorites, Notes & Alerts',
-      lightboxHint: 'Tap to close',
-      tipsUnit: 'tips',
-      itemsUnit: 'items',
-      alertAtWord: 'at $',
-      alertTriggeredWord: ' (triggered)',
-      confirmClear: 'Clear all data?',
-      notifTitle: 'Price Alert',
-      notifBodySuffix: 'reached target $'
+      brandTitle:'Signal Platform', brandSub:'Crypto Market Analysis',
+      filterAll:'All Signals', filterFav:'Favorites',
+      signalsTitle:'Today\'s Signals', navSignal:'Signal', navChart:'Chart', navGuide:'Guide',
+      chartTitle:'Live Chart', alertHint:'Price alert for selected symbol',
+      guideTitle:'Trading Guide', guideIntroTitle:'Comprehensive Trading Guide',
+      guideIntroText:'This guide summarizes the basics of risk management, trading psychology, and market analysis.',
+      noteTitle:'Personal Note', noteSub:'Record your analysis or reason for entering this signal.',
+      settingsTitle:'Settings', settingsSub:'Manage app and stored data',
+      setLiveLabel:'Live Image Refresh', setLiveDesc:'Every 2 seconds',
+      setNotifLabel:'Browser Notifications', setNotifDesc:'Price alert notifications',
+      menuTelegram:'Join Telegram', menuInstagram:'Join Instagram',
+      themeLabel:'Light Theme', gridEmpty:'You haven\'t added any signals to favorites yet.',
+      searchPlaceholder:'Search tips...', alertAdd:'Add',
+      alertPricePlaceholder:'Target Price (USD)', saveNote:'Save Note',
+      clearData:'Clear Favorites, Notes & Alerts',
+      lightboxHint:'Tap to close', tipsUnit:'tips', itemsUnit:'items',
+      alertAtWord:'at $', alertTriggeredWord:' (triggered)',
+      confirmClear:'Clear all data?', notifTitle:'Price Alert',
+      notifBodySuffix:'reached target $'
     },
     tr: {
-      brandTitle: 'Sinyal Platformu',
-      brandSub: 'Kripto Piyasa Analizi',
-      filterAll: 'Tüm Sinyaller',
-      filterFav: 'Favoriler',
-      signalsTitle: 'Bugünün Sinyalleri',
-      navSignal: 'Sinyal',
-      navChart: 'Grafik',
-      navGuide: 'Rehber',
-      chartTitle: 'Canlı Grafik',
-      alertHint: 'Seçilen sembol için fiyat uyarısı — fiyat hedefe ulaştığında bildirim alacaksınız.',
-      guideTitle: 'Alım Satım Rehberi',
-      guideIntroTitle: 'Kapsamlı Alım Satım Rehberi',
-      guideIntroText: 'Bu rehber, risk yönetimi, işlem psikolojisi ve piyasa analizinin temellerini özetler. Her işlem öncesi bu ipuçlarını gözden geçirmek duygusal kararları önleyebilir.',
-      noteTitle: 'Kişisel Not',
-      noteSub: 'Bu sinyale girme nedeninizi veya analizinizi kaydedin.',
-      settingsTitle: 'Ayarlar',
-      settingsSub: 'Uygulama ve bu cihazdaki kayıtlı verileri yönetin.',
-      setLiveLabel: 'Canlı Görsel Yenileme',
-      setLiveDesc: 'Her 2 saniyede dosyaları yeniden yükle',
-      setNotifLabel: 'Fiyat Uyarıları için Tarayıcı Bildirimleri',
-      setNotifDesc: 'Etkinleştirilirse, hedef fiyata ulaşıldığında bildirim gösterilir',
-      menuTelegram: 'Telegram\'a Katıl',
-      menuInstagram: 'Instagram\'a Katıl',
-      themeLabel: 'Açık Tema',
-      gridEmpty: 'Henüz favorilere sinyal eklemediniz.',
-      searchPlaceholder: 'Rehber ipuçlarında ara...',
-      alertAdd: 'Uyarı Ekle',
-      alertPricePlaceholder: 'Hedef Fiyat (USD)',
-      saveNote: 'Notu Kaydet',
-      clearData: 'Favorileri, Notları ve Uyarıları Temizle',
-      lightboxHint: 'Kapatmak için dokunun',
-      tipsUnit: 'ipucu',
-      itemsUnit: 'sinyal',
-      alertAtWord: '$ fiyatında',
-      alertTriggeredWord: ' (tetiklendi)',
-      confirmClear: 'Tüm veriler silinsin mi?',
-      notifTitle: 'Fiyat Uyarısı',
-      notifBodySuffix: 'hedef fiyata ulaştı: $'
+      brandTitle:'Sinyal Platformu', brandSub:'Kripto Piyasa Analizi',
+      filterAll:'Tüm Sinyaller', filterFav:'Favoriler',
+      signalsTitle:'Bugünün Sinyalleri', navSignal:'Sinyal', navChart:'Grafik', navGuide:'Rehber',
+      chartTitle:'Canlı Grafik', alertHint:'Seçilen sembol için fiyat uyarısı',
+      guideTitle:'Alım Satım Rehberi', guideIntroTitle:'Kapsamlı Alım Satım Rehberi',
+      guideIntroText:'Bu rehber, risk yönetimi, işlem psikolojisi ve piyasa analizinin temellerini özetler.',
+      noteTitle:'Kişisel Not', noteSub:'Bu sinyale girme nedeninizi veya analizinizi kaydedin.',
+      settingsTitle:'Ayarlar', settingsSub:'Uygulama ve kayıtlı verileri yönetin',
+      setLiveLabel:'Canlı Görsel Yenileme', setLiveDesc:'Her 2 saniye',
+      setNotifLabel:'Tarayıcı Bildirimleri', setNotifDesc:'Fiyat uyarı bildirimleri',
+      menuTelegram:'Telegram\'a Katıl', menuInstagram:'Instagram\'a Katıl',
+      themeLabel:'Açık Tema', gridEmpty:'Henüz favorilere sinyal eklemediniz.',
+      searchPlaceholder:'Rehberde ara...', alertAdd:'Ekle',
+      alertPricePlaceholder:'Hedef Fiyat (USD)', saveNote:'Notu Kaydet',
+      clearData:'Favorileri, Notları ve Uyarıları Temizle',
+      lightboxHint:'Kapatmak için dokunun', tipsUnit:'ipucu', itemsUnit:'sinyal',
+      alertAtWord:'$ fiyatında', alertTriggeredWord:' (tetiklendi)',
+      confirmClear:'Tüm veriler silinsin mi?', notifTitle:'Fiyat Uyarısı',
+      notifBodySuffix:'hedef fiyata ulaştı: $'
     },
     ar: {
-      brandTitle: 'منصة الإشارات',
-      brandSub: 'تحليل سوق العملات المشفرة',
-      filterAll: 'جميع الإشارات',
-      filterFav: 'المفضلة',
-      signalsTitle: 'إشارات اليوم',
-      navSignal: 'إشارة',
-      navChart: 'الرسم البياني',
-      navGuide: 'الدليل',
-      chartTitle: 'الرسم البياني المباشر',
-      alertHint: 'تنبيه السعر للرمز المحدد — سيتم إعلامك عند وصول السعر إلى الهدف.',
-      guideTitle: 'دليل التداول',
-      guideIntroTitle: 'الدليل الشامل للتداول',
-      guideIntroText: 'يلخص هذا الدليل أساسيات إدارة المخاطر وعلم نفس التداول وتحليل السوق. مراجعة هذه النصائح قبل أي صفقة يمكن أن تمنع القرارات العاطفية.',
-      noteTitle: 'ملاحظة شخصية',
-      noteSub: 'سجل تحليلك أو سبب دخولك لهذه الإشارة.',
-      settingsTitle: 'الإعدادات',
-      settingsSub: 'إدارة التطبيق والبيانات المخزنة على هذا الجهاز.',
-      setLiveLabel: 'تحديث الصور المباشر',
-      setLiveDesc: 'إعادة تحميل الملفات كل 2 ثانية',
-      setNotifLabel: 'إشعارات المتصفح لتنبيهات السعر',
-      setNotifDesc: 'عند التفعيل، سيتم عرض إشعار عند الوصول إلى السعر المستهدف',
-      menuTelegram: 'انضم إلى تيليجرام',
-      menuInstagram: 'انضم إلى إنستغرام',
-      themeLabel: 'الوضع الفاتح',
-      gridEmpty: 'لم تقم بإضافة أي إشارات إلى المفضلة بعد.',
-      searchPlaceholder: 'ابحث في نصائح الدليل...',
-      alertAdd: 'إضافة تنبيه',
-      alertPricePlaceholder: 'السعر المستهدف (دولار)',
-      saveNote: 'حفظ الملاحظة',
-      clearData: 'مسح المفضلة والملاحظات والتنبيهات',
-      lightboxHint: 'اضغط للإغلاق',
-      tipsUnit: 'نصيحة',
-      itemsUnit: 'عنصر',
-      alertAtWord: 'عند $',
-      alertTriggeredWord: ' (تم التفعيل)',
-      confirmClear: 'هل تريد مسح جميع البيانات؟',
-      notifTitle: 'تنبيه السعر',
-      notifBodySuffix: 'وصل إلى السعر المستهدف $'
+      brandTitle:'منصة الإشارات', brandSub:'تحليل سوق العملات المشفرة',
+      filterAll:'جميع الإشارات', filterFav:'المفضلة',
+      signalsTitle:'إشارات اليوم', navSignal:'إشارة', navChart:'الرسم البياني', navGuide:'الدليل',
+      chartTitle:'الرسم البياني المباشر', alertHint:'تنبيه السعر للرمز المحدد',
+      guideTitle:'دليل التداول', guideIntroTitle:'الدليل الشامل للتداول',
+      guideIntroText:'يلخص هذا الدليل أساسيات إدارة المخاطر وعلم نفس التداول وتحليل السوق.',
+      noteTitle:'ملاحظة شخصية', noteSub:'سجل تحليلك أو سبب دخولك لهذه الإشارة.',
+      settingsTitle:'الإعدادات', settingsSub:'إدارة التطبيق والبيانات المخزنة',
+      setLiveLabel:'تحديث الصور المباشر', setLiveDesc:'كل 2 ثانية',
+      setNotifLabel:'إشعارات المتصفح', setNotifDesc:'إشعارات تنبيه السعر',
+      menuTelegram:'انضم إلى تيليجرام', menuInstagram:'انضم إلى إنستغرام',
+      themeLabel:'الوضع الفاتح', gridEmpty:'لم تقم بإضافة أي إشارات إلى المفضلة بعد.',
+      searchPlaceholder:'ابحث في الدليل...', alertAdd:'إضافة',
+      alertPricePlaceholder:'السعر المستهدف (دولار)', saveNote:'حفظ الملاحظة',
+      clearData:'مسح المفضلة والملاحظات والتنبيهات',
+      lightboxHint:'اضغط للإغلاق', tipsUnit:'نصيحة', itemsUnit:'عنصر',
+      alertAtWord:'عند $', alertTriggeredWord:' (تم التفعيل)',
+      confirmClear:'هل تريد مسح جميع البيانات؟', notifTitle:'تنبيه السعر',
+      notifBodySuffix:'وصل إلى السعر المستهدف $'
     },
     ru: {
-      brandTitle: 'Сигнальная платформа',
-      brandSub: 'Анализ крипторынка',
-      filterAll: 'Все сигналы',
-      filterFav: 'Избранное',
-      signalsTitle: 'Сигналы сегодня',
-      navSignal: 'Сигнал',
-      navChart: 'График',
-      navGuide: 'Руководство',
-      chartTitle: 'Живой график',
-      alertHint: 'Ценовое оповещение для выбранного символа — вы будете уведомлены, когда цена достигнет цели.',
-      guideTitle: 'Руководство по трейдингу',
-      guideIntroTitle: 'Полное руководство по трейдингу',
-      guideIntroText: 'В этом руководстве собраны основы управления рисками, психологии трейдинга и анализа рынка. Просмотр этих советов перед любой сделкой поможет избежать эмоциональных решений.',
-      noteTitle: 'Личная заметка',
-      noteSub: 'Запишите свой анализ или причину входа в этот сигнал.',
-      settingsTitle: 'Настройки',
-      settingsSub: 'Управление приложением и сохранёнными данными на этом устройстве.',
-      setLiveLabel: 'Обновление изображений',
-      setLiveDesc: 'Перезагружать файлы каждые 2 секунды',
-      setNotifLabel: 'Уведомления браузера для ценовых оповещений',
-      setNotifDesc: 'При включении показывать уведомление при достижении целевой цены',
-      menuTelegram: 'Присоединиться к Telegram',
-      menuInstagram: 'Присоединиться к Instagram',
-      themeLabel: 'Светлая тема',
-      gridEmpty: 'Вы ещё не добавили сигналы в избранное.',
-      searchPlaceholder: 'Поиск по советам руководства...',
-      alertAdd: 'Добавить оповещение',
-      alertPricePlaceholder: 'Целевая цена (USD)',
-      saveNote: 'Сохранить заметку',
-      clearData: 'Очистить избранное, заметки и оповещения',
-      lightboxHint: 'Нажмите, чтобы закрыть',
-      tipsUnit: 'советов',
-      itemsUnit: 'шт.',
-      alertAtWord: 'на $',
-      alertTriggeredWord: ' (сработало)',
-      confirmClear: 'Очистить все данные?',
-      notifTitle: 'Ценовое оповещение',
-      notifBodySuffix: 'достигла цели $'
+      brandTitle:'Сигнальная платформа', brandSub:'Анализ крипторынка',
+      filterAll:'Все сигналы', filterFav:'Избранное',
+      signalsTitle:'Сигналы сегодня', navSignal:'Сигнал', navChart:'График', navGuide:'Руководство',
+      chartTitle:'Живой график', alertHint:'Ценовое оповещение для выбранного символа',
+      guideTitle:'Руководство по трейдингу', guideIntroTitle:'Полное руководство по трейдингу',
+      guideIntroText:'В этом руководстве собраны основы управления рисками, психологии трейдинга и анализа рынка.',
+      noteTitle:'Личная заметка', noteSub:'Запишите свой анализ или причину входа в этот сигнал.',
+      settingsTitle:'Настройки', settingsSub:'Управление приложением и сохранёнными данными',
+      setLiveLabel:'Обновление изображений', setLiveDesc:'Каждые 2 секунды',
+      setNotifLabel:'Уведомления браузера', setNotifDesc:'Уведомления о ценовых оповещениях',
+      menuTelegram:'Присоединиться к Telegram', menuInstagram:'Присоединиться к Instagram',
+      themeLabel:'Светлая тема', gridEmpty:'Вы ещё не добавили сигналы в избранное.',
+      searchPlaceholder:'Поиск по руководству...', alertAdd:'Добавить',
+      alertPricePlaceholder:'Целевая цена (USD)', saveNote:'Сохранить заметку',
+      clearData:'Очистить избранное, заметки и оповещения',
+      lightboxHint:'Нажмите, чтобы закрыть', tipsUnit:'советов', itemsUnit:'шт.',
+      alertAtWord:'на $', alertTriggeredWord:' (сработало)',
+      confirmClear:'Очистить все данные?', notifTitle:'Ценовое оповещение',
+      notifBodySuffix:'достигла цели $'
     }
   };
 
-  // ============ LANGUAGE → TRADINGVIEW LOCALE / METADATA ============
-  var LOCALE_MAP = { fa: 'fa_IR', en: 'en', tr: 'tr', ar: 'ar', ru: 'ru' };
-  var RTL_LANGS = { fa: true, ar: true };
+  var LOCALE_MAP = { fa:'fa_IR', en:'en', tr:'tr', ar:'ar', ru:'ru' };
+  var RTL_LANGS = { fa:true, ar:true };
 
-  // ============ LOCAL STORAGE HELPERS ============
   function lget(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){return d;} }
   function lset(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
 
-  // ============ STATE ============
   var state = {
     lang: lget('sg_lang','fa'),
     theme: lget('sg_theme','light'),
@@ -696,11 +544,9 @@
     noticeDismiss: lget('sg_notice_dismiss',null)
   };
 
-  // ============ DOM REFS ============
   var $ = function(s){ return document.querySelector(s); };
   var $$ = function(s){ return document.querySelectorAll(s); };
 
-  // ============ APPLY LANGUAGE ============
   function applyLanguage(lang){
     state.lang = lang;
     var t = LANG[lang] || LANG.fa;
@@ -728,7 +574,6 @@
     document.getElementById('menuTelegram').textContent = t.menuTelegram;
     document.getElementById('menuInstagram').textContent = t.menuInstagram;
     document.getElementById('themeLabel').textContent = state.theme === 'dark' ? 'تم تاریک' : t.themeLabel;
-    // Broadcast/announcement banner — pulled from the dedicated BROADCAST object above
     var bc = BROADCAST[lang] || BROADCAST.fa;
     document.getElementById('noticeTitle').textContent = bc.title;
     document.getElementById('noticeText').textContent = bc.text;
@@ -739,421 +584,100 @@
     document.getElementById('noteSaveBtn').textContent = t.saveNote;
     document.getElementById('clearDataBtn').textContent = t.clearData;
     document.querySelector('.lightbox-hint').textContent = t.lightboxHint;
-    // Update guide categories titles (they are static in HTML, will be re-rendered)
     renderGuide(lang);
-    // Update grid item counter + alert labels in the new language
     applyFilter();
     renderAlerts();
-    // Update direction (Persian and Arabic are RTL, the rest are LTR)
     document.documentElement.lang = lang;
     document.documentElement.dir = RTL_LANGS[lang] ? 'rtl' : 'ltr';
     lset('sg_lang', lang);
-    // Update lang buttons
     $$('.lang-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === lang); });
-    // Switch the live TradingView chart to the new language too.
-    // If the chart tab is currently open, re-render it immediately;
-    // otherwise it will pick up the new language next time it opens.
-    if(chartInited){
-      chartInited = false;
-      if(chartModal && chartModal.classList.contains('open')){
-        initChart();
-      }
-    }
   }
 
-  // ============================================================
-  //  📚 TRADING GUIDE CONTENT — fully translated per language
-  //  Each language block below (fa / en / tr / ar / ru) holds
-  //  5 categories × 10 tips. Category order/meaning is identical
-  //  across languages: [Risk & Capital, Psychology, Technical
-  //  Analysis, Strategy & Planning, Execution & Skills].
-  // ============================================================
-  var GUIDE_META = [
-    { icon: 'shield', color: 'pesteh' },
-    { icon: 'brain',  color: 'ghermez' },
-    { icon: 'chart',  color: 'pesteh' },
-    { icon: 'target', color: 'ghermez' },
-    { icon: 'bolt',   color: 'pesteh' }
-  ];
-
   var GUIDE_ITEMS = {
-    // ---------------- 🇮🇷 PERSIAN (فارسی) ----------------
     fa: [
-      [
-        ['تعیین حد ضرر پیش از ورود', 'هرگز وارد معامله نشوید مگر آنکه از قبل بدانید در چه قیمتی از آن خارج خواهید شد. حد ضرر باید بر اساس ساختار قیمت تعیین شود، نه یک عدد دلخواه.'],
-        ['محدودیت ریسک در هر معامله', 'به‌طور معمول بین یک تا دو درصد از کل سرمایه در هر معامله ریسک کنید تا چند ضرر متوالی حساب شما را از بین نبرد.'],
-        ['نسبت سود به ریسک مناسب', 'پیش از ورود بسنجید که آیا سود بالقوه حداقل دو تا سه برابر ریسک احتمالی است؛ در غیر این صورت از معامله صرف‌نظر کنید.'],
-        ['تنوع در دارایی‌ها', 'تمام سرمایه را روی یک ارز دیجیتال متمرکز نکنید؛ توزیع ریسک میان چند دارایی نوسانات حساب را کاهش می‌دهد.'],
-        ['مدیریت اهرم', 'استفاده از اهرم بالا سود و زیان را چند برابر می‌کند؛ برای اکثر معامله‌گران، اهرم پایین و کنترل‌شده منطقی‌تر است.'],
-        ['حفظ سرمایه در اولویت است', 'هدف اصلی هر معامله‌گر حرفه‌ای، حفظ سرمایه است نه کسب سود سریع؛ بدون سرمایه، فرصتی برای معامله باقی نمی‌ماند.'],
-        ['اجتناب از میانگین‌گیری نزولی بدون برنامه', 'افزودن به یک موقعیت زیان‌ده بدون تحلیل و حد ضرر مشخص، ریسک را به‌شدت افزایش می‌دهد.'],
-        ['تعیین سقف ضرر روزانه', 'برای خود یک سقف ضرر روزانه یا هفتگی تعیین کنید و در صورت رسیدن به آن، معاملات را متوقف کنید.'],
-        ['ذخیره‌ی مالی جدا از حساب معاملاتی', 'همیشه بخشی از سرمایه را خارج از بازار و به‌عنوان ذخیره‌ی اضطراری نگه دارید.'],
-        ['بازبینی دوره‌ای اندازه‌ی موقعیت', 'با رشد یا کاهش سرمایه، اندازه‌ی معاملات را متناسب با موجودی جدید تنظیم کنید.']
-      ],
-      [
-        ['کنترل ترس و طمع', 'این دو احساس بزرگ‌ترین دشمن تصمیم‌گیری منطقی هستند؛ تصمیمات را بر اساس برنامه بگیرید، نه هیجان لحظه‌ای.'],
-        ['پرهیز از معامله برای جبران ضرر', 'بعد از یک ضرر، تلاش برای جبران سریع معمولاً به تصمیمات پرریسک و ضررهای بزرگ‌تر منجر می‌شود.'],
-        ['پذیرش عدم قطعیت بازار', 'هیچ تحلیلی صد در صد درست نیست؛ معامله‌گری یعنی کار کردن با احتمالات، نه پیش‌بینی قطعی.'],
-        ['حفظ آرامش در نوسانات شدید', 'در روزهای پرنوسان، تصمیم‌گیری احساسی می‌تواند نتیجه‌ی ماه‌ها تحلیل درست را از بین ببرد.'],
-        ['فاصله گرفتن پس از ضررهای متوالی', 'اگر چند معامله پشت سر هم ضررده بود، استراحت کنید و شرایط ذهنی خود را بازیابی کنید.'],
-        ['اجتناب از اعتماد به نفس کاذب', 'چند سود متوالی می‌تواند باعث افزایش بی‌رویه ریسک شود؛ به برنامه‌ی خود پایبند بمانید.'],
-        ['ثبت احساسات در کنار معاملات', 'در دفترچه‌ی معاملاتی، حالت روانی خود هنگام ورود و خروج را نیز یادداشت کنید تا الگوهای رفتاری را بشناسید.'],
-        ['دوری از فومو (ترس از دست دادن فرصت)', 'ورود عجولانه به یک حرکت قیمتی بزرگ بدون تحلیل، یکی از رایج‌ترین اشتباهات معامله‌گران تازه‌کار است.'],
-        ['واقع‌بین بودن نسبت به بازدهی', 'انتظار سودهای غیرواقعی و سریع، مسیر را به سمت ریسک‌های غیرمنطقی سوق می‌دهد.'],
-        ['استراحت ذهنی منظم', 'خستگی ذهنی باعث کاهش تمرکز و افزایش خطا در تحلیل و اجرای معامله می‌شود.']
-      ],
-      [
-        ['شناخت روند اصلی بازار', 'پیش از هر تصمیم، مشخص کنید روند غالب صعودی، نزولی یا خنثی است و در جهت آن معامله کنید.'],
-        ['اهمیت سطوح حمایت و مقاومت', 'این سطوح نقاطی هستند که در گذشته واکنش قیمتی رخ داده و احتمال واکنش مجدد در آن‌ها بالاست.'],
-        ['تایید سیگنال در چند تایم‌فریم', 'یک سیگنال معتبرتر است وقتی در تایم‌فریم بالاتر و پایین‌تر هم‌راستا باشد.'],
-        ['توجه به حجم معاملات', 'افزایش حجم در جهت حرکت قیمت، اعتبار آن حرکت را تقویت می‌کند.'],
-        ['استفاده هدفمند از اندیکاتورها', 'اندیکاتورها ابزار کمکی برای تایید تحلیل هستند، نه منبع اصلی تصمیم‌گیری.'],
-        ['شناسایی الگوهای قیمتی', 'الگوهایی مانند مثلث، پرچم و سر و شانه می‌توانند نشانه‌ی ادامه یا بازگشت روند باشند.'],
-        ['بررسی نقاط نقدینگی بازار', 'بسیاری از حرکات ناگهانی قیمت، نتیجه‌ی جمع‌آوری نقدینگی در نزدیکی سطوح کلیدی است.'],
-        ['اهمیت کندل‌های تاییدی', 'پیش از ورود بر اساس یک سطح، منتظر بسته شدن کندل تاییدکننده در آن ناحیه بمانید.'],
-        ['دوری از تحلیل بیش از حد', 'بررسی هم‌زمان تعداد زیادی اندیکاتور می‌تواند باعث سردرگمی و تصمیم‌گیری تاخیری شود.'],
-        ['ثبت و بازبینی تحلیل‌های گذشته', 'مقایسه‌ی پیش‌بینی‌های قبلی با نتیجه‌ی واقعی بازار، دقت تحلیل شما را در طول زمان بهبود می‌دهد.']
-      ],
-      [
-        ['داشتن یک برنامه‌ی معاملاتی مکتوب', 'شرایط ورود، خروج، حد ضرر و حد سود را پیش از معامله به‌صورت مشخص و مکتوب تعیین کنید.'],
-        ['پایبندی به یک استراتژی مشخص', 'تغییر مداوم استراتژی بر اساس نتایج کوتاه‌مدت، مانع از سنجش واقعی عملکرد آن می‌شود.'],
-        ['تست استراتژی در حساب آزمایشی', 'پیش از استفاده از سرمایه‌ی واقعی، عملکرد استراتژی را در محیط آزمایشی بسنجید.'],
-        ['تعریف معیار موفقیت معامله', 'موفقیت یک معامله را بر اساس پایبندی به برنامه بسنجید، نه فقط نتیجه‌ی سود یا زیان آن.'],
-        ['برنامه‌ریزی برای سناریوهای مختلف', 'برای هر معامله سناریوی صعودی، نزولی و خنثی را از قبل در نظر بگیرید.'],
-        ['اهمیت زمان‌بندی بازار کریپتو', 'نوسانات بازار کریپتو در ساعات مختلف شبانه‌روز متفاوت است؛ زمان‌های پرحجم را بشناسید.'],
-        ['توجه به رویدادهای مهم بازار', 'اخبار کلان اقتصادی و رویدادهای مرتبط با پروژه‌ها می‌توانند نوسانات شدید ایجاد کنند.'],
-        ['بازبینی هفتگی عملکرد', 'در پایان هر هفته معاملات خود را مرور کنید تا نقاط قوت و ضعف استراتژی مشخص شود.'],
-        ['تعیین هدف بلندمدت', 'رشد سرمایه را در بازه‌ی زمانی بلندمدت بسنجید، نه بر اساس نتیجه‌ی یک یا چند معامله.'],
-        ['انعطاف‌پذیری در برابر شرایط جدید بازار', 'در صورت تغییر ساختار بازار، استراتژی را به‌صورت آگاهانه و بر اساس داده بازبینی کنید.']
-      ],
-      [
-        ['بررسی نقدینگی و اسپرد نماد', 'پیش از ورود به معامله، اسپرد و حجم معاملات نماد موردنظر را بررسی کنید تا از هزینه‌های اضافی جلوگیری شود.'],
-        ['استفاده از سفارش‌های محدود', 'در صورت امکان از سفارش‌های limit به‌جای market استفاده کنید تا نقطه‌ی ورود دقیق‌تری داشته باشید.'],
-        ['جابه‌جا نکردن حد ضرر پس از ورود', 'تغییر حد ضرر برای فرار از یک ضرر کوچک، معمولاً منجر به ضرر بزرگ‌تر می‌شود.'],
-        ['برداشت تدریجی سود', 'در معاملات سودده، بخشی از سود را در مسیر حرکت برداشت کنید تا ریسک بازگشت قیمت کاهش یابد.'],
-        ['استفاده از حد ضرر متحرک', 'در روندهای قوی، جابه‌جایی تدریجی حد ضرر در جهت سود می‌تواند بخشی از سود را قفل کند.'],
-        ['ثبت دقیق جزئیات هر معامله', 'نقطه‌ی ورود، خروج، دلیل معامله و نتیجه را برای تحلیل بعدی یادداشت کنید.'],
-        ['آگاهی از کارمزدها', 'در معاملات مکرر، کارمزد صرافی می‌تواند بخش قابل‌توجهی از سود را کاهش دهد.'],
-        ['امنیت حساب و کیف پول', 'همیشه از احراز هویت دو مرحله‌ای و ذخیره‌سازی امن دارایی دیجیتال اطمینان حاصل کنید.'],
-        ['اجتناب از معامله در شرایط خستگی', 'تصمیم‌گیری در حالت خستگی یا عجله، احتمال خطای اجرایی را افزایش می‌دهد.'],
-        ['یادگیری مستمر', 'بازار کریپتو دائم در حال تغییر است؛ به‌روز نگه داشتن دانش، مزیت رقابتی معامله‌گر را حفظ می‌کند.']
-      ]
+      ['تعیین حد ضرر پیش از ورود','هرگز وارد معامله نشوید مگر آنکه از قبل بدانید در چه قیمتی از آن خارج خواهید شد.'],
+      ['محدودیت ریسک در هر معامله','به‌طور معمول بین یک تا دو درصد از کل سرمایه در هر معامله ریسک کنید.'],
+      ['نسبت سود به ریسک مناسب','پیش از ورود بسنجید که آیا سود بالقوه حداقل دو تا سه برابر ریسک احتمالی است.'],
+      ['تنوع در دارایی‌ها','تمام سرمایه را روی یک ارز دیجیتال متمرکز نکنید.'],
+      ['مدیریت اهرم','استفاده از اهرم بالا سود و زیان را چند برابر می‌کند.'],
+      ['حفظ سرمایه در اولویت است','هدف اصلی هر معامله‌گر حرفه‌ای، حفظ سرمایه است.'],
+      ['اجتناب از میانگین‌گیری نزولی بدون برنامه','افزودن به یک موقعیت زیان‌ده بدون تحلیل ریسک را افزایش می‌دهد.'],
+      ['تعیین سقف ضرر روزانه','برای خود یک سقف ضرر روزانه تعیین کنید.'],
+      ['ذخیره‌ی مالی جدا از حساب معاملاتی','همیشه بخشی از سرمایه را خارج از بازار نگه دارید.'],
+      ['بازبینی دوره‌ای اندازه‌ی موقعیت','با رشد یا کاهش سرمایه، اندازه‌ی معاملات را تنظیم کنید.']
     ],
-
-    // ---------------- 🇬🇧 ENGLISH ----------------
     en: [
-      [
-        ['Set your stop-loss before entering', 'Never enter a trade without knowing in advance the exact price at which you will exit. The stop-loss should be based on price structure, not an arbitrary number.'],
-        ['Limit risk per trade', 'Typically risk only 1–2% of your total capital per trade, so a string of losses cannot wipe out your account.'],
-        ['Keep a proper reward-to-risk ratio', 'Before entering, check that the potential reward is at least 2–3 times the risk; otherwise skip the trade.'],
-        ['Diversify across assets', 'Do not concentrate all your capital in a single coin; spreading risk across several assets reduces account volatility.'],
-        ['Manage leverage carefully', 'High leverage multiplies both gains and losses; for most traders, low and controlled leverage is the wiser choice.'],
-        ['Capital preservation comes first', "A professional trader's main goal is protecting capital, not chasing quick profit; without capital there is no opportunity to trade."],
-        ['Avoid unplanned averaging down', 'Adding to a losing position without analysis or a defined stop sharply increases risk.'],
-        ['Set a daily loss limit', 'Define a daily or weekly maximum loss for yourself and stop trading once you hit it.'],
-        ['Keep savings separate from your trading account', 'Always keep part of your capital outside the market as an emergency reserve.'],
-        ['Review position sizing periodically', 'As your capital grows or shrinks, adjust trade size to match your new balance.']
-      ],
-      [
-        ['Control fear and greed', 'These two emotions are the biggest enemies of rational decision-making; base decisions on your plan, not momentary excitement.'],
-        ['Avoid revenge trading', 'After a loss, trying to recover it quickly usually leads to riskier decisions and bigger losses.'],
-        ['Accept market uncertainty', 'No analysis is ever 100% correct; trading means working with probabilities, not certain predictions.'],
-        ['Stay calm during sharp volatility', 'On highly volatile days, emotional decisions can undo months of sound analysis.'],
-        ['Step back after consecutive losses', 'If several trades in a row lose money, take a break and reset your mental state.'],
-        ['Guard against overconfidence', 'A string of wins can push you toward reckless risk-taking; stick to your plan regardless.'],
-        ['Log your emotions alongside your trades', 'Note your mental state at entry and exit in your trading journal to spot behavioral patterns.'],
-        ['Avoid FOMO', 'Jumping hastily into a big price move without analysis is one of the most common mistakes new traders make.'],
-        ['Be realistic about returns', 'Expecting unrealistic, fast profits pushes you toward irrational risk.'],
-        ['Take regular mental breaks', 'Mental fatigue reduces focus and increases errors in analysis and execution.']
-      ],
-      [
-        ["Identify the market's main trend", 'Before any decision, determine whether the dominant trend is up, down, or sideways, and trade in that direction.'],
-        ['Understand support and resistance', 'These are levels where price has reacted before, so a repeat reaction is likely.'],
-        ['Confirm signals across multiple timeframes', 'A signal is more reliable when higher and lower timeframes align.'],
-        ['Watch trading volume', 'Rising volume in the direction of a move strengthens its validity.'],
-        ['Use indicators purposefully', 'Indicators are confirmation tools, not the primary source of a decision.'],
-        ['Recognize price patterns', 'Patterns like triangles, flags, and head-and-shoulders can signal continuation or reversal.'],
-        ['Watch for liquidity zones', 'Many sudden price moves result from liquidity being swept near key levels.'],
-        ['Wait for confirmation candles', 'Before entering off a level, wait for a confirming candle close in that zone.'],
-        ['Avoid over-analysis', 'Checking too many indicators at once can cause confusion and delayed decisions.'],
-        ['Log and review past analyses', 'Comparing earlier forecasts with actual outcomes improves your analytical accuracy over time.']
-      ],
-      [
-        ['Keep a written trading plan', 'Define your entry, exit, stop-loss, and take-profit clearly and in writing before you trade.'],
-        ['Stick to one defined strategy', 'Constantly switching strategies based on short-term results prevents you from truly judging its performance.'],
-        ['Test strategies on a demo account', 'Before risking real capital, validate strategy performance in a demo environment.'],
-        ['Define what counts as a successful trade', 'Judge success by how well you followed your plan, not just the profit or loss outcome.'],
-        ['Plan for multiple scenarios', 'Consider bullish, bearish, and sideways scenarios for every trade in advance.'],
-        ['Know crypto market timing', 'Crypto volatility differs across the hours of the day; learn the high-volume windows.'],
-        ['Track major market events', 'Macroeconomic news and project-related events can trigger sharp volatility.'],
-        ['Review performance weekly', 'At the end of each week, review your trades to spot strengths and weaknesses in your strategy.'],
-        ['Set long-term goals', 'Measure capital growth over a long time horizon, not the result of one or a few trades.'],
-        ['Stay flexible as markets evolve', 'When market structure shifts, revise your strategy deliberately and based on data.']
-      ],
-      [
-        ['Check liquidity and spread', 'Before entering a trade, check the volume and spread of the symbol to avoid extra costs.'],
-        ['Use limit orders', 'Where possible, use limit orders instead of market orders for a more precise entry point.'],
-        ['Do not move your stop-loss after entry', 'Moving a stop to avoid a small loss usually leads to a bigger one.'],
-        ['Take profit gradually', 'On winning trades, lock in part of the profit along the way to reduce reversal risk.'],
-        ['Use a trailing stop', 'In strong trends, gradually moving your stop in the direction of profit locks in gains.'],
-        ['Log every trade in detail', 'Record entry, exit, reasoning, and outcome for later review.'],
-        ['Be aware of fees', 'On frequent trades, exchange fees can eat a significant share of your profit.'],
-        ['Secure your account and wallet', 'Always use two-factor authentication and secure storage for your digital assets.'],
-        ['Avoid trading while fatigued', 'Deciding while tired or rushed increases the chance of execution errors.'],
-        ['Keep learning continuously', 'The crypto market is constantly changing; staying current preserves a trader\'s competitive edge.']
-      ]
+      ['Set your stop-loss before entering','Never enter a trade without knowing the exact exit price in advance.'],
+      ['Limit risk per trade','Typically risk only 1–2% of your total capital per trade.'],
+      ['Keep a proper reward-to-risk ratio','Ensure potential reward is at least 2–3 times the risk.'],
+      ['Diversify across assets','Do not concentrate all your capital in a single coin.'],
+      ['Manage leverage carefully','High leverage multiplies both gains and losses.'],
+      ['Capital preservation comes first','A professional trader\'s main goal is protecting capital.'],
+      ['Avoid unplanned averaging down','Adding to a losing position without analysis sharply increases risk.'],
+      ['Set a daily loss limit','Define a daily maximum loss for yourself.'],
+      ['Keep savings separate from your trading account','Always keep part of your capital outside the market.'],
+      ['Review position sizing periodically','Adjust trade size to match your new balance.']
     ],
-
-    // ---------------- 🇹🇷 TURKISH (Türkçe) ----------------
     tr: [
-      [
-        ['Girişten önce zarar durdur belirleyin', 'Çıkış fiyatını önceden bilmeden asla işleme girmeyin. Zarar durdur, rastgele bir sayı değil, fiyat yapısına göre belirlenmelidir.'],
-        ['İşlem başına riski sınırlayın', "Genellikle toplam sermayenizin %1-2'sini riske atın, böylece art arda gelen zararlar hesabınızı bitirmez."],
-        ['Uygun kâr/risk oranı kullanın', 'Girmeden önce potansiyel kârın riskin en az 2-3 katı olduğundan emin olun; aksi halde işlemden vazgeçin.'],
-        ['Varlıklarınızı çeşitlendirin', 'Tüm sermayenizi tek bir kripto paraya bağlamayın; riski birden fazla varlığa yaymak hesap dalgalanmasını azaltır.'],
-        ['Kaldıracı dikkatli yönetin', 'Yüksek kaldıraç hem kârı hem zararı katlar; çoğu yatırımcı için düşük ve kontrollü kaldıraç daha mantıklıdır.'],
-        ['Sermayeyi korumak önceliklidir', 'Profesyonel bir yatırımcının asıl amacı hızlı kâr değil sermayeyi korumaktır; sermaye olmadan işlem fırsatı da kalmaz.'],
-        ['Plansız ortalama düşürmekten kaçının', 'Analiz ve net bir zarar durdur olmadan zarardaki bir pozisyona eklemek riski ciddi şekilde artırır.'],
-        ['Günlük zarar sınırı belirleyin', 'Kendinize günlük veya haftalık bir zarar tavanı koyun ve buna ulaştığınızda işlemi durdurun.'],
-        ['Birikiminizi işlem hesabından ayrı tutun', 'Sermayenizin bir kısmını her zaman piyasa dışında acil durum rezervi olarak saklayın.'],
-        ['Pozisyon büyüklüğünü düzenli gözden geçirin', 'Sermaye arttıkça veya azaldıkça işlem büyüklüğünü yeni bakiyeye göre ayarlayın.']
-      ],
-      [
-        ['Korku ve açgözlülüğü kontrol edin', 'Bu iki duygu mantıklı karar almanın en büyük düşmanıdır; kararları anlık heyecana değil plana göre alın.'],
-        ['Zararı telafi etmek için işlem yapmaktan kaçının', 'Bir zarardan sonra hızlıca telafi etmeye çalışmak genellikle daha riskli kararlara ve büyük zararlara yol açar.'],
-        ['Piyasadaki belirsizliği kabul edin', 'Hiçbir analiz yüzde yüz doğru değildir; yatırım, kesin tahminlerle değil olasılıklarla çalışmaktır.'],
-        ['Sert dalgalanmalarda sakin kalın', 'Yüksek volatiliteli günlerde duygusal karar vermek, aylarca süren doğru analizin sonucunu yok edebilir.'],
-        ['Art arda zararlardan sonra ara verin', 'Birkaç işlem üst üste zararla sonuçlanırsa, dinlenin ve zihinsel durumunuzu toparlayın.'],
-        ['Sahte özgüvenden kaçının', 'Art arda gelen kârlar riski aşırı artırmaya itebilir; planınıza sadık kalın.'],
-        ['Duygularınızı işlemlerle birlikte kaydedin', 'İşlem defterinizde giriş ve çıkışta ruh halinizi de not edin, davranış kalıplarınızı tanıyın.'],
-        ["FOMO'dan (fırsatı kaçırma korkusundan) uzak durun", 'Analiz yapmadan büyük bir fiyat hareketine aceleyle girmek, yeni yatırımcıların en yaygın hatasıdır.'],
-        ['Getiriler konusunda gerçekçi olun', 'Hızlı ve gerçekçi olmayan kâr beklentisi, mantıksız risklere yönlendirir.'],
-        ['Düzenli zihinsel dinlenme alın', 'Zihinsel yorgunluk, analiz ve işlem uygulamasında odaklanmayı azaltır ve hataları artırır.']
-      ],
-      [
-        ['Piyasanın ana trendini tanıyın', 'Her karardan önce hakim trendin yükseliş, düşüş veya yatay olduğunu belirleyin ve o yönde işlem yapın.'],
-        ['Destek ve direnç seviyelerinin önemi', 'Bu seviyeler geçmişte fiyat tepkisinin oluştuğu ve tekrar tepki verme olasılığı yüksek noktalardır.'],
-        ['Sinyali birden fazla zaman diliminde doğrulayın', 'Bir sinyal, üst ve alt zaman diliminde de uyumluysa daha güvenilirdir.'],
-        ['İşlem hacmine dikkat edin', 'Fiyat hareketi yönünde artan hacim, o hareketin geçerliliğini güçlendirir.'],
-        ['Göstergeleri amaca uygun kullanın', 'Göstergeler analizi doğrulamak için yardımcı araçlardır, ana karar kaynağı değildir.'],
-        ['Fiyat formasyonlarını tanıyın', 'Üçgen, bayrak ve omuz-baş-omuz gibi formasyonlar trendin devamı veya dönüşünün işareti olabilir.'],
-        ['Piyasa likidite bölgelerini inceleyin', 'Ani fiyat hareketlerinin çoğu, kritik seviyeler yakınında likidite toplanmasının sonucudur.'],
-        ['Onay mumlarının önemi', 'Bir seviyeye dayalı girmeden önce, o bölgede onaylayıcı bir mum kapanışını bekleyin.'],
-        ['Aşırı analizden kaçının', 'Aynı anda çok fazla gösterge incelemek kafa karışıklığına ve gecikmeli karara yol açabilir.'],
-        ['Geçmiş analizleri kaydedip gözden geçirin', 'Önceki tahminleri gerçek piyasa sonucuyla karşılaştırmak analiz doğruluğunuzu zamanla artırır.']
-      ],
-      [
-        ['Yazılı bir işlem planına sahip olun', 'Giriş, çıkış, zarar durdur ve kâr al seviyelerini işlemden önce açık ve yazılı olarak belirleyin.'],
-        ['Belirli bir stratejiye bağlı kalın', 'Stratejiyi kısa vadeli sonuçlara göre sürekli değiştirmek, gerçek performansını ölçmenizi engeller.'],
-        ['Stratejiyi demo hesapta test edin', 'Gerçek sermaye kullanmadan önce stratejinin performansını test ortamında ölçün.'],
-        ['Başarılı işlem kriterini tanımlayın', 'Bir işlemin başarısını sadece kâr/zarar sonucuna göre değil, plana bağlılığa göre değerlendirin.'],
-        ['Farklı senaryolar için planlama yapın', 'Her işlem için yükseliş, düşüş ve yatay senaryoları önceden düşünün.'],
-        ['Kripto piyasası zamanlamasının önemi', 'Kripto piyasasındaki dalgalanma günün farklı saatlerinde değişir; yüksek hacimli saatleri tanıyın.'],
-        ['Önemli piyasa olaylarına dikkat edin', 'Makroekonomik haberler ve projelerle ilgili olaylar ciddi dalgalanmalara neden olabilir.'],
-        ['Haftalık performans değerlendirmesi yapın', 'Her hafta sonunda işlemlerinizi gözden geçirerek stratejinin güçlü ve zayıf yönlerini belirleyin.'],
-        ['Uzun vadeli hedef belirleyin', 'Sermaye büyümesini bir veya birkaç işlemin sonucuna göre değil, uzun vadede değerlendirin.'],
-        ['Yeni piyasa koşullarına karşı esnek olun', 'Piyasa yapısı değiştiğinde stratejiyi bilinçli ve veriye dayalı şekilde gözden geçirin.']
-      ],
-      [
-        ["Sembolün likidite ve spread'ini kontrol edin", 'İşleme girmeden önce ilgili sembolün spread ve işlem hacmini kontrol ederek ekstra maliyetlerden kaçının.'],
-        ['Limit emirleri kullanın', 'Mümkünse market yerine limit emirleri kullanarak daha kesin bir giriş noktası elde edin.'],
-        ["Girişten sonra zarar durdur'u kaydırmayın", "Küçük bir zarardan kaçmak için zarar durdur'u değiştirmek genellikle daha büyük zarara yol açar."],
-        ['Kârı kademeli olarak alın', 'Kârlı işlemlerde, fiyat hareket ederken kârın bir kısmını alarak geri dönüş riskini azaltın.'],
-        ['Hareketli zarar durdur kullanın', "Güçlü trendlerde, zarar durdur'u kâr yönünde kademeli kaydırmak kârın bir kısmını kilitleyebilir."],
-        ['Her işlemin ayrıntılarını hassas kaydedin', 'Sonraki analiz için giriş, çıkış noktasını, işlem nedenini ve sonucunu not edin.'],
-        ['Komisyonların farkında olun', 'Sık işlemlerde borsa komisyonu kârın önemli bir kısmını azaltabilir.'],
-        ['Hesap ve cüzdan güvenliği', 'Her zaman iki aşamalı doğrulama kullanın ve dijital varlıklarınızı güvenli şekilde saklayın.'],
-        ['Yorgunken işlem yapmaktan kaçının', 'Yorgun veya aceleyle karar vermek, uygulama hatası olasılığını artırır.'],
-        ['Sürekli öğrenmeye devam edin', 'Kripto piyasası sürekli değişiyor; bilgiyi güncel tutmak yatırımcının rekabet avantajını korur.']
-      ]
+      ['Girişten önce zarar durdur belirleyin','Çıkış fiyatını önceden bilmeden asla işleme girmeyin.'],
+      ['İşlem başına riski sınırlayın','Genellikle toplam sermayenizin %1-2\'sini riske atın.'],
+      ['Uygun kâr/risk oranı kullanın','Potansiyel kârın riskin en az 2-3 katı olduğundan emin olun.'],
+      ['Varlıklarınızı çeşitlendirin','Tüm sermayenizi tek bir kripto paraya bağlamayın.'],
+      ['Kaldıracı dikkatli yönetin','Yüksek kaldıraç hem kârı hem zararı katlar.'],
+      ['Sermayeyi korumak önceliklidir','Profesyonel yatırımcının asıl amacı sermayeyi korumaktır.'],
+      ['Plansız ortalama düşürmekten kaçının','Analiz olmadan zarardaki pozisyona eklemek riski artırır.'],
+      ['Günlük zarar sınırı belirleyin','Kendinize günlük bir zarar tavanı koyun.'],
+      ['Birikiminizi işlem hesabından ayrı tutun','Sermayenizin bir kısmını piyasa dışında saklayın.'],
+      ['Pozisyon büyüklüğünü gözden geçirin','Sermaye değişimine göre işlem büyüklüğünü ayarlayın.']
     ],
-
-    // ---------------- 🇸🇦 ARABIC (العربية) ----------------
     ar: [
-      [
-        ['تحديد وقف الخسارة قبل الدخول', 'لا تدخل صفقة أبدًا دون أن تعرف مسبقًا عند أي سعر ستخرج منها. يجب تحديد وقف الخسارة بناءً على هيكل السعر وليس رقمًا عشوائيًا.'],
-        ['تحديد سقف المخاطرة في كل صفقة', 'عادةً خاطر بنسبة 1 إلى 2 بالمئة فقط من رأس المال الكلي في كل صفقة حتى لا تقضي سلسلة خسائر متتالية على حسابك.'],
-        ['نسبة عائد إلى مخاطرة مناسبة', 'قبل الدخول، تحقق من أن الربح المحتمل يعادل ضعفين إلى ثلاثة أضعاف المخاطرة على الأقل، وإلا تجاهل الصفقة.'],
-        ['التنويع بين الأصول', 'لا تركز كل رأس المال على عملة رقمية واحدة؛ توزيع المخاطرة بين عدة أصول يقلل من تقلبات الحساب.'],
-        ['إدارة الرافعة المالية بحذر', 'استخدام رافعة مالية عالية يضاعف الأرباح والخسائر معًا؛ بالنسبة لمعظم المتداولين، الرافعة المنخفضة والمحسوبة أكثر منطقية.'],
-        ['الحفاظ على رأس المال أولوية', 'الهدف الأساسي لأي متداول محترف هو حماية رأس المال وليس تحقيق ربح سريع؛ فبدون رأس المال لا تبقى فرصة للتداول.'],
-        ['تجنب التوسط الهابط دون خطة', 'إضافة مركز إلى صفقة خاسرة دون تحليل أو وقف خسارة محدد يزيد المخاطرة بشكل كبير.'],
-        ['تحديد سقف خسارة يومي', 'حدد لنفسك سقف خسارة يومي أو أسبوعي وتوقف عن التداول عند الوصول إليه.'],
-        ['فصل المدخرات عن حساب التداول', 'احتفظ دائمًا بجزء من رأس المال خارج السوق كاحتياطي للطوارئ.'],
-        ['مراجعة دورية لحجم المركز', 'مع نمو أو انخفاض رأس المال، عدّل حجم الصفقات بما يتناسب مع الرصيد الجديد.']
-      ],
-      [
-        ['السيطرة على الخوف والطمع', 'هذان الشعوران هما أكبر أعداء القرار المنطقي؛ اتخذ قراراتك بناءً على خطتك لا بناءً على الانفعال اللحظي.'],
-        ['تجنب التداول للتعويض عن الخسارة', 'بعد الخسارة، محاولة التعويض السريع تؤدي عادةً إلى قرارات عالية المخاطرة وخسائر أكبر.'],
-        ['تقبل عدم اليقين في السوق', 'لا يوجد تحليل صحيح مئة بالمئة؛ التداول يعني العمل بالاحتمالات لا التنبؤ القاطع.'],
-        ['الحفاظ على الهدوء في التقلبات الحادة', 'في الأيام شديدة التقلب، يمكن للقرار العاطفي أن يهدم نتيجة أشهر من التحليل السليم.'],
-        ['أخذ مسافة بعد خسائر متتالية', 'إذا خسرت عدة صفقات متتالية، خذ استراحة وأعد ضبط حالتك الذهنية.'],
-        ['تجنب الثقة الزائدة الكاذبة', 'الأرباح المتتالية قد تدفعك لزيادة المخاطرة دون داعٍ؛ التزم بخطتك.'],
-        ['تسجيل مشاعرك مع صفقاتك', 'دوّن حالتك النفسية عند الدخول والخروج في دفتر التداول للتعرف على أنماط سلوكك.'],
-        ['تجنب الخوف من فوات الفرصة (FOMO)', 'الدخول المتسرع في حركة سعرية كبيرة دون تحليل من أكثر الأخطاء شيوعًا لدى المتداولين المبتدئين.'],
-        ['الواقعية بشأن العوائد', 'توقع أرباح سريعة وغير واقعية يدفعك نحو مخاطر غير منطقية.'],
-        ['أخذ راحة ذهنية منتظمة', 'الإرهاق الذهني يقلل التركيز ويزيد الأخطاء في التحليل وتنفيذ الصفقات.']
-      ],
-      [
-        ['تحديد الاتجاه الرئيسي للسوق', 'قبل أي قرار، حدد ما إذا كان الاتجاه السائد صاعدًا أو هابطًا أو عرضيًا وتداول في ذلك الاتجاه.'],
-        ['أهمية مستويات الدعم والمقاومة', 'هذه المستويات هي نقاط شهدت ردة فعل سعرية سابقة، واحتمال تكرار ردة الفعل فيها مرتفع.'],
-        ['تأكيد الإشارة عبر عدة أطر زمنية', 'تكون الإشارة أكثر موثوقية عندما تتوافق في الإطار الزمني الأعلى والأدنى.'],
-        ['الانتباه إلى حجم التداول', 'ارتفاع الحجم في اتجاه الحركة يعزز مصداقية تلك الحركة.'],
-        ['استخدام المؤشرات بشكل هادف', 'المؤشرات أدوات مساعدة لتأكيد التحليل، وليست المصدر الأساسي للقرار.'],
-        ['التعرف على الأنماط السعرية', 'أنماط مثل المثلث والعلم والرأس والكتفين يمكن أن تشير إلى استمرار الاتجاه أو انعكاسه.'],
-        ['دراسة مناطق السيولة في السوق', 'كثير من الحركات السعرية المفاجئة ناتجة عن تجميع السيولة بالقرب من المستويات الرئيسية.'],
-        ['أهمية شموع التأكيد', 'قبل الدخول بناءً على مستوى معين، انتظر إغلاق شمعة تأكيدية في تلك المنطقة.'],
-        ['تجنب الإفراط في التحليل', 'دراسة عدد كبير من المؤشرات في آن واحد قد يسبب الارتباك وتأخير القرار.'],
-        ['تسجيل ومراجعة التحليلات السابقة', 'مقارنة التوقعات السابقة بنتيجة السوق الفعلية تحسّن دقة تحليلك بمرور الوقت.']
-      ],
-      [
-        ['امتلاك خطة تداول مكتوبة', 'حدد شروط الدخول والخروج ووقف الخسارة وجني الأرباح بوضوح وكتابةً قبل التداول.'],
-        ['الالتزام باستراتيجية محددة', 'التغيير المستمر للاستراتيجية بناءً على نتائج قصيرة المدى يمنعك من تقييم أدائها الحقيقي.'],
-        ['اختبار الاستراتيجية في حساب تجريبي', 'قبل استخدام رأس مال حقيقي، قيّم أداء الاستراتيجية في بيئة تجريبية.'],
-        ['تعريف معيار نجاح الصفقة', 'قيّم نجاح الصفقة بناءً على الالتزام بالخطة، لا فقط بناءً على نتيجتها ربحًا أو خسارة.'],
-        ['التخطيط لسيناريوهات مختلفة', 'ضع في اعتبارك سيناريو الصعود والهبوط والاستقرار لكل صفقة مسبقًا.'],
-        ['أهمية توقيت سوق العملات الرقمية', 'تتفاوت تقلبات سوق العملات الرقمية باختلاف ساعات اليوم؛ تعرّف على الأوقات عالية الحجم.'],
-        ['متابعة الأحداث المهمة في السوق', 'الأخبار الاقتصادية الكلية والأحداث المرتبطة بالمشاريع قد تسبب تقلبات حادة.'],
-        ['مراجعة الأداء أسبوعيًا', 'في نهاية كل أسبوع، راجع صفقاتك لتحديد نقاط القوة والضعف في استراتيجيتك.'],
-        ['تحديد هدف طويل الأمد', 'قيّم نمو رأس المال على مدى زمني طويل، لا بناءً على نتيجة صفقة أو صفقات قليلة.'],
-        ['المرونة أمام ظروف السوق الجديدة', 'عند تغير هيكل السوق، راجع الاستراتيجية بوعي وبناءً على البيانات.']
-      ],
-      [
-        ['فحص سيولة وفارق سعر الرمز', 'قبل الدخول في صفقة، تحقق من فارق السعر وحجم التداول للرمز لتجنب تكاليف إضافية.'],
-        ['استخدام الأوامر المحددة', 'استخدم أوامر limit بدلاً من market قدر الإمكان للحصول على نقطة دخول أدق.'],
-        ['عدم تحريك وقف الخسارة بعد الدخول', 'تغيير وقف الخسارة للهروب من خسارة صغيرة يؤدي عادةً إلى خسارة أكبر.'],
-        ['جني الأرباح تدريجيًا', 'في الصفقات الرابحة، اجنِ جزءًا من الربح أثناء الحركة لتقليل مخاطر الانعكاس.'],
-        ['استخدام وقف الخسارة المتحرك', 'في الاتجاهات القوية، تحريك وقف الخسارة تدريجيًا باتجاه الربح يمكن أن يثبّت جزءًا من الأرباح.'],
-        ['تسجيل تفاصيل كل صفقة بدقة', 'دوّن نقطة الدخول والخروج وسبب الصفقة ونتيجتها للتحليل لاحقًا.'],
-        ['الوعي بالرسوم', 'في الصفقات المتكررة، يمكن لرسوم المنصة أن تقلل جزءًا كبيرًا من الأرباح.'],
-        ['أمان الحساب والمحفظة', 'تأكد دائمًا من تفعيل التحقق بخطوتين والتخزين الآمن لأصولك الرقمية.'],
-        ['تجنب التداول في حالة الإرهاق', 'اتخاذ القرار في حالة التعب أو التسرع يزيد من احتمال أخطاء التنفيذ.'],
-        ['التعلم المستمر', 'سوق العملات الرقمية في تغير دائم؛ مواكبة المعرفة تحافظ على الميزة التنافسية للمتداول.']
-      ]
+      ['تحديد وقف الخسارة قبل الدخول','لا تدخل صفقة دون معرفة سعر الخروج مسبقاً.'],
+      ['تحديد سقف المخاطرة في كل صفقة','خاطر بنسبة 1 إلى 2 بالمئة من رأس المال في كل صفقة.'],
+      ['نسبة عائد إلى مخاطرة مناسبة','تأكد أن الربح المحتمل يعادل ضعفين إلى ثلاثة أضعاف المخاطرة.'],
+      ['التنويع بين الأصول','لا تركز كل رأس المال على عملة واحدة.'],
+      ['إدارة الرافعة المالية بحذر','الرافعة العالية تضاعف الأرباح والخسائر.'],
+      ['الحفاظ على رأس المال أولوية','الهدف الأساسي هو حماية رأس المال.'],
+      ['تجنب التوسط الهابط دون خطة','إضافة مركز خاسر دون تحليل يزيد المخاطرة.'],
+      ['تحديد سقف خسارة يومي','حدد سقف خسارة يومي لنفسك.'],
+      ['فصل المدخرات عن حساب التداول','احتفظ بجزء من رأس المال خارج السوق.'],
+      ['مراجعة دورية لحجم المركز','عدّل حجم الصفقات مع تغير رأس المال.']
     ],
-
-    // ---------------- 🇷🇺 RUSSIAN (Русский) ----------------
     ru: [
-      [
-        ['Определяйте стоп-лосс перед входом', 'Никогда не входите в сделку, не зная заранее, при какой цене вы из неё выйдете. Стоп-лосс должен определяться структурой цены, а не произвольным числом.'],
-        ['Ограничивайте риск на сделку', 'Обычно рискуйте лишь 1–2% от общего капитала на сделку, чтобы серия убытков не уничтожила счёт.'],
-        ['Соблюдайте адекватное соотношение прибыли к риску', 'Перед входом убедитесь, что потенциальная прибыль минимум в 2–3 раза превышает риск; иначе откажитесь от сделки.'],
-        ['Диверсифицируйте активы', 'Не концентрируйте весь капитал на одной криптовалюте; распределение риска между несколькими активами снижает волатильность счёта.'],
-        ['Управляйте кредитным плечом осторожно', 'Высокое плечо многократно увеличивает как прибыль, так и убытки; для большинства трейдеров разумнее низкое, контролируемое плечо.'],
-        ['Сохранение капитала — приоритет', 'Главная цель профессионального трейдера — сохранить капитал, а не быстро заработать; без капитала не остаётся возможности торговать.'],
-        ['Избегайте усреднения без плана', 'Добавление к убыточной позиции без анализа и чёткого стоп-лосса резко увеличивает риск.'],
-        ['Устанавливайте дневной лимит убытка', 'Определите для себя дневной или недельный предел убытка и прекращайте торговлю при его достижении.'],
-        ['Держите сбережения отдельно от торгового счёта', 'Всегда держите часть капитала вне рынка как резерв на случай непредвиденных ситуаций.'],
-        ['Периодически пересматривайте размер позиции', 'По мере роста или снижения капитала корректируйте размер сделок в соответствии с новым балансом.']
-      ],
-      [
-        ['Контролируйте страх и жадность', 'Эти два чувства — главные враги рационального решения; принимайте решения на основе плана, а не сиюминутных эмоций.'],
-        ['Не торгуйте, чтобы отыграться', 'После убытка попытка быстро его компенсировать обычно приводит к более рискованным решениям и ещё большим потерям.'],
-        ['Принимайте неопределённость рынка', 'Ни один анализ не бывает верным на сто процентов; трейдинг — это работа с вероятностями, а не точное предсказание.'],
-        ['Сохраняйте спокойствие при резких колебаниях', 'В дни высокой волатильности эмоциональное решение может свести на нет результат месяцев верного анализа.'],
-        ['Делайте паузу после серии убытков', 'Если несколько сделок подряд закрылись в минус, отдохните и восстановите своё психологическое состояние.'],
-        ['Остерегайтесь ложной самоуверенности', 'Серия побед может подтолкнуть к неоправданному увеличению риска; придерживайтесь плана.'],
-        ['Фиксируйте эмоции вместе со сделками', 'Записывайте своё психологическое состояние при входе и выходе в торговом дневнике, чтобы распознавать поведенческие паттерны.'],
-        ['Избегайте FOMO (страха упустить возможность)', 'Поспешный вход в крупное ценовое движение без анализа — одна из самых частых ошибок начинающих трейдеров.'],
-        ['Будьте реалистичны в ожиданиях доходности', 'Ожидание быстрой нереалистичной прибыли толкает к неразумным рискам.'],
-        ['Регулярно давайте себе умственный отдых', 'Умственная усталость снижает концентрацию и увеличивает число ошибок в анализе и исполнении сделок.']
-      ],
-      [
-        ['Определяйте основной тренд рынка', 'Перед любым решением определите, является ли доминирующий тренд восходящим, нисходящим или боковым, и торгуйте в этом направлении.'],
-        ['Учитывайте уровни поддержки и сопротивления', 'Это точки, где цена уже реагировала ранее, и вероятность повторной реакции высока.'],
-        ['Подтверждайте сигнал на нескольких таймфреймах', 'Сигнал надёжнее, когда он совпадает на более высоком и более низком таймфрейме.'],
-        ['Обращайте внимание на объём торгов', 'Рост объёма в направлении движения цены усиливает достоверность этого движения.'],
-        ['Используйте индикаторы целенаправленно', 'Индикаторы — вспомогательный инструмент подтверждения анализа, а не основной источник решения.'],
-        ['Распознавайте ценовые паттерны', 'Такие фигуры, как треугольник, флаг и голова-плечи, могут указывать на продолжение или разворот тренда.'],
-        ['Изучайте зоны ликвидности рынка', 'Многие резкие движения цены — результат сбора ликвидности рядом с ключевыми уровнями.'],
-        ['Дожидайтесь подтверждающих свечей', 'Прежде чем входить от уровня, дождитесь закрытия подтверждающей свечи в этой зоне.'],
-        ['Избегайте чрезмерного анализа', 'Одновременное изучение слишком многих индикаторов может вызвать путаницу и задержку решения.'],
-        ['Фиксируйте и пересматривайте прошлые анализы', 'Сравнение прежних прогнозов с реальным результатом рынка со временем повышает точность вашего анализа.']
-      ],
-      [
-        ['Ведите письменный торговый план', 'Чётко и письменно определяйте условия входа, выхода, стоп-лосса и тейк-профита до сделки.'],
-        ['Придерживайтесь определённой стратегии', 'Постоянная смена стратегии из-за краткосрочных результатов мешает объективно оценить её эффективность.'],
-        ['Тестируйте стратегию на демо-счёте', 'Прежде чем использовать реальный капитал, оцените эффективность стратегии в тестовой среде.'],
-        ['Определите критерий успешной сделки', 'Оценивайте успех сделки по следованию плану, а не только по итоговой прибыли или убытку.'],
-        ['Планируйте разные сценарии', 'Заранее продумывайте бычий, медвежий и нейтральный сценарий для каждой сделки.'],
-        ['Учитывайте особенности времени на крипторынке', 'Волатильность крипторынка меняется в течение суток; изучите часы высокой активности.'],
-        ['Следите за важными рыночными событиями', 'Макроэкономические новости и события, связанные с проектами, могут вызвать резкие колебания.'],
-        ['Проводите еженедельный обзор результатов', 'В конце каждой недели анализируйте свои сделки, чтобы выявить сильные и слабые стороны стратегии.'],
-        ['Ставьте долгосрочную цель', 'Оценивайте рост капитала на длительном временном горизонте, а не по результату одной или нескольких сделок.'],
-        ['Будьте гибкими при изменении рынка', 'При изменении структуры рынка осознанно пересматривайте стратегию на основе данных.']
-      ],
-      [
-        ['Проверяйте ликвидность и спред символа', 'Перед входом в сделку проверьте спред и объём торгов по инструменту, чтобы избежать лишних издержек.'],
-        ['Используйте лимитные ордера', 'По возможности используйте лимитные, а не рыночные ордера для более точной точки входа.'],
-        ['Не двигайте стоп-лосс после входа', 'Перемещение стоп-лосса, чтобы избежать небольшого убытка, обычно приводит к более крупному.'],
-        ['Фиксируйте прибыль постепенно', 'В прибыльных сделках забирайте часть прибыли по ходу движения, чтобы снизить риск разворота.'],
-        ['Используйте скользящий стоп-лосс', 'В сильных трендах постепенное смещение стоп-лосса в сторону прибыли позволяет зафиксировать её часть.'],
-        ['Точно фиксируйте детали каждой сделки', 'Записывайте точку входа, выхода, причину сделки и её результат для последующего анализа.'],
-        ['Помните о комиссиях', 'При частых сделках биржевые комиссии могут существенно снижать прибыль.'],
-        ['Обеспечивайте безопасность счёта и кошелька', 'Всегда используйте двухфакторную аутентификацию и надёжное хранение цифровых активов.'],
-        ['Избегайте торговли в состоянии усталости', 'Принятие решений в уставшем или спешном состоянии повышает вероятность ошибок исполнения.'],
-        ['Продолжайте постоянно учиться', 'Рынок криптовалют непрерывно меняется; актуальные знания сохраняют конкурентное преимущество трейдера.']
-      ]
+      ['Определяйте стоп-лосс перед входом','Никогда не входите в сделку, не зная цены выхода.'],
+      ['Ограничивайте риск на сделку','Рискуйте лишь 1–2% от капитала на сделку.'],
+      ['Соблюдайте соотношение прибыли к риску','Убедитесь, что прибыль минимум в 2–3 раза превышает риск.'],
+      ['Диверсифицируйте активы','Не концентрируйте капитал на одной криптовалюте.'],
+      ['Управляйте плечом осторожно','Высокое плечо увеличивает как прибыль, так и убытки.'],
+      ['Сохранение капитала — приоритет','Главная цель — сохранить капитал.'],
+      ['Избегайте усреднения без плана','Добавление к убыточной позиции без анализа увеличивает риск.'],
+      ['Устанавливайте дневной лимит убытка','Определите дневной предел убытка.'],
+      ['Держите сбережения отдельно от счёта','Держите часть капитала вне рынка.'],
+      ['Пересматривайте размер позиции','Корректируйте размер сделок при изменении капитала.']
     ]
   };
 
-  // ============ GUIDE DATA ============
-  function getGuideData(lang){
-    var langItems = GUIDE_ITEMS[lang] || GUIDE_ITEMS.fa;
-    return GUIDE_META.map(function(meta, i){
-      return { icon: meta.icon, color: meta.color, items: langItems[i] };
-    });
-  }
-
-  // ============ RENDER GUIDE ============
   function renderGuide(lang){
+    var items = GUIDE_ITEMS[lang] || GUIDE_ITEMS.fa;
     var t = LANG[lang] || LANG.fa;
-    var categories = getGuideData(lang);
-    var icons = {
-      shield: '<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/>',
-      brain: '<path d="M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-2 5v1a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/>',
-      chart: '<path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/>',
-      target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
-      bolt: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>'
-    };
-    var catTitles = {
-      fa: ['مدیریت ریسک و سرمایه', 'روانشناسی معامله‌گری', 'تحلیل تکنیکال', 'استراتژی و برنامه‌ریزی', 'اجرای معامله و مهارت‌های عملی'],
-      en: ['Risk & Capital Management', 'Trading Psychology', 'Technical Analysis', 'Strategy & Planning', 'Trade Execution & Skills'],
-      tr: ['Risk ve Sermaye Yönetimi', 'İşlem Psikolojisi', 'Teknik Analiz', 'Strateji ve Planlama', 'İşlem Yürütme ve Beceriler'],
-      ar: ['إدارة المخاطر ورأس المال', 'علم نفس التداول', 'التحليل الفني', 'الاستراتيجية والتخطيط', 'تنفيذ الصفقات والمهارات العملية'],
-      ru: ['Управление рисками и капиталом', 'Психология трейдинга', 'Технический анализ', 'Стратегия и планирование', 'Исполнение сделок и навыки']
-    };
     var wrap = document.getElementById('guideCats');
-    var t = LANG[lang] || LANG.fa;
-    // PERF: build everything off-DOM in a DocumentFragment first, then a
-    // single append — avoids N reflows/repaints when rendering ~50 cards.
     var frag = document.createDocumentFragment();
-    categories.forEach(function(cat, ci){
-      var section = document.createElement('div');
-      section.className = 'guide-cat';
-      section.dataset.cat = ci;
-      var head = document.createElement('div');
-      head.className = 'guide-cat-head';
-      var iconBg = cat.color === 'pesteh' ? 'background:var(--pesteh-soft2); color:var(--pesteh-dark);' : 'background:var(--ghermez-soft); color:var(--ghermez-dark);';
-      var title = catTitles[lang] ? catTitles[lang][ci] : catTitles.fa[ci];
-      head.innerHTML = '<div class="guide-cat-icon" style="' + iconBg + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + icons[cat.icon] + '</svg></div><div><h3>' + title + '</h3><span>' + cat.items.length + ' ' + t.tipsUnit + '</span></div>';
-      section.appendChild(head);
-      cat.items.forEach(function(item, i){
-        var card = document.createElement('div');
-        card.className = 'guide-card';
-        card.dataset.text = (item[0] + ' ' + item[1]).toLowerCase();
-        var borderColor = cat.color === 'pesteh' ? 'var(--pesteh)' : 'var(--ghermez)';
-        var numBg = cat.color === 'pesteh' ? 'background:var(--pesteh-soft2); color:var(--pesteh-dark);' : 'background:var(--ghermez-soft); color:var(--ghermez-dark);';
-        card.style.borderInlineStartColor = borderColor;
-        card.innerHTML = '<div class="gn" style="' + numBg + '">' + (i+1) + '</div><div class="gt"><b>' + item[0] + '</b><p>' + item[1] + '</p></div>';
-        section.appendChild(card);
-      });
-      frag.appendChild(section);
+    var section = document.createElement('div');
+    section.className = 'guide-cat';
+    var head = document.createElement('div');
+    head.className = 'guide-cat-head';
+    head.innerHTML = '<div class="guide-cat-icon" style="background:var(--pesteh-soft2);color:var(--pesteh-dark);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></div><div><h3>مدیریت ریسک و سرمایه</h3><span>'+items.length+' '+t.tipsUnit+'</span></div>';
+    section.appendChild(head);
+    items.forEach(function(item, i){
+      var card = document.createElement('div');
+      card.className = 'guide-card';
+      card.dataset.text = (item[0] + ' ' + item[1]).toLowerCase();
+      card.style.borderInlineStartColor = 'var(--pesteh)';
+      card.innerHTML = '<div class="gn" style="background:var(--pesteh-soft2);color:var(--pesteh-dark);">'+(i+1)+'</div><div class="gt"><b>'+item[0]+'</b><p>'+item[1]+'</p></div>';
+      section.appendChild(card);
     });
+    frag.appendChild(section);
     wrap.innerHTML = '';
     wrap.appendChild(frag);
-    // Re-apply search filter
     var q = document.getElementById('guideSearch').value.trim().toLowerCase();
     filterGuide(q);
   }
@@ -1173,7 +697,6 @@
     document.getElementById('guideNoResult').style.display = anyVisible ? 'none' : 'block';
   }
 
-  // ============ APPLY THEME ============
   function applyTheme(theme){
     state.theme = theme;
     var root = document.documentElement;
@@ -1186,25 +709,22 @@
       root.style.setProperty('--glass', 'rgba(30,36,24,0.75)');
       root.style.setProperty('--glass-strong', 'rgba(40,48,34,0.92)');
       root.style.setProperty('--line', 'rgba(200,215,185,0.15)');
-      root.style.setProperty('--shadow-1', '0 10px 30px rgba(0,0,0,0.5)');
-      root.style.setProperty('--shadow-2', '0 4px 14px rgba(0,0,0,0.4)');
+      root.style.setProperty('--shadow', '0 6px 20px rgba(0,0,0,0.4)');
       document.getElementById('themeLabel').textContent = 'تم تاریک';
     } else {
       root.style.setProperty('--bg-base', '#EFF3E8');
       root.style.setProperty('--ink', '#26301F');
       root.style.setProperty('--ink-soft', '#5B6653');
       root.style.setProperty('--ink-dim', '#8FA184');
-      root.style.setProperty('--glass', 'rgba(255,255,255,0.64)');
-      root.style.setProperty('--glass-strong', 'rgba(255,255,255,0.88)');
+      root.style.setProperty('--glass', 'rgba(255,255,255,0.75)');
+      root.style.setProperty('--glass-strong', 'rgba(255,255,255,0.92)');
       root.style.setProperty('--line', 'rgba(38,48,31,0.09)');
-      root.style.setProperty('--shadow-1', '0 10px 30px rgba(38,48,31,0.12)');
-      root.style.setProperty('--shadow-2', '0 4px 14px rgba(38,48,31,0.10)');
+      root.style.setProperty('--shadow', '0 6px 20px rgba(38,48,31,0.10)');
       document.getElementById('themeLabel').textContent = t.themeLabel || 'تم روشن';
     }
     lset('sg_theme', theme);
   }
 
-  // ============ USER NOTICE ============
   function showNoticeIfNeeded(){
     var dismissed = lget('sg_notice_dismiss', null);
     if(!dismissed || Date.now() - dismissed > 86400000){
@@ -1212,97 +732,30 @@
     }
   }
 
-  // ============================================================
-  //  ⚙️ ENTERPRISE PERFORMANCE LAYER
-  //  ------------------------------------------------------------
-  //  Client-side caching, request de-duplication and retry/back-off
-  //  so the UI stays fast and resilient under heavy usage and flaky
-  //  connections. Notes on true million-user scaling are at the
-  //  bottom of this file.
-  // ============================================================
-
-  // In-memory TTL cache + in-flight request de-duplication.
-  // Prevents redundant network calls when several parts of the UI
-  // ask for the same data within a short window (e.g. multiple price
-  // alerts on the same symbol, or rapid tab switching).
-  var ApiCache = (function(){
-    var store = new Map();
-    var inflight = new Map();
-    function get(key){
-      var e = store.get(key);
-      if(!e) return null;
-      if(Date.now() > e.expires){ store.delete(key); return null; }
-      return e.value;
-    }
-    function set(key, value, ttlMs){ store.set(key, { value: value, expires: Date.now() + ttlMs }); }
-    function fetchCached(key, ttlMs, fetcher){
-      var cached = get(key);
-      if(cached) return Promise.resolve(cached);
-      if(inflight.has(key)) return inflight.get(key);
-      var p = fetcher().then(function(data){
-        set(key, data, ttlMs);
-        inflight.delete(key);
-        return data;
-      }).catch(function(err){ inflight.delete(key); throw err; });
-      inflight.set(key, p);
-      return p;
-    }
-    return { get: get, set: set, fetchCached: fetchCached };
-  })();
-
-  // Fetch with exponential back-off retry — keeps the app resilient
-  // against transient network/API failures instead of failing silently.
-  function fetchWithRetry(url, retries, backoffMs){
-    retries = retries == null ? 2 : retries;
-    backoffMs = backoffMs == null ? 400 : backoffMs;
-    return fetch(url).then(function(r){
-      if(!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    }).catch(function(err){
-      if(retries <= 0) throw err;
-      return new Promise(function(resolve){ setTimeout(resolve, backoffMs); })
-        .then(function(){ return fetchWithRetry(url, retries - 1, backoffMs * 2); });
-    });
-  }
-
-  // Debounce helper — used to avoid re-filtering/re-rendering on every
-  // single keystroke in high-frequency input events.
-  function debounce(fn, waitMs){
-    var timer = null;
-    return function(){
-      var ctx = this, args = arguments;
-      clearTimeout(timer);
-      timer = setTimeout(function(){ fn.apply(ctx, args); }, waitMs);
-    };
-  }
-
-  // ============ TICKER ============
+  // Ticker
   var tickerCoins = ['BTC','ETH','BNB','SOL','XRP','DOGE','ADA','TON','TRX','LINK','AVAX','LTC','PEPE','WIF','SUI'];
   function fmtPrice(p){ p=parseFloat(p); if(p>=1000) return p.toLocaleString('en-US',{maximumFractionDigits:0}); if(p>=1) return p.toLocaleString('en-US',{maximumFractionDigits:2}); return p.toLocaleString('en-US',{maximumFractionDigits:6}); }
   function renderTicker(data){
     var track = document.getElementById('tickerTrack');
     var html = '';
-    var build = function(){ var out=''; data.forEach(function(d){ var up=parseFloat(d.priceChangePercent)>=0; out+='<span class="ticker-item"><span class="sym">'+d.symbol.replace('USDT','')+'</span><span class="px">$'+fmtPrice(d.lastPrice)+'</span><span class="chg '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(parseFloat(d.priceChangePercent)).toFixed(1)+'%</span></span>'; }); return out; };
-    html = build() + build();
-    track.innerHTML = html;
+    data.forEach(function(d){ var up=parseFloat(d.priceChangePercent)>=0; html+='<span class="ticker-item"><span class="sym">'+d.symbol.replace('USDT','')+'</span><span class="px">$'+fmtPrice(d.lastPrice)+'</span><span class="chg '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(parseFloat(d.priceChangePercent)).toFixed(1)+'%</span></span>'; });
+    track.innerHTML = html + html;
   }
   function fetchTicker(){
     var symbols = tickerCoins.map(function(c){ return c+'USDT'; });
-    var url = 'https://api.binance.com/api/v3/ticker/24hr?symbols='+encodeURIComponent(JSON.stringify(symbols));
-    // Cached for 15s + deduplicated + retried — resilient under load
-    // without hammering the upstream API when many tabs/users poll it.
-    ApiCache.fetchCached('ticker24h', 15000, function(){ return fetchWithRetry(url); })
+    fetch('https://api.binance.com/api/v3/ticker/24hr?symbols='+encodeURIComponent(JSON.stringify(symbols)))
+      .then(function(r){ return r.json(); })
       .then(function(data){ if(Array.isArray(data)&&data.length) renderTicker(data); })
       .catch(function(){});
   }
 
-  // ============ CHART ============
-
-  var coins = ["BTC","ETH","BNB","XRP","SOL","ADA","DOGE","TRX","DOT","MATIC","LTC","AVAX","LINK","ATOM","UNI","XLM","ETC","FIL","APT","ARB","NEAR","OP","INJ","SUI","SHIB","ICP","HBAR","VET","ALGO","SAND","MANA","AXS","EGLD","FTM","THETA","XTZ","EOS","AAVE","MKR","GRT","CHZ","ENJ","ZEC","DASH","NEO","IOTA","KSM","RUNE","CAKE","CRV","COMP","SNX","YFI","1INCH","BAT","ZIL","ONE","HOT","ANKR","CELR","SKL","OCEAN","RSR","STORJ","BAND","KAVA","RVN","WAVES","QTUM","ICX","ONT","ZRX","KNC","LRC","REN","BAL","UMA","SUSHI","ALPHA","PERP","CVC","NKN","COTI","CTSI","DENT","DUSK","FET","GALA","GAL","GMT","GTC","HIGH","HOOK","IDEX","ILV","IMX","JASMY","JOE","KDA","KLAY","LDO","LEVER","LINA","LIT","LOOM","LPT","LQTY","LUNA","LUNC","MAGIC","MASK","MDT","MINA","MTL","MULTI","NMR","OGN","OMG","ORN","OXT","PAXG","PEOPLE","PHA","POLYX","PROM","PUNDIX","QUICK","RAD","RARE","RARI","RAY","REEF","REI","REQ","RGT","RLC","ROSE","RPL","SC","SFP","SLP","SNT","SPELL","SSV","STG","STMX","STPT","STRAX","STX","SUPER","SXP","SYS","TFUEL","TLM","TOMO","TRB","TRU","TVK","TWT","UNFI","UTK","VOXEL","VTHO","WAN","WING","WOO","XEC","XEM","XNO","XVS","YGG","ZEN","ZK","PEPE","WIF","BONK","FLOKI","TON","PYTH","JUP","STRK","TIA","SEI","ORDI","WLD","ENA","W","ETHFI","ONDO","NOT","RENDER","TAO","AR","KAS","BEAM","BLUR","CFX","GLMR","ASTR","CKB"];
+  // Chart
+  var chartInited = false;
+  var coins = ["BTC","ETH","BNB","XRP","SOL","ADA","DOGE","TRX","LINK","AVAX","LTC","MATIC","DOT","UNI","ATOM","ARB","NEAR","OP","SUI","PEPE","WIF","TON"];
   var select = document.getElementById('symbolSelect');
   coins.forEach(function(c){ var o=document.createElement('option'); o.value=c+'USDT'; o.textContent=c+' / USDT'; select.appendChild(o); });
   select.value = 'BTCUSDT';
-  var chartInited = false;
+
   function initChart(){
     var container = document.getElementById('chartContainer');
     container.innerHTML = '';
@@ -1321,9 +774,6 @@
       enable_publishing: false,
       hide_top_toolbar: false,
       hide_side_toolbar: false,
-      hide_legend: false,
-      withdateranges: true,
-      allow_symbol_change: false,
       details: true,
       studies: ['MASimple@tv-basicstudies'],
       container_id: 'chartContainer'
@@ -1331,7 +781,7 @@
     chartInited = true;
   }
 
-  // ============ ALERTS ============
+  // Alerts
   function updateBellDot(){ document.getElementById('bellBtn').classList.toggle('has-alerts', state.alerts.length > 0); }
   function renderAlerts(){
     var list = document.getElementById('alertList');
@@ -1359,25 +809,21 @@
     if(!state.alerts.length) return;
     var symbols = Array.from(new Set(state.alerts.map(function(a){ return a.symbol; })));
     Promise.all(symbols.map(function(s){
-      // Short TTL cache + retry: dedupes calls when several alerts
-      // share the same symbol and survives brief network hiccups.
-      return ApiCache.fetchCached('price:' + s, 4000, function(){
-        return fetchWithRetry('https://api.binance.com/api/v3/ticker/price?symbol=' + s, 1, 300);
-      }).catch(function(){ return null; });
+      return fetch('https://api.binance.com/api/v3/ticker/price?symbol='+s)
+        .then(function(r){ return r.json(); })
+        .catch(function(){ return null; });
     })).then(function(results){
       var changed = false;
       results.forEach(function(r){
         if(!r || !r.price) return;
         var price = parseFloat(r.price);
         state.alerts.forEach(function(a){
-          if(a.symbol === r.symbol && !a.triggered){
-            if(price >= a.target){
-              a.triggered = true;
-              changed = true;
-              if(state.settings.notifications && 'Notification' in window && Notification.permission === 'granted'){
-                var t = LANG[state.lang] || LANG.fa;
-                new Notification(t.notifTitle, { body: a.symbol.replace('USDT','') + ' ' + t.notifBodySuffix + a.target });
-              }
+          if(a.symbol === r.symbol && !a.triggered && price >= a.target){
+            a.triggered = true;
+            changed = true;
+            if(state.settings.notifications && 'Notification' in window && Notification.permission === 'granted'){
+              var t = LANG[state.lang] || LANG.fa;
+              new Notification(t.notifTitle, { body: a.symbol.replace('USDT','') + ' ' + t.notifBodySuffix + a.target });
             }
           }
         });
@@ -1386,7 +832,7 @@
     });
   }
 
-  // ============ FAVORITES & NOTES ============
+  // Favorites & Notes
   function updateFavCount(){ var w=document.getElementById('favCountWrap'); w.textContent = state.favorites.length ? '('+state.favorites.length+')' : ''; }
   function applyCardStates(){
     document.querySelectorAll('.icon-btn.fav').forEach(function(b){ b.classList.toggle('active', state.favorites.indexOf(b.dataset.id) > -1); });
@@ -1407,30 +853,15 @@
     document.getElementById('gridEmpty').style.display = (shown === 0) ? 'block' : 'none';
   }
 
-  // ============ LIVE REFRESH ============
+  // Live Refresh
   var liveTimer = null;
-  function bust(u){ return u + '?v=' + Date.now(); }
-  // PERF: only cards actually visible in the viewport are tracked here
-  // (via IntersectionObserver) and refreshed — off-screen cards aren't
-  // reloaded every tick, cutting wasted bandwidth/requests at scale.
-  var visibleCards = new Set();
-  if('IntersectionObserver' in window){
-    var mediaObserver = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if(entry.isIntersecting) visibleCards.add(entry.target);
-        else visibleCards.delete(entry.target);
-      });
-    }, { root: null, threshold: 0.1 });
-    document.querySelectorAll('.card').forEach(function(card){ mediaObserver.observe(card); });
-  }
   function refreshAssets(){
-    document.getElementById('bgImg').style.backgroundImage = "url('" + bust('m9.jpg') + "')";
-    var targets = visibleCards.size ? visibleCards : document.querySelectorAll('.card');
-    targets.forEach(function(card){
-      var img = card.querySelector('img[data-live]');
-      if(img) img.src = bust(img.dataset.base);
-      var v = card.querySelector('video.media');
-      if(v && v.paused) v.src = bust(v.dataset.base);
+    document.querySelectorAll('.card img.media').forEach(function(img){
+      var src = img.src;
+      if(src && !src.includes('picsum.photos') && !src.includes('commondatastorage')){
+        var sep = src.indexOf('?') > -1 ? '&' : '?';
+        img.src = src + sep + 'v=' + Date.now();
+      }
     });
   }
   function setLiveRefresh(on){
@@ -1438,7 +869,7 @@
     if(on){ liveTimer = setInterval(refreshAssets, 2000); }
   }
 
-  // ============ NAVIGATION ============
+  // Navigation
   var navBtns = document.querySelectorAll('.nav-btn');
   var chartModal = document.getElementById('chartModal');
   var guideModal = document.getElementById('guideModal');
@@ -1456,7 +887,7 @@
       } else if(tab === 'chart'){
         guideModal.classList.remove('open');
         chartModal.classList.add('open');
-        if(!chartInited){ initChart(); chartInited = true; }
+        if(!chartInited){ initChart(); }
         renderAlerts();
       } else if(tab === 'guide'){
         chartModal.classList.remove('open');
@@ -1473,10 +904,9 @@
     });
   });
 
-  // ============ LIGHTBOX ============
+  // Lightbox
   var lightbox = document.getElementById('lightbox');
   var lbFrame = document.getElementById('lightboxFrame');
-  var lbBg = document.getElementById('lightboxBg');
   document.querySelectorAll('.card').forEach(function(card){
     card.addEventListener('click', function(e){
       if(e.target.closest('.icon-btn')) return;
@@ -1484,12 +914,11 @@
       var src = card.dataset.src;
       lbFrame.innerHTML = '';
       if(type === 'image'){
-        lbBg.style.backgroundImage = "url('" + src + "')";
         var img = document.createElement('img');
         img.src = src;
+        img.alt = 'Signal';
         lbFrame.appendChild(img);
       } else {
-        lbBg.style.backgroundImage = "url('m9.jpg')";
         var vid = document.createElement('video');
         vid.src = src;
         vid.controls = true;
@@ -1506,12 +935,12 @@
     setTimeout(function(){
       lbFrame.querySelectorAll('video').forEach(function(v){ v.pause(); });
       lbFrame.innerHTML = '';
-    }, 300);
+    }, 200);
   }
   document.getElementById('lightboxClose').addEventListener('click', function(e){ e.stopPropagation(); closeLightbox(); });
   lightbox.addEventListener('click', function(e){ if(e.target.tagName === 'VIDEO') return; closeLightbox(); });
 
-  // ============ SETTINGS ============
+  // Settings
   var settingsOverlay = document.getElementById('settingsOverlay');
   var switchLive = document.getElementById('switchLive');
   var switchNotif = document.getElementById('switchNotif');
@@ -1548,29 +977,24 @@
     settingsOverlay.classList.remove('open');
   });
 
-  // ============ EVENT BINDINGS ============
-  // Language
+  // Event Bindings
   document.querySelectorAll('.lang-btn').forEach(function(b){
     b.addEventListener('click', function(){
       applyLanguage(b.dataset.lang);
       renderGuide(state.lang);
     });
   });
-  // Theme
   document.getElementById('themeToggle').addEventListener('click', function(){
     applyTheme(state.theme === 'dark' ? 'light' : 'dark');
   });
-  // Hamburger
   var hamburgerMenu = document.getElementById('hamburgerMenu');
   document.getElementById('hamburgerBtn').addEventListener('click', function(){ hamburgerMenu.classList.add('open'); });
   document.getElementById('menuCloseBtn').addEventListener('click', function(){ hamburgerMenu.classList.remove('open'); });
   hamburgerMenu.addEventListener('click', function(e){ if(e.target === hamburgerMenu) hamburgerMenu.classList.remove('open'); });
-  // Notice dismiss
   document.getElementById('noticeDismiss').addEventListener('click', function(){
     document.getElementById('userNotice').style.display = 'none';
     lset('sg_notice_dismiss', Date.now());
   });
-  // Filter chips
   document.querySelectorAll('.chip').forEach(function(c){
     c.addEventListener('click', function(){
       document.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('active'); });
@@ -1578,7 +1002,6 @@
       applyFilter();
     });
   });
-  // Favorite buttons
   document.querySelectorAll('.icon-btn.fav').forEach(function(b){
     b.addEventListener('click', function(e){
       e.stopPropagation();
@@ -1591,7 +1014,6 @@
       applyFilter();
     });
   });
-  // Note buttons
   var noteOverlay = document.getElementById('noteOverlay');
   var noteTextarea = document.getElementById('noteTextarea');
   var activeNoteId = null;
@@ -1612,7 +1034,6 @@
     noteOverlay.classList.remove('open');
   });
   noteOverlay.addEventListener('click', function(e){ if(e.target === noteOverlay) noteOverlay.classList.remove('open'); });
-  // Alert add
   document.getElementById('alertAddBtn').addEventListener('click', function(){
     var input = document.getElementById('alertPriceInput');
     var val = parseFloat(input.value);
@@ -1625,37 +1046,19 @@
       Notification.requestPermission();
     }
   });
-  // Bell / alert panel toggle
   document.getElementById('bellBtn').addEventListener('click', function(){
     document.getElementById('alertPanel').classList.toggle('open');
   });
-  // Symbol select change
   select.addEventListener('change', function(){
     if(chartInited) initChart();
     renderAlerts();
   });
-  // Guide search — debounced to avoid re-filtering ~50 cards on every keystroke
-  document.getElementById('guideSearch').addEventListener('input', debounce(function(){
+  document.getElementById('guideSearch').addEventListener('input', function(){
     var q = this.value.trim().toLowerCase();
     filterGuide(q);
-  }, 120));
+  });
 
-  // ============ BACKGROUND PARALLAX ============
-  // rAF-throttled: coalesces rapid scroll events into one transform
-  // update per animation frame instead of one per scroll event.
-  var bgImg = document.getElementById('bgImg');
-  var scrollTicking = false;
-  window.addEventListener('scroll', function(){
-    if(scrollTicking) return;
-    scrollTicking = true;
-    requestAnimationFrame(function(){
-      var y = window.scrollY || 0;
-      bgImg.style.transform = 'scale(1.18) translateY(' + (y * 0.04) + 'px)';
-      scrollTicking = false;
-    });
-  }, {passive: true});
-
-  // ============ INITIALIZATION ============
+  // Init
   function init(){
     applyLanguage(state.lang);
     applyTheme(state.theme);
@@ -1667,24 +1070,10 @@
     applyFilter();
     renderAlerts();
     renderGuide(state.lang);
-    // Check alerts every 8 seconds
     setInterval(checkAlerts, 8000);
-    // Refresh assets initially
-    setTimeout(refreshAssets, 500);
   }
 
   init();
-
-  // ============================================================
-  //  NOTE ON SCALING TO MILLIONS OF USERS
-  //  This file is a client-side app: caching, request dedup and
-  //  retry/back-off above keep IT fast on one device. Serving that
-  //  many concurrent users also needs infrastructure outside this
-  //  file — a CDN (Cloudflare/Fastly) in front of static assets with
-  //  long cache-control headers, a horizontally-scaled API/backend
-  //  behind a load balancer, and (for the ticker) a shared WebSocket/
-  //  SSE feed instead of every client polling Binance directly.
-  // ============================================================
 
 })();
 </script>
