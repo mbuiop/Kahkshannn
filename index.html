@@ -114,10 +114,10 @@
 
   /* ===== Signal Grid ===== */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .card{position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:3/4;background:var(--glass);border:1px solid rgba(255,255,255,0.55);box-shadow:var(--shadow-1);transition:transform .18s;will-change:transform;cursor:pointer;}
+  .card{position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:3/4;background:var(--glass);border:1px solid rgba(255,255,255,0.55);box-shadow:var(--shadow-1);transition:transform .18s;will-change:transform;}
   .card.hidden-card{display:none;}
   .card:active{transform:scale(0.95);}
-  .card .media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#1a1f17;}
+  .card .media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
   .card .media-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--pesteh-soft),var(--pesteh-soft2));color:var(--pesteh-dark);}
   .card .media-fallback svg{width:26px;height:26px;opacity:.5;}
   .card .scrim{position:absolute;inset:0;background:linear-gradient(180deg, rgba(20,26,14,0) 60%, rgba(15,20,10,0.42) 100%);pointer-events:none;}
@@ -128,10 +128,8 @@
   .icon-btn.fav.active svg{fill:#fff;stroke:#fff;}
   .icon-btn.note.has-note{background:var(--pesteh);}
   .icon-btn.note.has-note svg{stroke:#fff;}
-  .card .play-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.86);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.2);pointer-events:none;z-index:1;}
+  .card .play-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.86);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
   .card .play-icon svg{width:15px;height:15px;margin-inline-start:2px;fill:var(--ghermez);}
-  .card .video-loading{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:1;color:#fff;font-size:12px;font-weight:700;}
-  .card .video-loading.active{display:flex;}
 
   /* ===== Bottom Nav ===== */
   .navbar{position:fixed;bottom:10px;left:0;right:0;display:flex;justify-content:center;z-index:40;padding-bottom:env(safe-area-inset-bottom);}
@@ -250,7 +248,7 @@
     </div>
     <div class="topbar-actions">
       <button class="icon-pill" id="hamburgerBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-      <button class="icon-pill" id="settingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <button class="icon-pill" id="settingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </div>
   </div>
 
@@ -298,7 +296,7 @@
   <!-- Signal Grid -->
   <div class="grid" id="signalGrid">
     <div class="card" data-id="m1" data-type="image" data-src="m1.jpg">
-      <img class="media" data-base="m1.jpg" data-live src="m1.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <img class="media" data-base="m1.jpg" data-live src="m1.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
       <div class="scrim"></div>
       <div class="top-actions">
@@ -307,7 +305,7 @@
       </div>
     </div>
     <div class="card" data-id="m2" data-type="image" data-src="m2.jpg">
-      <img class="media" data-base="m2.jpg" data-live src="m2.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <img class="media" data-base="m2.jpg" data-live src="m2.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
       <div class="scrim"></div>
       <div class="top-actions">
@@ -316,7 +314,7 @@
       </div>
     </div>
     <div class="card" data-id="m3" data-type="image" data-src="m3.jpg">
-      <img class="media" data-base="m3.jpg" data-live src="m3.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <img class="media" data-base="m3.jpg" data-live src="m3.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
       <div class="scrim"></div>
       <div class="top-actions">
@@ -325,7 +323,7 @@
       </div>
     </div>
     <div class="card" data-id="m4" data-type="image" data-src="m4.jpg">
-      <img class="media" data-base="m4.jpg" data-live src="m4.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <img class="media" data-base="m4.jpg" data-live src="m4.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
       <div class="scrim"></div>
       <div class="top-actions">
@@ -334,8 +332,7 @@
       </div>
     </div>
     <div class="card" data-id="v1" data-type="video" data-src="m1.mp4">
-      <div class="video-loading" id="loading-v1">📹 بارگذاری...</div>
-      <video class="media" data-base="m1.mp4" src="m1.mp4" muted preload="metadata" playsinline></video>
+      <video class="media" data-base="m1.mp4" src="m1.mp4" muted preload="metadata"></video>
       <div class="scrim"></div>
       <div class="top-actions">
         <button class="icon-btn note" data-id="v1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
@@ -344,8 +341,7 @@
       <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
     </div>
     <div class="card" data-id="v2" data-type="video" data-src="m2.mp4">
-      <div class="video-loading" id="loading-v2">📹 بارگذاری...</div>
-      <video class="media" data-base="m2.mp4" src="m2.mp4" muted preload="metadata" playsinline></video>
+      <video class="media" data-base="m2.mp4" src="m2.mp4" muted preload="metadata"></video>
       <div class="scrim"></div>
       <div class="top-actions">
         <button class="icon-btn note" data-id="v2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
@@ -421,14 +417,62 @@
 
   // ============================================================
   //  ENTERPRISE-GRADE CONFIGURATION
-  //  - Complete multi-language with full guide translation
-  //  - Optimized video loading with preview support
-  //  - High-performance architecture with caching
+  //  - Multi-language with complete translation for each section
+  //  - High-performance caching & optimization
+  //  - Scalable architecture for millions of users
   // ============================================================
 
+  // ============================================================
+  //  📢 BROADCAST / PUBLIC ANNOUNCEMENT MESSAGES  (per language)
+  //  ------------------------------------------------------------
+  //  This is the ONLY place you need to edit the public notice
+  //  banner shown at the top of the app. Every language has its
+  //  own clearly separated block below — find it by its flag/
+  //  comment header and edit ONLY the "title" and "text" strings.
+  //  Nothing else in the code needs to change.
+  // ============================================================
+  var BROADCAST = {
+
+    // ---------------- 🇮🇷 PERSIAN (فارسی) ----------------
+    fa: {
+      title: '📌 نکته مهم',
+      text: 'لطفاً قبل از هر معامله، بخش راهنمایی را مطالعه کنید. مدیریت ریسک کلید موفقیت است.'
+    },
+
+    // ---------------- 🇬🇧 ENGLISH ----------------
+    en: {
+      title: '📌 Important Note',
+      text: 'Please review the guide section before any trade. Risk management is key to success.'
+    },
+
+    // ---------------- 🇹🇷 TURKISH (Türkçe) ----------------
+    tr: {
+      title: '📌 Önemli Not',
+      text: 'Her işlem öncesi rehber bölümünü inceleyin. Risk yönetimi başarının anahtarıdır.'
+    },
+
+    // ---------------- 🇸🇦 ARABIC (العربية) ----------------
+    ar: {
+      title: '📌 ملاحظة مهمة',
+      text: 'يرجى مراجعة قسم الدليل قبل أي صفقة. إدارة المخاطر هي مفتاح النجاح.'
+    },
+
+    // ---------------- 🇷🇺 RUSSIAN (Русский) ----------------
+    ru: {
+      title: '📌 Важное примечание',
+      text: 'Пожалуйста, ознакомьтесь с разделом руководства перед любой сделкой. Управление рисками — ключ к успеху.'
+    }
+
+  };
+
   // ============ TRANSLATIONS ============
-  // Complete translations for all 5 languages
-  // Each language has its own full guide content
+  // Each language has its own complete set of translations.
+  // To modify any text, edit the corresponding language block below.
+  // - fa: Persian (Farsi)
+  // - en: English
+  // - tr: Turkish
+  // - ar: Arabic
+  // - ru: Russian
 
   var LANG = {
     fa: {
@@ -456,8 +500,6 @@
       menuTelegram: 'عضویت در تلگرام',
       menuInstagram: 'عضویت در اینستاگرام',
       themeLabel: 'تم روشن',
-      noticeTitle: '📌 نکته مهم',
-      noticeText: 'لطفاً قبل از هر معامله، بخش راهنمایی را مطالعه کنید. مدیریت ریسک کلید موفقیت است.',
       gridEmpty: 'هنوز سیگنالی را به علاقه‌مندی‌ها اضافه نکرده‌اید.',
       searchPlaceholder: 'جست‌وجو در نکات راهنما...',
       alertAdd: 'افزودن هشدار',
@@ -465,77 +507,13 @@
       saveNote: 'ذخیره یادداشت',
       clearData: 'پاک‌کردن علاقه‌مندی‌ها، یادداشت‌ها و هشدارها',
       lightboxHint: 'برای بستن، لمس کنید',
-      loadingVideo: '📹 بارگذاری ویدئو...',
-      // Guide categories
-      guideCats: {
-        risk: 'مدیریت ریسک و سرمایه',
-        psychology: 'روانشناسی معامله‌گری',
-        technical: 'تحلیل تکنیکال',
-        strategy: 'استراتژی و برنامه‌ریزی',
-        execution: 'اجرای معامله و مهارت‌های عملی'
-      },
-      guideItems: {
-        risk: [
-          ['تعیین حد ضرر پیش از ورود', 'هرگز وارد معامله نشوید مگر آنکه از قبل بدانید در چه قیمتی از آن خارج خواهید شد. حد ضرر باید بر اساس ساختار قیمت تعیین شود، نه یک عدد دلخواه.'],
-          ['محدودیت ریسک در هر معامله', 'به‌طور معمول بین یک تا دو درصد از کل سرمایه در هر معامله ریسک کنید تا چند ضرر متوالی حساب شما را از بین نبرد.'],
-          ['نسبت سود به ریسک مناسب', 'پیش از ورود بسنجید که آیا سود بالقوه حداقل دو تا سه برابر ریسک احتمالی است؛ در غیر این صورت از معامله صرف‌نظر کنید.'],
-          ['تنوع در دارایی‌ها', 'تمام سرمایه را روی یک ارز دیجیتال متمرکز نکنید؛ توزیع ریسک میان چند دارایی نوسانات حساب را کاهش می‌دهد.'],
-          ['مدیریت اهرم', 'استفاده از اهرم بالا سود و زیان را چند برابر می‌کند؛ برای اکثر معامله‌گران، اهرم پایین و کنترل‌شده منطقی‌تر است.'],
-          ['حفظ سرمایه در اولویت است', 'هدف اصلی هر معامله‌گر حرفه‌ای، حفظ سرمایه است نه کسب سود سریع؛ بدون سرمایه، فرصتی برای معامله باقی نمی‌ماند.'],
-          ['اجتناب از میانگین‌گیری نزولی بدون برنامه', 'افزودن به یک موقعیت زیان‌ده بدون تحلیل و حد ضرر مشخص، ریسک را به‌شدت افزایش می‌دهد.'],
-          ['تعیین سقف ضرر روزانه', 'برای خود یک سقف ضرر روزانه یا هفتگی تعیین کنید و در صورت رسیدن به آن، معاملات را متوقف کنید.'],
-          ['ذخیره‌ی مالی جدا از حساب معاملاتی', 'همیشه بخشی از سرمایه را خارج از بازار و به‌عنوان ذخیره‌ی اضطراری نگه دارید.'],
-          ['بازبینی دوره‌ای اندازه‌ی موقعیت', 'با رشد یا کاهش سرمایه، اندازه‌ی معاملات را متناسب با موجودی جدید تنظیم کنید.']
-        ],
-        psychology: [
-          ['کنترل ترس و طمع', 'این دو احساس بزرگ‌ترین دشمن تصمیم‌گیری منطقی هستند؛ تصمیمات را بر اساس برنامه بگیرید، نه هیجان لحظه‌ای.'],
-          ['پرهیز از معامله برای جبران ضرر', 'بعد از یک ضرر، تلاش برای جبران سریع معمولاً به تصمیمات پرریسک و ضررهای بزرگ‌تر منجر می‌شود.'],
-          ['پذیرش عدم قطعیت بازار', 'هیچ تحلیلی صد در صد درست نیست؛ معامله‌گری یعنی کار کردن با احتمالات، نه پیش‌بینی قطعی.'],
-          ['حفظ آرامش در نوسانات شدید', 'در روزهای پرنوسان، تصمیم‌گیری احساسی می‌تواند نتیجه‌ی ماه‌ها تحلیل درست را از بین ببرد.'],
-          ['فاصله گرفتن پس از ضررهای متوالی', 'اگر چند معامله پشت سر هم ضررده بود، استراحت کنید و شرایط ذهنی خود را بازیابی کنید.'],
-          ['اجتناب از اعتماد به نفس کاذب', 'چند سود متوالی می‌تواند باعث افزایش بی‌رویه ریسک شود؛ به برنامه‌ی خود پایبند بمانید.'],
-          ['ثبت احساسات در کنار معاملات', 'در دفترچه‌ی معاملاتی، حالت روانی خود هنگام ورود و خروج را نیز یادداشت کنید تا الگوهای رفتاری را بشناسید.'],
-          ['دوری از فومو (ترس از دست دادن فرصت)', 'ورود عجولانه به یک حرکت قیمتی بزرگ بدون تحلیل، یکی از رایج‌ترین اشتباهات معامله‌گران تازه‌کار است.'],
-          ['واقع‌بین بودن نسبت به بازدهی', 'انتظار سودهای غیرواقعی و سریع، مسیر را به سمت ریسک‌های غیرمنطقی سوق می‌دهد.'],
-          ['استراحت ذهنی منظم', 'خستگی ذهنی باعث کاهش تمرکز و افزایش خطا در تحلیل و اجرای معامله می‌شود.']
-        ],
-        technical: [
-          ['شناخت روند اصلی بازار', 'پیش از هر تصمیم، مشخص کنید روند غالب صعودی، نزولی یا خنثی است و در جهت آن معامله کنید.'],
-          ['اهمیت سطوح حمایت و مقاومت', 'این سطوح نقاطی هستند که در گذشته واکنش قیمتی رخ داده و احتمال واکنش مجدد در آن‌ها بالاست.'],
-          ['تایید سیگنال در چند تایم‌فریم', 'یک سیگنال معتبرتر است وقتی در تایم‌فریم بالاتر و پایین‌تر هم‌راستا باشد.'],
-          ['توجه به حجم معاملات', 'افزایش حجم در جهت حرکت قیمت، اعتبار آن حرکت را تقویت می‌کند.'],
-          ['استفاده هدفمند از اندیکاتورها', 'اندیکاتورها ابزار کمکی برای تایید تحلیل هستند، نه منبع اصلی تصمیم‌گیری.'],
-          ['شناسایی الگوهای قیمتی', 'الگوهایی مانند مثلث، پرچم و سر و شانه می‌توانند نشانه‌ی ادامه یا بازگشت روند باشند.'],
-          ['بررسی نقاط نقدینگی بازار', 'بسیاری از حرکات ناگهانی قیمت، نتیجه‌ی جمع‌آوری نقدینگی در نزدیکی سطوح کلیدی است.'],
-          ['اهمیت کندل‌های تاییدی', 'پیش از ورود بر اساس یک سطح، منتظر بسته شدن کندل تاییدکننده در آن ناحیه بمانید.'],
-          ['دوری از تحلیل بیش از حد', 'بررسی هم‌زمان تعداد زیادی اندیکاتور می‌تواند باعث سردرگمی و تصمیم‌گیری تاخیری شود.'],
-          ['ثبت و بازبینی تحلیل‌های گذشته', 'مقایسه‌ی پیش‌بینی‌های قبلی با نتیجه‌ی واقعی بازار، دقت تحلیل شما را در طول زمان بهبود می‌دهد.']
-        ],
-        strategy: [
-          ['داشتن یک برنامه‌ی معاملاتی مکتوب', 'شرایط ورود، خروج، حد ضرر و حد سود را پیش از معامله به‌صورت مشخص و مکتوب تعیین کنید.'],
-          ['پایبندی به یک استراتژی مشخص', 'تغییر مداوم استراتژی بر اساس نتایج کوتاه‌مدت، مانع از سنجش واقعی عملکرد آن می‌شود.'],
-          ['تست استراتژی در حساب آزمایشی', 'پیش از استفاده از سرمایه‌ی واقعی، عملکرد استراتژی را در محیط آزمایشی بسنجید.'],
-          ['تعریف معیار موفقیت معامله', 'موفقیت یک معامله را بر اساس پایبندی به برنامه بسنجید، نه فقط نتیجه‌ی سود یا زیان آن.'],
-          ['برنامه‌ریزی برای سناریوهای مختلف', 'برای هر معامله سناریوی صعودی، نزولی و خنثی را از قبل در نظر بگیرید.'],
-          ['اهمیت زمان‌بندی بازار کریپتو', 'نوسانات بازار کریپتو در ساعات مختلف شبانه‌روز متفاوت است؛ زمان‌های پرحجم را بشناسید.'],
-          ['توجه به رویدادهای مهم بازار', 'اخبار کلان اقتصادی و رویدادهای مرتبط با پروژه‌ها می‌توانند نوسانات شدید ایجاد کنند.'],
-          ['بازبینی هفتگی عملکرد', 'در پایان هر هفته معاملات خود را مرور کنید تا نقاط قوت و ضعف استراتژی مشخص شود.'],
-          ['تعیین هدف بلندمدت', 'رشد سرمایه را در بازه‌ی زمانی بلندمدت بسنجید، نه بر اساس نتیجه‌ی یک یا چند معامله.'],
-          ['انعطاف‌پذیری در برابر شرایط جدید بازار', 'در صورت تغییر ساختار بازار، استراتژی را به‌صورت آگاهانه و بر اساس داده بازبینی کنید.']
-        ],
-        execution: [
-          ['بررسی نقدینگی و اسپرد نماد', 'پیش از ورود به معامله، اسپرد و حجم معاملات نماد موردنظر را بررسی کنید تا از هزینه‌های اضافی جلوگیری شود.'],
-          ['استفاده از سفارش‌های محدود', 'در صورت امکان از سفارش‌های limit به‌جای market استفاده کنید تا نقطه‌ی ورود دقیق‌تری داشته باشید.'],
-          ['جابه‌جا نکردن حد ضرر پس از ورود', 'تغییر حد ضرر برای فرار از یک ضرر کوچک، معمولاً منجر به ضرر بزرگ‌تر می‌شود.'],
-          ['برداشت تدریجی سود', 'در معاملات سودده، بخشی از سود را در مسیر حرکت برداشت کنید تا ریسک بازگشت قیمت کاهش یابد.'],
-          ['استفاده از حد ضرر متحرک', 'در روندهای قوی، جابه‌جایی تدریجی حد ضرر در جهت سود می‌تواند بخشی از سود را قفل کند.'],
-          ['ثبت دقیق جزئیات هر معامله', 'نقطه‌ی ورود، خروج، دلیل معامله و نتیجه را برای تحلیل بعدی یادداشت کنید.'],
-          ['آگاهی از کارمزدها', 'در معاملات مکرر، کارمزد صرافی می‌تواند بخش قابل‌توجهی از سود را کاهش دهد.'],
-          ['امنیت حساب و کیف پول', 'همیشه از احراز هویت دو مرحله‌ای و ذخیره‌سازی امن دارایی دیجیتال اطمینان حاصل کنید.'],
-          ['اجتناب از معامله در شرایط خستگی', 'تصمیم‌گیری در حالت خستگی یا عجله، احتمال خطای اجرایی را افزایش می‌دهد.'],
-          ['یادگیری مستمر', 'بازار کریپتو دائم در حال تغییر است؛ به‌روز نگه داشتن دانش، مزیت رقابتی معامله‌گر را حفظ می‌کند.']
-        ]
-      }
+      tipsUnit: 'نکته',
+      itemsUnit: 'مورد',
+      alertAtWord: 'در $',
+      alertTriggeredWord: ' (فعال شد)',
+      confirmClear: 'همه‌ی داده‌ها پاک شوند؟',
+      notifTitle: 'هشدار قیمت',
+      notifBodySuffix: 'به قیمت هدف $'
     },
     en: {
       brandTitle: 'Signal Platform',
@@ -562,8 +540,6 @@
       menuTelegram: 'Join Telegram',
       menuInstagram: 'Join Instagram',
       themeLabel: 'Light Theme',
-      noticeTitle: '📌 Important Note',
-      noticeText: 'Please review the guide section before any trade. Risk management is key to success.',
       gridEmpty: 'You haven\'t added any signals to favorites yet.',
       searchPlaceholder: 'Search guide tips...',
       alertAdd: 'Add Alert',
@@ -571,76 +547,13 @@
       saveNote: 'Save Note',
       clearData: 'Clear Favorites, Notes & Alerts',
       lightboxHint: 'Tap to close',
-      loadingVideo: '📹 Loading video...',
-      guideCats: {
-        risk: 'Risk & Capital Management',
-        psychology: 'Trading Psychology',
-        technical: 'Technical Analysis',
-        strategy: 'Strategy & Planning',
-        execution: 'Trade Execution & Skills'
-      },
-      guideItems: {
-        risk: [
-          ['Set Stop Loss Before Entry', 'Never enter a trade without knowing exactly where you will exit. Stop loss should be based on price structure, not an arbitrary number.'],
-          ['Limit Risk Per Trade', 'Typically risk 1-2% of total capital per trade so that multiple consecutive losses don\'t destroy your account.'],
-          ['Proper Risk-to-Reward Ratio', 'Before entering, assess whether potential profit is at least 2-3 times the potential risk; otherwise, skip the trade.'],
-          ['Diversify Assets', 'Don\'t concentrate all capital on a single cryptocurrency; distributing risk among multiple assets reduces account volatility.'],
-          ['Leverage Management', 'High leverage multiplies both profits and losses; for most traders, lower and controlled leverage is more logical.'],
-          ['Capital Preservation is Priority', 'The main goal of any professional trader is capital preservation, not quick profit; without capital, no trading opportunity remains.'],
-          ['Avoid Unplanned Averaging Down', 'Adding to a losing position without analysis and a clear stop loss significantly increases risk.'],
-          ['Set Daily Loss Limit', 'Set a daily or weekly loss limit for yourself and stop trading when you reach it.'],
-          ['Separate Financial Reserve', 'Always keep a portion of capital outside the market as an emergency reserve.'],
-          ['Periodic Position Size Review', 'As capital grows or shrinks, adjust position sizes proportionally to the new balance.']
-        ],
-        psychology: [
-          ['Control Fear and Greed', 'These two emotions are the biggest enemies of logical decision-making; base decisions on your plan, not momentary excitement.'],
-          ['Avoid Revenge Trading', 'After a loss, trying to quickly recover usually leads to risky decisions and larger losses.'],
-          ['Accept Market Uncertainty', 'No analysis is 100% correct; trading means working with probabilities, not certain predictions.'],
-          ['Stay Calm in High Volatility', 'On highly volatile days, emotional decisions can destroy months of proper analysis.'],
-          ['Step Back After Consecutive Losses', 'If you have several losing trades in a row, take a break and recover your mental state.'],
-          ['Avoid False Confidence', 'Several consecutive wins can lead to excessive risk-taking; stick to your plan.'],
-          ['Record Emotions with Trades', 'In your trading journal, note your psychological state when entering and exiting to identify behavioral patterns.'],
-          ['Avoid FOMO', 'Rushing into a big price move without analysis is one of the most common mistakes of beginner traders.'],
-          ['Be Realistic About Returns', 'Expecting unrealistic and quick profits leads to irrational risk-taking.'],
-          ['Regular Mental Breaks', 'Mental fatigue reduces focus and increases errors in analysis and trade execution.']
-        ],
-        technical: [
-          ['Identify the Main Trend', 'Before any decision, determine whether the dominant trend is bullish, bearish, or neutral, and trade in its direction.'],
-          ['Importance of Support and Resistance Levels', 'These are levels where price reactions have occurred in the past and are likely to react again.'],
-          ['Confirm Signal in Multiple Timeframes', 'A signal is more valid when aligned across higher and lower timeframes.'],
-          ['Pay Attention to Trading Volume', 'Increasing volume in the direction of price movement strengthens the validity of that move.'],
-          ['Use Indicators Purposefully', 'Indicators are auxiliary tools for confirming analysis, not the primary source of decision-making.'],
-          ['Identify Price Patterns', 'Patterns like triangles, flags, and head and shoulders can indicate trend continuation or reversal.'],
-          ['Check Market Liquidity Points', 'Many sudden price movements result from liquidity sweeps near key levels.'],
-          ['Importance of Confirmation Candles', 'Before entering based on a level, wait for a confirming candle to close in that area.'],
-          ['Avoid Over-Analysis', 'Simultaneously checking too many indicators can cause confusion and delayed decisions.'],
-          ['Record and Review Past Analyses', 'Comparing previous predictions with actual market results improves your analysis accuracy over time.']
-        ],
-        strategy: [
-          ['Have a Written Trading Plan', 'Clearly and in writing define entry, exit, stop loss, and take profit conditions before the trade.'],
-          ['Stick to a Specific Strategy', 'Constantly changing strategy based on short-term results prevents proper performance evaluation.'],
-          ['Test Strategy in Demo Account', 'Before using real capital, test your strategy\'s performance in a demo environment.'],
-          ['Define Success Criteria', 'Measure trade success based on adherence to your plan, not just the profit or loss outcome.'],
-          ['Plan for Different Scenarios', 'Consider bullish, bearish, and neutral scenarios for each trade in advance.'],
-          ['Understand Crypto Market Timing', 'Crypto market volatility varies at different times of day; know high-volume periods.'],
-          ['Pay Attention to Market Events', 'Macroeconomic news and project-related events can create severe volatility.'],
-          ['Weekly Performance Review', 'At the end of each week, review your trades to identify strategy strengths and weaknesses.'],
-          ['Set Long-term Goals', 'Measure capital growth over a long-term period, not based on one or a few trades.'],
-          ['Adapt to New Market Conditions', 'If market structure changes, consciously revise your strategy based on data.']
-        ],
-        execution: [
-          ['Check Liquidity and Spread', 'Before entering a trade, check the spread and trading volume of the symbol to avoid extra costs.'],
-          ['Use Limit Orders When Possible', 'If possible, use limit orders instead of market orders for more precise entry.'],
-          ['Don\'t Move Stop Loss After Entry', 'Changing your stop loss to avoid a small loss usually leads to a larger loss.'],
-          ['Take Gradual Profits', 'In profitable trades, take partial profits along the way to reduce reversal risk.'],
-          ['Use Trailing Stop Loss', 'In strong trends, gradually moving the stop loss in the profit direction can lock in some gains.'],
-          ['Record Trade Details', 'Note entry point, exit, trade reason, and result for later analysis.'],
-          ['Be Aware of Fees', 'In frequent trading, exchange fees can significantly reduce profits.'],
-          ['Account and Wallet Security', 'Always use two-factor authentication and secure digital asset storage.'],
-          ['Avoid Trading When Fatigued', 'Making decisions while tired or rushed increases the chance of execution errors.'],
-          ['Continuous Learning', 'The crypto market is constantly evolving; keeping your knowledge up to date maintains your competitive edge.']
-        ]
-      }
+      tipsUnit: 'tips',
+      itemsUnit: 'items',
+      alertAtWord: 'at $',
+      alertTriggeredWord: ' (triggered)',
+      confirmClear: 'Clear all data?',
+      notifTitle: 'Price Alert',
+      notifBodySuffix: 'reached target $'
     },
     tr: {
       brandTitle: 'Sinyal Platformu',
@@ -667,8 +580,6 @@
       menuTelegram: 'Telegram\'a Katıl',
       menuInstagram: 'Instagram\'a Katıl',
       themeLabel: 'Açık Tema',
-      noticeTitle: '📌 Önemli Not',
-      noticeText: 'Her işlem öncesi rehber bölümünü inceleyin. Risk yönetimi başarının anahtarıdır.',
       gridEmpty: 'Henüz favorilere sinyal eklemediniz.',
       searchPlaceholder: 'Rehber ipuçlarında ara...',
       alertAdd: 'Uyarı Ekle',
@@ -676,76 +587,13 @@
       saveNote: 'Notu Kaydet',
       clearData: 'Favorileri, Notları ve Uyarıları Temizle',
       lightboxHint: 'Kapatmak için dokunun',
-      loadingVideo: '📹 Video yükleniyor...',
-      guideCats: {
-        risk: 'Risk ve Sermaye Yönetimi',
-        psychology: 'İşlem Psikolojisi',
-        technical: 'Teknik Analiz',
-        strategy: 'Strateji ve Planlama',
-        execution: 'İşlem Yürütme ve Beceriler'
-      },
-      guideItems: {
-        risk: [
-          ['Giriş Öncesi Zarar Durdur Belirleme', 'Çıkış yapacağınız fiyatı önceden bilmeden asla işleme girmeyin. Zarar durdur, keyfi bir sayı değil, fiyat yapısına göre belirlenmelidir.'],
-          ['Her İşlemde Risk Sınırı', 'Her işlemde toplam sermayenin %1-2\'sini riske atın, böylece ardışık kayıplar hesabınızı yok etmez.'],
-          ['Uygun Risk-Ödül Oranı', 'Giriş öncesi potansiyel karın en az 2-3 kat risk olduğunu değerlendirin; değilse işlemden vazgeçin.'],
-          ['Varlık Çeşitlendirmesi', 'Tüm sermayeyi tek bir kripto paraya yoğunlaştırmayın; riski birden fazla varlığa dağıtmak hesap dalgalanmasını azaltır.'],
-          ['Kaldıraç Yönetimi', 'Yüksek kaldıraç hem karı hem zararı katlar; çoğu trader için düşük ve kontrollü kaldıraç daha mantıklıdır.'],
-          ['Sermaye Koruma Önceliktir', 'Profesyonel trader\'ın temel amacı sermaye korumadır, hızlı kar değil; sermaye olmadan işlem fırsatı kalmaz.'],
-          ['Plansız Ortalama Düşürmekten Kaçınma', 'Analiz ve net zarar durdur olmadan kayıp bir pozisyona eklemek riski önemli ölçüde artırır.'],
-          ['Günlük Zarar Limiti Belirleme', 'Kendinize günlük veya haftalık bir zarar limiti belirleyin ve ulaşıldığında işlemleri durdurun.'],
-          ['Ayrı Finansal Rezerv', 'Sermayenin bir kısmını her zaman piyasa dışında acil durum rezervi olarak tutun.'],
-          ['Periyodik Pozisyon Boyutu Gözden Geçirme', 'Sermaye büyüdükçe veya küçüldükçe, işlem boyutlarını yeni bakiyeye orantılı olarak ayarlayın.']
-        ],
-        psychology: [
-          ['Korku ve Açgözlülüğü Kontrol Etme', 'Bu iki duygu mantıklı karar vermenin en büyük düşmanıdır; kararları anlık heyecana göre değil, planınıza göre alın.'],
-          ['İntikam İşleminden Kaçınma', 'Bir kayıptan sonra hızlı telafi etme çabası genellikle riskli kararlara ve daha büyük kayıplara yol açar.'],
-          ['Piyasa Belirsizliğini Kabul Etme', 'Hiçbir analiz %100 doğru değildir; işlem yapmak kesin tahminlerle değil, olasılıklarla çalışmaktır.'],
-          ['Yüksek Volatilitede Sakin Kalma', 'Çok değişkenli günlerde duygusal kararlar aylarca süren doğru analizleri yok edebilir.'],
-          ['Ardışık Kayıplardan Sonra Geri Çekilme', 'Arka arkaya kaybeden işlemleriniz varsa, mola verin ve zihinsel durumunuzu toparlayın.'],
-          ['Sahte Güvenden Kaçınma', 'Ardışık kazançlar aşırı risk almaya yol açabilir; planınıza sadık kalın.'],
-          ['İşlemlerle Duyguları Kaydetme', 'İşlem günlüğünüzde, giriş ve çıkış sırasındaki psikolojik durumunuzu not edin.'],
-          ['FOMO\'dan Kaçınma', 'Analiz yapmadan büyük bir fiyat hareketine aceleyle girmek, yeni trader\'ların en yaygın hatalarındandır.'],
-          ['Getiri Konusunda Gerçekçi Olma', 'Gerçekçi olmayan ve hızlı kar beklemek, mantıksız risk almaya yönlendirir.'],
-          ['Düzenli Zihinsel Molalar', 'Zihinsel yorgunluk, odaklanmayı azaltır ve analiz ile işlem yürütmede hataları artırır.']
-        ],
-        technical: [
-          ['Ana Trendi Belirleme', 'Her karardan önce, baskın trendin yükseliş, düşüş veya yatay olduğunu belirleyin ve yönünde işlem yapın.'],
-          ['Destek ve Direnç Seviyelerinin Önemi', 'Bu seviyeler, geçmişte fiyat tepkilerinin oluştuğu ve tekrar tepki verme olasılığı yüksek olan noktalardır.'],
-          ['Sinyali Birden Fazla Zaman Diliminde Onaylama', 'Bir sinyal, daha yüksek ve daha düşük zaman dilimlerinde aynı hizada olduğunda daha geçerlidir.'],
-          ['İşlem Hacmine Dikkat Etme', 'Fiyat hareketi yönünde artan hacim, o hareketin geçerliliğini güçlendirir.'],
-          ['Göstergeleri Amaçlı Kullanma', 'Göstergeler, analizi onaylamak için yardımcı araçlardır, karar vermenin birincil kaynağı değildir.'],
-          ['Fiyat Modellerini Tanıma', 'Üçgen, bayrak ve baş-omuz gibi modeller trend devamı veya dönüşü gösterebilir.'],
-          ['Piyasa Likidite Noktalarını Kontrol Etme', 'Birçok ani fiyat hareketi, kritik seviyeler yakınında likidite toplamanın sonucudur.'],
-          ['Onay Mumlarının Önemi', 'Bir seviyeye göre giriş yapmadan önce, o bölgede onaylayıcı bir mumun kapanmasını bekleyin.'],
-          ['Aşırı Analizden Kaçınma', 'Aynı anda çok fazla gösterge kontrol etmek kafa karışıklığına ve gecikmiş kararlara neden olabilir.'],
-          ['Geçmiş Analizleri Kaydetme ve Gözden Geçirme', 'Önceki tahminleri gerçek piyasa sonuçlarıyla karşılaştırmak, zamanla analiz doğruluğunuzu artırır.']
-        ],
-        strategy: [
-          ['Yazılı Bir İşlem Planına Sahip Olma', 'İşlem öncesi giriş, çıkış, zarar durdur ve kar al koşullarını açık ve yazılı olarak belirleyin.'],
-          ['Belirli Bir Stratejiye Bağlı Kalma', 'Kısa vadeli sonuçlara göre stratejiyi sürekli değiştirmek, performansın gerçekçi değerlendirilmesini engeller.'],
-          ['Stratejiyi Demo Hesapta Test Etme', 'Gerçek sermaye kullanmadan önce, stratejinizin performansını demo ortamında test edin.'],
-          ['Başarı Kriterlerini Tanımlama', 'Bir işlemin başarısını sadece kar veya zarar sonucuna göre değil, planınıza bağlılığa göre ölçün.'],
-          ['Farklı Senaryolar için Planlama', 'Her işlem için yükseliş, düşüş ve yatay senaryoları önceden değerlendirin.'],
-          ['Kripto Piyasa Zamanlamasını Anlama', 'Kripto piyasa volatilitesi günün farklı saatlerinde değişir; yüksek hacimli dönemleri bilin.'],
-          ['Önemli Piyasa Olaylarına Dikkat Etme', 'Makroekonomik haberler ve projelerle ilgili olaylar şiddetli volatilite yaratabilir.'],
-          ['Haftalık Performans Gözden Geçirme', 'Her haftanın sonunda işlemlerinizi gözden geçirerek strateji güçlü ve zayıf yönlerini belirleyin.'],
-          ['Uzun Vadeli Hedefler Belirleme', 'Sermaye büyümesini bir veya birkaç işleme göre değil, uzun vadeli bir dönemde değerlendirin.'],
-          ['Yeni Piyasa Koşullarına Uyum Sağlama', 'Piyasa yapısı değişirse, stratejinizi verilere dayanarak bilinçli bir şekilde revize edin.']
-        ],
-        execution: [
-          ['Likidite ve Spread Kontrolü', 'İşleme girmeden önce, sembolün spread ve işlem hacmini kontrol ederek ekstra maliyetlerden kaçının.'],
-          ['Mümkün Olduğunda Limit Emirleri Kullanma', 'Mümkünse, daha hassas giriş için piyasa emirleri yerine limit emirleri kullanın.'],
-          ['Girişten Sonra Zarar Durduru Değiştirmeme', 'Küçük bir kayıptan kaçmak için zarar durduru değiştirmek genellikle daha büyük kayıplara yol açar.'],
-          ['Kademeli Kar Alma', 'Kârlı işlemlerde, geri dönüş riskini azaltmak için yol boyunca kısmi kâr alın.'],
-          ['İzleyen Zarar Durdur Kullanma', 'Güçlü trendlerde, zarar durduru kâr yönünde kademeli olarak hareket ettirmek bazı kazançları kilitleyebilir.'],
-          ['İşlem Detaylarını Kaydetme', 'Giriş noktası, çıkış, işlem nedeni ve sonucu daha sonraki analiz için not edin.'],
-          ['Ücretlerin Farkında Olma', 'Sık işlemlerde, borsa ücretleri kârı önemli ölçüde azaltabilir.'],
-          ['Hesap ve Cüzdan Güvenliği', 'Her zaman iki faktörlü kimlik doğrulama ve güvenli dijital varlık depolama kullanın.'],
-          ['Yorgunken İşlem Yapmaktan Kaçınma', 'Yorgun veya aceleciyken karar vermek, yürütme hataları olasılığını artırır.'],
-          ['Sürekli Öğrenme', 'Kripto piyasası sürekli gelişmektedir; bilginizi güncel tutmak rekabet avantajınızı korur.']
-        ]
-      }
+      tipsUnit: 'ipucu',
+      itemsUnit: 'sinyal',
+      alertAtWord: '$ fiyatında',
+      alertTriggeredWord: ' (tetiklendi)',
+      confirmClear: 'Tüm veriler silinsin mi?',
+      notifTitle: 'Fiyat Uyarısı',
+      notifBodySuffix: 'hedef fiyata ulaştı: $'
     },
     ar: {
       brandTitle: 'منصة الإشارات',
@@ -772,8 +620,6 @@
       menuTelegram: 'انضم إلى تيليجرام',
       menuInstagram: 'انضم إلى إنستغرام',
       themeLabel: 'الوضع الفاتح',
-      noticeTitle: '📌 ملاحظة مهمة',
-      noticeText: 'يرجى مراجعة قسم الدليل قبل أي صفقة. إدارة المخاطر هي مفتاح النجاح.',
       gridEmpty: 'لم تقم بإضافة أي إشارات إلى المفضلة بعد.',
       searchPlaceholder: 'ابحث في نصائح الدليل...',
       alertAdd: 'إضافة تنبيه',
@@ -781,76 +627,13 @@
       saveNote: 'حفظ الملاحظة',
       clearData: 'مسح المفضلة والملاحظات والتنبيهات',
       lightboxHint: 'اضغط للإغلاق',
-      loadingVideo: '📹 جاري تحميل الفيديو...',
-      guideCats: {
-        risk: 'إدارة المخاطر ورأس المال',
-        psychology: 'علم نفس التداول',
-        technical: 'التحليل الفني',
-        strategy: 'الاستراتيجية والتخطيط',
-        execution: 'تنفيذ الصفقات والمهارات العملية'
-      },
-      guideItems: {
-        risk: [
-          ['تحديد وقف الخسارة قبل الدخول', 'لا تدخل صفقة أبداً دون أن تعرف مسبقاً السعر الذي ستخرج عنده. يجب تحديد وقف الخسارة بناءً على هيكل السعر، وليس رقم عشوائي.'],
-          ['الحد من المخاطر في كل صفقة', 'عادةً ما تخاطر بنسبة 1-2% من إجمالي رأس المال في كل صفقة حتى لا تدمر الخسائر المتتالية حسابك.'],
-          ['نسبة المخاطرة إلى العائد المناسبة', 'قبل الدخول، قم بتقييم ما إذا كان الربح المحتمل يساوي على الأقل 2-3 أضعاف المخاطرة المحتملة؛ وإلا فتجاوز عن الصفقة.'],
-          ['تنويع الأصول', 'لا تركز كل رأس المال على عملة مشفرة واحدة؛ توزيع المخاطر بين عدة أصول يقلل من تقلبات الحساب.'],
-          ['إدارة الرافعة المالية', 'الرافعة المالية العالية تضاعف الأرباح والخسائر؛ بالنسبة لمعظم المتداولين، الرافعة المنخفضة والمنضبطة أكثر منطقية.'],
-          ['الحفاظ على رأس المال هو الأولوية', 'الهدف الرئيسي لأي متداول محترف هو الحفاظ على رأس المال، وليس تحقيق ربح سريع؛ بدون رأس مال، لا تبقى فرصة للتداول.'],
-          ['تجنب متوسط السعر النازل بدون خطة', 'إضافة إلى مركز خاسر بدون تحليل ووقف خسارة محدد يزيد المخاطر بشكل كبير.'],
-          ['تحديد سقف الخسارة اليومي', 'حدد لنفسك سقف خسارة يومي أو أسبوعي وتوقف عن التداول عند الوصول إليه.'],
-          ['احتياطي مالي منفصل عن حساب التداول', 'احتفظ دائماً بجزء من رأس المال خارج السوق كاحتياطي طوارئ.'],
-          ['مراجعة دورية لحجم المركز', 'مع نمو أو تقلص رأس المال، قم بتعديل أحجام الصفقات بما يتناسب مع الرصيد الجديد.']
-        ],
-        psychology: [
-          ['السيطرة على الخوف والطمع', 'هذان الشعوران هما أكبر أعداء اتخاذ القرار المنطقي؛ اتخذ القرارات بناءً على خطتك، وليس على الإثارة اللحظية.'],
-          ['تجنب التداول للتعويض عن الخسارة', 'بعد الخسارة، محاولة التعويض السريع عادة ما تؤدي إلى قرارات محفوفة بالمخاطر وخسائر أكبر.'],
-          ['قبول عدم اليقين في السوق', 'لا يوجد تحليل صحيح بنسبة 100%؛ التداول يعني العمل بالاحتمالات، وليس التنبؤات المؤكدة.'],
-          ['الحفاظ على الهدوء في التقلبات الشديدة', 'في الأيام شديدة التقلب، يمكن للقرارات العاطفية أن تدمر شهوراً من التحليل السليم.'],
-          ['الابتعاد بعد الخسائر المتتالية', 'إذا كانت لديك عدة صفقات خاسرة متتالية، خذ قسطاً من الراحة واستعد حالتك الذهنية.'],
-          ['تجنب الثقة الزائفة', 'يمكن أن تؤدي المكاسب المتتالية إلى المخاطرة المفرطة؛ التزم بخطتك.'],
-          ['تسجيل المشاعر مع الصفقات', 'في دفتر يوميات التداول، دوِّن حالتك النفسية عند الدخول والخروج لتحديد أنماط السلوك.'],
-          ['تجنب فومو (الخوف من تفويت الفرصة)', 'الدخول المتسرع في حركة سعرية كبيرة بدون تحليل هو أحد أكثر الأخطاء شيوعاً للمتداولين المبتدئين.'],
-          ['أن تكون واقعياً بشأن العوائد', 'توقع أرباح غير واقعية وسريعة يقود إلى مخاطرة غير عقلانية.'],
-          ['فترات راحة ذهنية منتظمة', 'الإرهاق الذهني يقلل من التركيز ويزيد من الأخطاء في التحليل وتنفيذ الصفقات.']
-        ],
-        technical: [
-          ['تحديد الاتجاه الرئيسي للسوق', 'قبل أي قرار، حدد ما إذا كان الاتجاه السائد صعودياً أو هبوطياً أو محايداً، وتداول في اتجاهه.'],
-          ['أهمية مستويات الدعم والمقاومة', 'هذه مستويات حدثت عندها ردود فعل سعرية في الماضي ومن المرجح أن تتفاعل مرة أخرى.'],
-          ['تأكيد الإشارة في أطر زمنية متعددة', 'الإشارة تكون أكثر صحة عندما تكون متوافقة عبر الأطر الزمنية الأعلى والأدنى.'],
-          ['الانتباه إلى حجم التداول', 'زيادة الحجم في اتجاه حركة السعر تعزز صحة تلك الحركة.'],
-          ['استخدام المؤشرات بهدف', 'المؤشرات هي أدوات مساعدة لتأكيد التحليل، وليست المصدر الأساسي لاتخاذ القرار.'],
-          ['تحديد أنماط الأسعار', 'يمكن لأنماط مثل المثلثات والأعلام والرأس والكتفين أن تشير إلى استمرار أو انعكاس الاتجاه.'],
-          ['فحص نقاط السيولة في السوق', 'العديد من تحركات الأسعار المفاجئة هي نتيجة لمسح السيولة بالقرب من المستويات الرئيسية.'],
-          ['أهمية شموع التأكيد', 'قبل الدخول بناءً على مستوى، انتظر إغلاق شمعة تأكيدية في تلك المنطقة.'],
-          ['تجنب التحليل المفرط', 'التحقق المتزامن من العديد من المؤشرات يمكن أن يسبب الارتباك والقرارات المتأخرة.'],
-          ['تسجيل ومراجعة التحليلات السابقة', 'مقارنة التوقعات السابقة مع النتائج الفعلية للسوق يحسن دقة تحليلك بمرور الوقت.']
-        ],
-        strategy: [
-          ['امتلاك خطة تداول مكتوبة', 'حدد بوضوح وبشكل كتابي شروط الدخول والخروج ووقف الخسارة وجني الأرباح قبل الصفقة.'],
-          ['الالتزام باستراتيجية محددة', 'تغيير الاستراتيجية باستمرار بناءً على النتائج قصيرة المدى يمنع التقييم الحقيقي للأداء.'],
-          ['اختبار الاستراتيجية في حساب تجريبي', 'قبل استخدام رأس المال الحقيقي، اختبر أداء استراتيجيتك في بيئة تجريبية.'],
-          ['تحديد معايير النجاح للصفقة', 'قس نجاح الصفقة بناءً على الالتزام بخطتك، وليس فقط نتيجة الربح أو الخسارة.'],
-          ['التخطيط لسيناريوهات مختلفة', 'لكل صفقة، ضع في الاعتبار السيناريوهات الصعودية والهبوطية والمحايدة مسبقاً.'],
-          ['فهم توقيت سوق العملات المشفرة', 'تختلف تقلبات سوق العملات المشفرة في أوقات مختلفة من اليوم؛ تعرف على فترات الحجم المرتفع.'],
-          ['الانتباه إلى الأحداث الهامة في السوق', 'الأخبار الاقتصادية الكلية والأحداث المتعلقة بالمشاريع يمكن أن تسبب تقلبات حادة.'],
-          ['مراجعة الأداء الأسبوعية', 'في نهاية كل أسبوع، راجع صفقاتك لتحديد نقاط القوة والضعف في الاستراتيجية.'],
-          ['تحديد أهداف طويلة الأجل', 'قس نمو رأس المال على مدى فترة طويلة، وليس بناءً على صفقة واحدة أو عدة صفقات.'],
-          ['التكيف مع ظروف السوق الجديدة', 'إذا تغير هيكل السوق، قم بمراجعة استراتيجيتك بوعي بناءً على البيانات.']
-        ],
-        execution: [
-          ['فحص السيولة والسبريد', 'قبل الدخول في صفقة، تحقق من السبريد وحجم التداول للرمز لتجنب التكاليف الإضافية.'],
-          ['استخدام أوامر الحد عند الإمكان', 'إذا أمكن، استخدم أوامر الحد بدلاً من أوامر السوق للحصول على نقطة دخول أكثر دقة.'],
-          ['عدم تحريك وقف الخسارة بعد الدخول', 'تغيير وقف الخسارة لتجنب خسارة صغيرة عادة ما يؤدي إلى خسارة أكبر.'],
-          ['أخذ الأرباح تدريجياً', 'في الصفقات المربحة، خذ أرباحاً جزئية على طول الطريق لتقليل مخاطر الارتداد.'],
-          ['استخدام وقف الخسارة المتحرك', 'في الاتجاهات القوية، تحريك وقف الخسارة تدريجياً في اتجاه الربح يمكن أن يقفل بعض المكاسب.'],
-          ['تسجيل تفاصيل الصفقة بدقة', 'دوِّن نقطة الدخول والخروج وسبب الصفقة والنتيجة للتحليل لاحقاً.'],
-          ['الوعي بالرسوم', 'في التداول المتكرر، يمكن لرسوم البورصة أن تقلل الأرباح بشكل كبير.'],
-          ['أمان الحساب والمحفظة', 'استخدم دائماً المصادقة الثنائية والتخزين الآمن للأصول الرقمية.'],
-          ['تجنب التداول في حالة الإرهاق', 'اتخاذ القرارات في حالة التعب أو التسرع يزيد من احتمالية أخطاء التنفيذ.'],
-          ['التعلم المستمر', 'سوق العملات المشفرة في تطور مستمر؛ الحفاظ على تحديث معرفتك يحافظ على ميزتك التنافسية.']
-        ]
-      }
+      tipsUnit: 'نصيحة',
+      itemsUnit: 'عنصر',
+      alertAtWord: 'عند $',
+      alertTriggeredWord: ' (تم التفعيل)',
+      confirmClear: 'هل تريد مسح جميع البيانات؟',
+      notifTitle: 'تنبيه السعر',
+      notifBodySuffix: 'وصل إلى السعر المستهدف $'
     },
     ru: {
       brandTitle: 'Сигнальная платформа',
@@ -877,8 +660,6 @@
       menuTelegram: 'Присоединиться к Telegram',
       menuInstagram: 'Присоединиться к Instagram',
       themeLabel: 'Светлая тема',
-      noticeTitle: '📌 Важное примечание',
-      noticeText: 'Пожалуйста, ознакомьтесь с разделом руководства перед любой сделкой. Управление рисками — ключ к успеху.',
       gridEmpty: 'Вы ещё не добавили сигналы в избранное.',
       searchPlaceholder: 'Поиск по советам руководства...',
       alertAdd: 'Добавить оповещение',
@@ -886,108 +667,43 @@
       saveNote: 'Сохранить заметку',
       clearData: 'Очистить избранное, заметки и оповещения',
       lightboxHint: 'Нажмите, чтобы закрыть',
-      loadingVideo: '📹 Загрузка видео...',
-      guideCats: {
-        risk: 'Управление рисками и капиталом',
-        psychology: 'Психология трейдинга',
-        technical: 'Технический анализ',
-        strategy: 'Стратегия и планирование',
-        execution: 'Исполнение сделок и навыки'
-      },
-      guideItems: {
-        risk: [
-          ['Установка стоп-лосса до входа', 'Никогда не входите в сделку, не зная заранее, по какой цене вы выйдете. Стоп-лосс должен определяться на основе структуры цены, а не произвольного числа.'],
-          ['Ограничение риска на сделку', 'Обычно рискуйте 1-2% от общего капитала на сделку, чтобы несколько последовательных убытков не уничтожили ваш счет.'],
-          ['Правильное соотношение риска к прибыли', 'Перед входом оцените, составляет ли потенциальная прибыль как минимум 2-3 раза потенциальный риск; в противном случае пропустите сделку.'],
-          ['Диверсификация активов', 'Не концентрируйте весь капитал на одной криптовалюте; распределение риска между несколькими активами снижает волатильность счета.'],
-          ['Управление кредитным плечом', 'Высокое кредитное плечо умножает как прибыль, так и убытки; для большинства трейдеров более низкое и контролируемое плечо более логично.'],
-          ['Сохранение капитала в приоритете', 'Основная цель любого профессионального трейдера — сохранение капитала, а не быстрая прибыль; без капитала не остается возможности для торговли.'],
-          ['Избегайте усреднения без плана', 'Добавление к убыточной позиции без анализа и четкого стоп-лосса значительно увеличивает риск.'],
-          ['Установка дневного лимита убытков', 'Установите для себя дневной или недельный лимит убытков и прекратите торговлю при его достижении.'],
-          ['Отдельный финансовый резерв', 'Всегда держите часть капитала вне рынка в качестве аварийного резерва.'],
-          ['Периодический пересмотр размера позиции', 'По мере роста или сокращения капитала корректируйте размеры сделок пропорционально новому балансу.']
-        ],
-        psychology: [
-          ['Контроль страха и жадности', 'Эти два чувства — главные враги логического принятия решений; принимайте решения на основе плана, а не моментального волнения.'],
-          ['Избегайте торговли для отыгрыша', 'После убытка попытка быстро отыграться обычно приводит к рискованным решениям и большим потерям.'],
-          ['Принятие рыночной неопределенности', 'Ни один анализ не является на 100% правильным; трейдинг означает работу с вероятностями, а не с точными прогнозами.'],
-          ['Сохранение спокойствия при высокой волатильности', 'В дни высокой волатильности эмоциональные решения могут уничтожить месяцы правильного анализа.'],
-          ['Отстранение после последовательных убытков', 'Если у вас несколько убыточных сделок подряд, сделайте паузу и восстановите свое психическое состояние.'],
-          ['Избегайте ложной уверенности', 'Несколько последовательных прибылей могут привести к чрезмерному риску; придерживайтесь своего плана.'],
-          ['Записывайте эмоции вместе со сделками', 'В торговом журнале отмечайте свое психологическое состояние при входе и выходе, чтобы выявить поведенческие паттерны.'],
-          ['Избегайте FOMO', 'Поспешный вход в крупное ценовое движение без анализа — одна из самых распространенных ошибок начинающих трейдеров.'],
-          ['Будьте реалистичны в отношении доходности', 'Ожидание нереалистичной и быстрой прибыли ведет к нерациональному риску.'],
-          ['Регулярные ментальные перерывы', 'Умственная усталость снижает концентрацию и увеличивает ошибки в анализе и исполнении сделок.']
-        ],
-        technical: [
-          ['Определение основного тренда', 'Перед любым решением определите, является ли доминирующий тренд восходящим, нисходящим или нейтральным, и торгуйте в его направлении.'],
-          ['Важность уровней поддержки и сопротивления', 'Это уровни, на которых в прошлом происходили ценовые реакции и вероятность повторной реакции высока.'],
-          ['Подтверждение сигнала на нескольких таймфреймах', 'Сигнал более достоверен, когда он совпадает на более высоких и более низких таймфреймах.'],
-          ['Внимание к объему торгов', 'Увеличение объема в направлении движения цены укрепляет достоверность этого движения.'],
-          ['Целенаправленное использование индикаторов', 'Индикаторы — это вспомогательные инструменты для подтверждения анализа, а не основной источник принятия решений.'],
-          ['Распознавание ценовых паттернов', 'Такие паттерны, как треугольники, флаги и голова-плечи, могут указывать на продолжение или разворот тренда.'],
-          ['Проверка точек ликвидности рынка', 'Многие внезапные ценовые движения являются результатом сбора ликвидности вблизи ключевых уровней.'],
-          ['Важность подтверждающих свечей', 'Перед входом на основе уровня дождитесь закрытия подтверждающей свечи в этой области.'],
-          ['Избегайте чрезмерного анализа', 'Одновременная проверка слишком большого количества индикаторов может вызвать путаницу и задержку решений.'],
-          ['Запись и пересмотр прошлых анализов', 'Сравнение предыдущих прогнозов с фактическими результатами рынка со временем повышает точность вашего анализа.']
-        ],
-        strategy: [
-          ['Наличие письменного торгового плана', 'Четко и в письменной форме определите условия входа, выхода, стоп-лосса и тейк-профита до сделки.'],
-          ['Приверженность конкретной стратегии', 'Постоянное изменение стратегии на основе краткосрочных результатов мешает объективной оценке эффективности.'],
-          ['Тестирование стратегии на демо-счете', 'Перед использованием реального капитала протестируйте эффективность стратегии в демо-среде.'],
-          ['Определение критериев успеха сделки', 'Измеряйте успех сделки на основе соблюдения плана, а не только результата прибыли или убытка.'],
-          ['Планирование различных сценариев', 'Для каждой сделки заранее рассмотрите восходящий, нисходящий и нейтральный сценарии.'],
-          ['Понимание времени крипторынка', 'Волатильность крипторынка варьируется в разное время суток; знайте периоды высокого объема.'],
-          ['Внимание к важным рыночным событиям', 'Макроэкономические новости и события, связанные с проектами, могут вызвать сильную волатильность.'],
-          ['Еженедельный обзор эффективности', 'В конце каждой недели просматривайте свои сделки, чтобы определить сильные и слабые стороны стратегии.'],
-          ['Установка долгосрочных целей', 'Оценивайте рост капитала за долгосрочный период, а не на основе одной или нескольких сделок.'],
-          ['Адаптация к новым рыночным условиям', 'Если структура рынка меняется, сознательно пересматривайте стратегию на основе данных.']
-        ],
-        execution: [
-          ['Проверка ликвидности и спреда', 'Перед входом в сделку проверьте спред и торговый объем символа, чтобы избежать дополнительных затрат.'],
-          ['Использование лимитных ордеров', 'По возможности используйте лимитные ордера вместо рыночных для более точного входа.'],
-          ['Не перемещайте стоп-лосс после входа', 'Изменение стоп-лосса, чтобы избежать небольшого убытка, обычно приводит к более крупному убытку.'],
-          ['Постепенная фиксация прибыли', 'В прибыльных сделках частично фиксируйте прибыль по пути, чтобы снизить риск разворота.'],
-          ['Использование трейлинг-стопа', 'В сильных трендах постепенное перемещение стоп-лосса в направлении прибыли может зафиксировать часть прибыли.'],
-          ['Точная запись деталей сделки', 'Записывайте точку входа, выхода, причину сделки и результат для последующего анализа.'],
-          ['Осведомленность о комиссиях', 'При частой торговле комиссии биржи могут значительно снизить прибыль.'],
-          ['Безопасность аккаунта и кошелька', 'Всегда используйте двухфакторную аутентификацию и безопасное хранение цифровых активов.'],
-          ['Избегайте торговли в состоянии усталости', 'Принятие решений в состоянии усталости или спешки увеличивает вероятность ошибок исполнения.'],
-          ['Непрерывное обучение', 'Крипторынок постоянно развивается; поддержание актуальности знаний сохраняет ваше конкурентное преимущество.']
-        ]
-      }
+      tipsUnit: 'советов',
+      itemsUnit: 'шт.',
+      alertAtWord: 'на $',
+      alertTriggeredWord: ' (сработало)',
+      confirmClear: 'Очистить все данные?',
+      notifTitle: 'Ценовое оповещение',
+      notifBodySuffix: 'достигла цели $'
     }
   };
 
-  // ============ STATE MANAGEMENT ============
+  // ============ LANGUAGE → TRADINGVIEW LOCALE / METADATA ============
+  var LOCALE_MAP = { fa: 'fa_IR', en: 'en', tr: 'tr', ar: 'ar', ru: 'ru' };
+  var RTL_LANGS = { fa: true, ar: true };
+
+  // ============ LOCAL STORAGE HELPERS ============
+  function lget(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){return d;} }
+  function lset(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+
+  // ============ STATE ============
   var state = {
-    lang: (function(){ try{ return localStorage.getItem('sg_lang')||'fa'; }catch(e){ return 'fa'; } })(),
-    theme: (function(){ try{ return localStorage.getItem('sg_theme')||'light'; }catch(e){ return 'light'; } })(),
-    favorites: (function(){ try{ return JSON.parse(localStorage.getItem('sg_favorites'))||[]; }catch(e){ return []; } })(),
-    notes: (function(){ try{ return JSON.parse(localStorage.getItem('sg_notes'))||{}; }catch(e){ return {}; } })(),
-    alerts: (function(){ try{ return JSON.parse(localStorage.getItem('sg_alerts'))||[]; }catch(e){ return []; } })(),
-    settings: (function(){ try{ return JSON.parse(localStorage.getItem('sg_settings'))||{liveRefresh:true,notifications:false}; }catch(e){ return {liveRefresh:true,notifications:false}; } })(),
-    noticeDismiss: (function(){ try{ return localStorage.getItem('sg_notice_dismiss'); }catch(e){ return null; } })()
+    lang: lget('sg_lang','fa'),
+    theme: lget('sg_theme','light'),
+    favorites: lget('sg_favorites',[]),
+    notes: lget('sg_notes',{}),
+    alerts: lget('sg_alerts',[]),
+    settings: lget('sg_settings',{liveRefresh:true,notifications:false}),
+    noticeDismiss: lget('sg_notice_dismiss',null)
   };
 
-  // ============ CORE FUNCTIONS ============
-  function saveState(){
-    try{
-      localStorage.setItem('sg_lang', state.lang);
-      localStorage.setItem('sg_theme', state.theme);
-      localStorage.setItem('sg_favorites', JSON.stringify(state.favorites));
-      localStorage.setItem('sg_notes', JSON.stringify(state.notes));
-      localStorage.setItem('sg_alerts', JSON.stringify(state.alerts));
-      localStorage.setItem('sg_settings', JSON.stringify(state.settings));
-    }catch(e){}
-  }
+  // ============ DOM REFS ============
+  var $ = function(s){ return document.querySelector(s); };
+  var $$ = function(s){ return document.querySelectorAll(s); };
 
   // ============ APPLY LANGUAGE ============
   function applyLanguage(lang){
     state.lang = lang;
     var t = LANG[lang] || LANG.fa;
-    
-    // Basic UI elements
     document.getElementById('brandTitle').textContent = t.brandTitle;
     document.getElementById('brandSub').textContent = t.brandSub;
     document.getElementById('filterAll').textContent = t.filterAll;
@@ -1012,8 +728,10 @@
     document.getElementById('menuTelegram').textContent = t.menuTelegram;
     document.getElementById('menuInstagram').textContent = t.menuInstagram;
     document.getElementById('themeLabel').textContent = state.theme === 'dark' ? 'تم تاریک' : t.themeLabel;
-    document.getElementById('noticeTitle').textContent = t.noticeTitle;
-    document.getElementById('noticeText').textContent = t.noticeText;
+    // Broadcast/announcement banner — pulled from the dedicated BROADCAST object above
+    var bc = BROADCAST[lang] || BROADCAST.fa;
+    document.getElementById('noticeTitle').textContent = bc.title;
+    document.getElementById('noticeText').textContent = bc.text;
     document.getElementById('gridEmpty').textContent = t.gridEmpty;
     document.getElementById('guideSearch').placeholder = t.searchPlaceholder;
     document.getElementById('alertAddBtn').textContent = t.alertAdd;
@@ -1021,41 +739,377 @@
     document.getElementById('noteSaveBtn').textContent = t.saveNote;
     document.getElementById('clearDataBtn').textContent = t.clearData;
     document.querySelector('.lightbox-hint').textContent = t.lightboxHint;
-    
-    // Update loading text for videos
-    document.querySelectorAll('.video-loading').forEach(function(el){
-      el.textContent = t.loadingVideo || '📹 Loading...';
-    });
-
-    // Render guide with full translation
+    // Update guide categories titles (they are static in HTML, will be re-rendered)
     renderGuide(lang);
-    
-    // Update direction
+    // Update grid item counter + alert labels in the new language
+    applyFilter();
+    renderAlerts();
+    // Update direction (Persian and Arabic are RTL, the rest are LTR)
     document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    
-    // Update language buttons
-    document.querySelectorAll('.lang-btn').forEach(function(b){
-      b.classList.toggle('active', b.dataset.lang === lang);
+    document.documentElement.dir = RTL_LANGS[lang] ? 'rtl' : 'ltr';
+    lset('sg_lang', lang);
+    // Update lang buttons
+    $$('.lang-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === lang); });
+    // Switch the live TradingView chart to the new language too.
+    // If the chart tab is currently open, re-render it immediately;
+    // otherwise it will pick up the new language next time it opens.
+    if(chartInited){
+      chartInited = false;
+      if(chartModal && chartModal.classList.contains('open')){
+        initChart();
+      }
+    }
+  }
+
+  // ============================================================
+  //  📚 TRADING GUIDE CONTENT — fully translated per language
+  //  Each language block below (fa / en / tr / ar / ru) holds
+  //  5 categories × 10 tips. Category order/meaning is identical
+  //  across languages: [Risk & Capital, Psychology, Technical
+  //  Analysis, Strategy & Planning, Execution & Skills].
+  // ============================================================
+  var GUIDE_META = [
+    { icon: 'shield', color: 'pesteh' },
+    { icon: 'brain',  color: 'ghermez' },
+    { icon: 'chart',  color: 'pesteh' },
+    { icon: 'target', color: 'ghermez' },
+    { icon: 'bolt',   color: 'pesteh' }
+  ];
+
+  var GUIDE_ITEMS = {
+    // ---------------- 🇮🇷 PERSIAN (فارسی) ----------------
+    fa: [
+      [
+        ['تعیین حد ضرر پیش از ورود', 'هرگز وارد معامله نشوید مگر آنکه از قبل بدانید در چه قیمتی از آن خارج خواهید شد. حد ضرر باید بر اساس ساختار قیمت تعیین شود، نه یک عدد دلخواه.'],
+        ['محدودیت ریسک در هر معامله', 'به‌طور معمول بین یک تا دو درصد از کل سرمایه در هر معامله ریسک کنید تا چند ضرر متوالی حساب شما را از بین نبرد.'],
+        ['نسبت سود به ریسک مناسب', 'پیش از ورود بسنجید که آیا سود بالقوه حداقل دو تا سه برابر ریسک احتمالی است؛ در غیر این صورت از معامله صرف‌نظر کنید.'],
+        ['تنوع در دارایی‌ها', 'تمام سرمایه را روی یک ارز دیجیتال متمرکز نکنید؛ توزیع ریسک میان چند دارایی نوسانات حساب را کاهش می‌دهد.'],
+        ['مدیریت اهرم', 'استفاده از اهرم بالا سود و زیان را چند برابر می‌کند؛ برای اکثر معامله‌گران، اهرم پایین و کنترل‌شده منطقی‌تر است.'],
+        ['حفظ سرمایه در اولویت است', 'هدف اصلی هر معامله‌گر حرفه‌ای، حفظ سرمایه است نه کسب سود سریع؛ بدون سرمایه، فرصتی برای معامله باقی نمی‌ماند.'],
+        ['اجتناب از میانگین‌گیری نزولی بدون برنامه', 'افزودن به یک موقعیت زیان‌ده بدون تحلیل و حد ضرر مشخص، ریسک را به‌شدت افزایش می‌دهد.'],
+        ['تعیین سقف ضرر روزانه', 'برای خود یک سقف ضرر روزانه یا هفتگی تعیین کنید و در صورت رسیدن به آن، معاملات را متوقف کنید.'],
+        ['ذخیره‌ی مالی جدا از حساب معاملاتی', 'همیشه بخشی از سرمایه را خارج از بازار و به‌عنوان ذخیره‌ی اضطراری نگه دارید.'],
+        ['بازبینی دوره‌ای اندازه‌ی موقعیت', 'با رشد یا کاهش سرمایه، اندازه‌ی معاملات را متناسب با موجودی جدید تنظیم کنید.']
+      ],
+      [
+        ['کنترل ترس و طمع', 'این دو احساس بزرگ‌ترین دشمن تصمیم‌گیری منطقی هستند؛ تصمیمات را بر اساس برنامه بگیرید، نه هیجان لحظه‌ای.'],
+        ['پرهیز از معامله برای جبران ضرر', 'بعد از یک ضرر، تلاش برای جبران سریع معمولاً به تصمیمات پرریسک و ضررهای بزرگ‌تر منجر می‌شود.'],
+        ['پذیرش عدم قطعیت بازار', 'هیچ تحلیلی صد در صد درست نیست؛ معامله‌گری یعنی کار کردن با احتمالات، نه پیش‌بینی قطعی.'],
+        ['حفظ آرامش در نوسانات شدید', 'در روزهای پرنوسان، تصمیم‌گیری احساسی می‌تواند نتیجه‌ی ماه‌ها تحلیل درست را از بین ببرد.'],
+        ['فاصله گرفتن پس از ضررهای متوالی', 'اگر چند معامله پشت سر هم ضررده بود، استراحت کنید و شرایط ذهنی خود را بازیابی کنید.'],
+        ['اجتناب از اعتماد به نفس کاذب', 'چند سود متوالی می‌تواند باعث افزایش بی‌رویه ریسک شود؛ به برنامه‌ی خود پایبند بمانید.'],
+        ['ثبت احساسات در کنار معاملات', 'در دفترچه‌ی معاملاتی، حالت روانی خود هنگام ورود و خروج را نیز یادداشت کنید تا الگوهای رفتاری را بشناسید.'],
+        ['دوری از فومو (ترس از دست دادن فرصت)', 'ورود عجولانه به یک حرکت قیمتی بزرگ بدون تحلیل، یکی از رایج‌ترین اشتباهات معامله‌گران تازه‌کار است.'],
+        ['واقع‌بین بودن نسبت به بازدهی', 'انتظار سودهای غیرواقعی و سریع، مسیر را به سمت ریسک‌های غیرمنطقی سوق می‌دهد.'],
+        ['استراحت ذهنی منظم', 'خستگی ذهنی باعث کاهش تمرکز و افزایش خطا در تحلیل و اجرای معامله می‌شود.']
+      ],
+      [
+        ['شناخت روند اصلی بازار', 'پیش از هر تصمیم، مشخص کنید روند غالب صعودی، نزولی یا خنثی است و در جهت آن معامله کنید.'],
+        ['اهمیت سطوح حمایت و مقاومت', 'این سطوح نقاطی هستند که در گذشته واکنش قیمتی رخ داده و احتمال واکنش مجدد در آن‌ها بالاست.'],
+        ['تایید سیگنال در چند تایم‌فریم', 'یک سیگنال معتبرتر است وقتی در تایم‌فریم بالاتر و پایین‌تر هم‌راستا باشد.'],
+        ['توجه به حجم معاملات', 'افزایش حجم در جهت حرکت قیمت، اعتبار آن حرکت را تقویت می‌کند.'],
+        ['استفاده هدفمند از اندیکاتورها', 'اندیکاتورها ابزار کمکی برای تایید تحلیل هستند، نه منبع اصلی تصمیم‌گیری.'],
+        ['شناسایی الگوهای قیمتی', 'الگوهایی مانند مثلث، پرچم و سر و شانه می‌توانند نشانه‌ی ادامه یا بازگشت روند باشند.'],
+        ['بررسی نقاط نقدینگی بازار', 'بسیاری از حرکات ناگهانی قیمت، نتیجه‌ی جمع‌آوری نقدینگی در نزدیکی سطوح کلیدی است.'],
+        ['اهمیت کندل‌های تاییدی', 'پیش از ورود بر اساس یک سطح، منتظر بسته شدن کندل تاییدکننده در آن ناحیه بمانید.'],
+        ['دوری از تحلیل بیش از حد', 'بررسی هم‌زمان تعداد زیادی اندیکاتور می‌تواند باعث سردرگمی و تصمیم‌گیری تاخیری شود.'],
+        ['ثبت و بازبینی تحلیل‌های گذشته', 'مقایسه‌ی پیش‌بینی‌های قبلی با نتیجه‌ی واقعی بازار، دقت تحلیل شما را در طول زمان بهبود می‌دهد.']
+      ],
+      [
+        ['داشتن یک برنامه‌ی معاملاتی مکتوب', 'شرایط ورود، خروج، حد ضرر و حد سود را پیش از معامله به‌صورت مشخص و مکتوب تعیین کنید.'],
+        ['پایبندی به یک استراتژی مشخص', 'تغییر مداوم استراتژی بر اساس نتایج کوتاه‌مدت، مانع از سنجش واقعی عملکرد آن می‌شود.'],
+        ['تست استراتژی در حساب آزمایشی', 'پیش از استفاده از سرمایه‌ی واقعی، عملکرد استراتژی را در محیط آزمایشی بسنجید.'],
+        ['تعریف معیار موفقیت معامله', 'موفقیت یک معامله را بر اساس پایبندی به برنامه بسنجید، نه فقط نتیجه‌ی سود یا زیان آن.'],
+        ['برنامه‌ریزی برای سناریوهای مختلف', 'برای هر معامله سناریوی صعودی، نزولی و خنثی را از قبل در نظر بگیرید.'],
+        ['اهمیت زمان‌بندی بازار کریپتو', 'نوسانات بازار کریپتو در ساعات مختلف شبانه‌روز متفاوت است؛ زمان‌های پرحجم را بشناسید.'],
+        ['توجه به رویدادهای مهم بازار', 'اخبار کلان اقتصادی و رویدادهای مرتبط با پروژه‌ها می‌توانند نوسانات شدید ایجاد کنند.'],
+        ['بازبینی هفتگی عملکرد', 'در پایان هر هفته معاملات خود را مرور کنید تا نقاط قوت و ضعف استراتژی مشخص شود.'],
+        ['تعیین هدف بلندمدت', 'رشد سرمایه را در بازه‌ی زمانی بلندمدت بسنجید، نه بر اساس نتیجه‌ی یک یا چند معامله.'],
+        ['انعطاف‌پذیری در برابر شرایط جدید بازار', 'در صورت تغییر ساختار بازار، استراتژی را به‌صورت آگاهانه و بر اساس داده بازبینی کنید.']
+      ],
+      [
+        ['بررسی نقدینگی و اسپرد نماد', 'پیش از ورود به معامله، اسپرد و حجم معاملات نماد موردنظر را بررسی کنید تا از هزینه‌های اضافی جلوگیری شود.'],
+        ['استفاده از سفارش‌های محدود', 'در صورت امکان از سفارش‌های limit به‌جای market استفاده کنید تا نقطه‌ی ورود دقیق‌تری داشته باشید.'],
+        ['جابه‌جا نکردن حد ضرر پس از ورود', 'تغییر حد ضرر برای فرار از یک ضرر کوچک، معمولاً منجر به ضرر بزرگ‌تر می‌شود.'],
+        ['برداشت تدریجی سود', 'در معاملات سودده، بخشی از سود را در مسیر حرکت برداشت کنید تا ریسک بازگشت قیمت کاهش یابد.'],
+        ['استفاده از حد ضرر متحرک', 'در روندهای قوی، جابه‌جایی تدریجی حد ضرر در جهت سود می‌تواند بخشی از سود را قفل کند.'],
+        ['ثبت دقیق جزئیات هر معامله', 'نقطه‌ی ورود، خروج، دلیل معامله و نتیجه را برای تحلیل بعدی یادداشت کنید.'],
+        ['آگاهی از کارمزدها', 'در معاملات مکرر، کارمزد صرافی می‌تواند بخش قابل‌توجهی از سود را کاهش دهد.'],
+        ['امنیت حساب و کیف پول', 'همیشه از احراز هویت دو مرحله‌ای و ذخیره‌سازی امن دارایی دیجیتال اطمینان حاصل کنید.'],
+        ['اجتناب از معامله در شرایط خستگی', 'تصمیم‌گیری در حالت خستگی یا عجله، احتمال خطای اجرایی را افزایش می‌دهد.'],
+        ['یادگیری مستمر', 'بازار کریپتو دائم در حال تغییر است؛ به‌روز نگه داشتن دانش، مزیت رقابتی معامله‌گر را حفظ می‌کند.']
+      ]
+    ],
+
+    // ---------------- 🇬🇧 ENGLISH ----------------
+    en: [
+      [
+        ['Set your stop-loss before entering', 'Never enter a trade without knowing in advance the exact price at which you will exit. The stop-loss should be based on price structure, not an arbitrary number.'],
+        ['Limit risk per trade', 'Typically risk only 1–2% of your total capital per trade, so a string of losses cannot wipe out your account.'],
+        ['Keep a proper reward-to-risk ratio', 'Before entering, check that the potential reward is at least 2–3 times the risk; otherwise skip the trade.'],
+        ['Diversify across assets', 'Do not concentrate all your capital in a single coin; spreading risk across several assets reduces account volatility.'],
+        ['Manage leverage carefully', 'High leverage multiplies both gains and losses; for most traders, low and controlled leverage is the wiser choice.'],
+        ['Capital preservation comes first', "A professional trader's main goal is protecting capital, not chasing quick profit; without capital there is no opportunity to trade."],
+        ['Avoid unplanned averaging down', 'Adding to a losing position without analysis or a defined stop sharply increases risk.'],
+        ['Set a daily loss limit', 'Define a daily or weekly maximum loss for yourself and stop trading once you hit it.'],
+        ['Keep savings separate from your trading account', 'Always keep part of your capital outside the market as an emergency reserve.'],
+        ['Review position sizing periodically', 'As your capital grows or shrinks, adjust trade size to match your new balance.']
+      ],
+      [
+        ['Control fear and greed', 'These two emotions are the biggest enemies of rational decision-making; base decisions on your plan, not momentary excitement.'],
+        ['Avoid revenge trading', 'After a loss, trying to recover it quickly usually leads to riskier decisions and bigger losses.'],
+        ['Accept market uncertainty', 'No analysis is ever 100% correct; trading means working with probabilities, not certain predictions.'],
+        ['Stay calm during sharp volatility', 'On highly volatile days, emotional decisions can undo months of sound analysis.'],
+        ['Step back after consecutive losses', 'If several trades in a row lose money, take a break and reset your mental state.'],
+        ['Guard against overconfidence', 'A string of wins can push you toward reckless risk-taking; stick to your plan regardless.'],
+        ['Log your emotions alongside your trades', 'Note your mental state at entry and exit in your trading journal to spot behavioral patterns.'],
+        ['Avoid FOMO', 'Jumping hastily into a big price move without analysis is one of the most common mistakes new traders make.'],
+        ['Be realistic about returns', 'Expecting unrealistic, fast profits pushes you toward irrational risk.'],
+        ['Take regular mental breaks', 'Mental fatigue reduces focus and increases errors in analysis and execution.']
+      ],
+      [
+        ["Identify the market's main trend", 'Before any decision, determine whether the dominant trend is up, down, or sideways, and trade in that direction.'],
+        ['Understand support and resistance', 'These are levels where price has reacted before, so a repeat reaction is likely.'],
+        ['Confirm signals across multiple timeframes', 'A signal is more reliable when higher and lower timeframes align.'],
+        ['Watch trading volume', 'Rising volume in the direction of a move strengthens its validity.'],
+        ['Use indicators purposefully', 'Indicators are confirmation tools, not the primary source of a decision.'],
+        ['Recognize price patterns', 'Patterns like triangles, flags, and head-and-shoulders can signal continuation or reversal.'],
+        ['Watch for liquidity zones', 'Many sudden price moves result from liquidity being swept near key levels.'],
+        ['Wait for confirmation candles', 'Before entering off a level, wait for a confirming candle close in that zone.'],
+        ['Avoid over-analysis', 'Checking too many indicators at once can cause confusion and delayed decisions.'],
+        ['Log and review past analyses', 'Comparing earlier forecasts with actual outcomes improves your analytical accuracy over time.']
+      ],
+      [
+        ['Keep a written trading plan', 'Define your entry, exit, stop-loss, and take-profit clearly and in writing before you trade.'],
+        ['Stick to one defined strategy', 'Constantly switching strategies based on short-term results prevents you from truly judging its performance.'],
+        ['Test strategies on a demo account', 'Before risking real capital, validate strategy performance in a demo environment.'],
+        ['Define what counts as a successful trade', 'Judge success by how well you followed your plan, not just the profit or loss outcome.'],
+        ['Plan for multiple scenarios', 'Consider bullish, bearish, and sideways scenarios for every trade in advance.'],
+        ['Know crypto market timing', 'Crypto volatility differs across the hours of the day; learn the high-volume windows.'],
+        ['Track major market events', 'Macroeconomic news and project-related events can trigger sharp volatility.'],
+        ['Review performance weekly', 'At the end of each week, review your trades to spot strengths and weaknesses in your strategy.'],
+        ['Set long-term goals', 'Measure capital growth over a long time horizon, not the result of one or a few trades.'],
+        ['Stay flexible as markets evolve', 'When market structure shifts, revise your strategy deliberately and based on data.']
+      ],
+      [
+        ['Check liquidity and spread', 'Before entering a trade, check the volume and spread of the symbol to avoid extra costs.'],
+        ['Use limit orders', 'Where possible, use limit orders instead of market orders for a more precise entry point.'],
+        ['Do not move your stop-loss after entry', 'Moving a stop to avoid a small loss usually leads to a bigger one.'],
+        ['Take profit gradually', 'On winning trades, lock in part of the profit along the way to reduce reversal risk.'],
+        ['Use a trailing stop', 'In strong trends, gradually moving your stop in the direction of profit locks in gains.'],
+        ['Log every trade in detail', 'Record entry, exit, reasoning, and outcome for later review.'],
+        ['Be aware of fees', 'On frequent trades, exchange fees can eat a significant share of your profit.'],
+        ['Secure your account and wallet', 'Always use two-factor authentication and secure storage for your digital assets.'],
+        ['Avoid trading while fatigued', 'Deciding while tired or rushed increases the chance of execution errors.'],
+        ['Keep learning continuously', 'The crypto market is constantly changing; staying current preserves a trader\'s competitive edge.']
+      ]
+    ],
+
+    // ---------------- 🇹🇷 TURKISH (Türkçe) ----------------
+    tr: [
+      [
+        ['Girişten önce zarar durdur belirleyin', 'Çıkış fiyatını önceden bilmeden asla işleme girmeyin. Zarar durdur, rastgele bir sayı değil, fiyat yapısına göre belirlenmelidir.'],
+        ['İşlem başına riski sınırlayın', "Genellikle toplam sermayenizin %1-2'sini riske atın, böylece art arda gelen zararlar hesabınızı bitirmez."],
+        ['Uygun kâr/risk oranı kullanın', 'Girmeden önce potansiyel kârın riskin en az 2-3 katı olduğundan emin olun; aksi halde işlemden vazgeçin.'],
+        ['Varlıklarınızı çeşitlendirin', 'Tüm sermayenizi tek bir kripto paraya bağlamayın; riski birden fazla varlığa yaymak hesap dalgalanmasını azaltır.'],
+        ['Kaldıracı dikkatli yönetin', 'Yüksek kaldıraç hem kârı hem zararı katlar; çoğu yatırımcı için düşük ve kontrollü kaldıraç daha mantıklıdır.'],
+        ['Sermayeyi korumak önceliklidir', 'Profesyonel bir yatırımcının asıl amacı hızlı kâr değil sermayeyi korumaktır; sermaye olmadan işlem fırsatı da kalmaz.'],
+        ['Plansız ortalama düşürmekten kaçının', 'Analiz ve net bir zarar durdur olmadan zarardaki bir pozisyona eklemek riski ciddi şekilde artırır.'],
+        ['Günlük zarar sınırı belirleyin', 'Kendinize günlük veya haftalık bir zarar tavanı koyun ve buna ulaştığınızda işlemi durdurun.'],
+        ['Birikiminizi işlem hesabından ayrı tutun', 'Sermayenizin bir kısmını her zaman piyasa dışında acil durum rezervi olarak saklayın.'],
+        ['Pozisyon büyüklüğünü düzenli gözden geçirin', 'Sermaye arttıkça veya azaldıkça işlem büyüklüğünü yeni bakiyeye göre ayarlayın.']
+      ],
+      [
+        ['Korku ve açgözlülüğü kontrol edin', 'Bu iki duygu mantıklı karar almanın en büyük düşmanıdır; kararları anlık heyecana değil plana göre alın.'],
+        ['Zararı telafi etmek için işlem yapmaktan kaçının', 'Bir zarardan sonra hızlıca telafi etmeye çalışmak genellikle daha riskli kararlara ve büyük zararlara yol açar.'],
+        ['Piyasadaki belirsizliği kabul edin', 'Hiçbir analiz yüzde yüz doğru değildir; yatırım, kesin tahminlerle değil olasılıklarla çalışmaktır.'],
+        ['Sert dalgalanmalarda sakin kalın', 'Yüksek volatiliteli günlerde duygusal karar vermek, aylarca süren doğru analizin sonucunu yok edebilir.'],
+        ['Art arda zararlardan sonra ara verin', 'Birkaç işlem üst üste zararla sonuçlanırsa, dinlenin ve zihinsel durumunuzu toparlayın.'],
+        ['Sahte özgüvenden kaçının', 'Art arda gelen kârlar riski aşırı artırmaya itebilir; planınıza sadık kalın.'],
+        ['Duygularınızı işlemlerle birlikte kaydedin', 'İşlem defterinizde giriş ve çıkışta ruh halinizi de not edin, davranış kalıplarınızı tanıyın.'],
+        ["FOMO'dan (fırsatı kaçırma korkusundan) uzak durun", 'Analiz yapmadan büyük bir fiyat hareketine aceleyle girmek, yeni yatırımcıların en yaygın hatasıdır.'],
+        ['Getiriler konusunda gerçekçi olun', 'Hızlı ve gerçekçi olmayan kâr beklentisi, mantıksız risklere yönlendirir.'],
+        ['Düzenli zihinsel dinlenme alın', 'Zihinsel yorgunluk, analiz ve işlem uygulamasında odaklanmayı azaltır ve hataları artırır.']
+      ],
+      [
+        ['Piyasanın ana trendini tanıyın', 'Her karardan önce hakim trendin yükseliş, düşüş veya yatay olduğunu belirleyin ve o yönde işlem yapın.'],
+        ['Destek ve direnç seviyelerinin önemi', 'Bu seviyeler geçmişte fiyat tepkisinin oluştuğu ve tekrar tepki verme olasılığı yüksek noktalardır.'],
+        ['Sinyali birden fazla zaman diliminde doğrulayın', 'Bir sinyal, üst ve alt zaman diliminde de uyumluysa daha güvenilirdir.'],
+        ['İşlem hacmine dikkat edin', 'Fiyat hareketi yönünde artan hacim, o hareketin geçerliliğini güçlendirir.'],
+        ['Göstergeleri amaca uygun kullanın', 'Göstergeler analizi doğrulamak için yardımcı araçlardır, ana karar kaynağı değildir.'],
+        ['Fiyat formasyonlarını tanıyın', 'Üçgen, bayrak ve omuz-baş-omuz gibi formasyonlar trendin devamı veya dönüşünün işareti olabilir.'],
+        ['Piyasa likidite bölgelerini inceleyin', 'Ani fiyat hareketlerinin çoğu, kritik seviyeler yakınında likidite toplanmasının sonucudur.'],
+        ['Onay mumlarının önemi', 'Bir seviyeye dayalı girmeden önce, o bölgede onaylayıcı bir mum kapanışını bekleyin.'],
+        ['Aşırı analizden kaçının', 'Aynı anda çok fazla gösterge incelemek kafa karışıklığına ve gecikmeli karara yol açabilir.'],
+        ['Geçmiş analizleri kaydedip gözden geçirin', 'Önceki tahminleri gerçek piyasa sonucuyla karşılaştırmak analiz doğruluğunuzu zamanla artırır.']
+      ],
+      [
+        ['Yazılı bir işlem planına sahip olun', 'Giriş, çıkış, zarar durdur ve kâr al seviyelerini işlemden önce açık ve yazılı olarak belirleyin.'],
+        ['Belirli bir stratejiye bağlı kalın', 'Stratejiyi kısa vadeli sonuçlara göre sürekli değiştirmek, gerçek performansını ölçmenizi engeller.'],
+        ['Stratejiyi demo hesapta test edin', 'Gerçek sermaye kullanmadan önce stratejinin performansını test ortamında ölçün.'],
+        ['Başarılı işlem kriterini tanımlayın', 'Bir işlemin başarısını sadece kâr/zarar sonucuna göre değil, plana bağlılığa göre değerlendirin.'],
+        ['Farklı senaryolar için planlama yapın', 'Her işlem için yükseliş, düşüş ve yatay senaryoları önceden düşünün.'],
+        ['Kripto piyasası zamanlamasının önemi', 'Kripto piyasasındaki dalgalanma günün farklı saatlerinde değişir; yüksek hacimli saatleri tanıyın.'],
+        ['Önemli piyasa olaylarına dikkat edin', 'Makroekonomik haberler ve projelerle ilgili olaylar ciddi dalgalanmalara neden olabilir.'],
+        ['Haftalık performans değerlendirmesi yapın', 'Her hafta sonunda işlemlerinizi gözden geçirerek stratejinin güçlü ve zayıf yönlerini belirleyin.'],
+        ['Uzun vadeli hedef belirleyin', 'Sermaye büyümesini bir veya birkaç işlemin sonucuna göre değil, uzun vadede değerlendirin.'],
+        ['Yeni piyasa koşullarına karşı esnek olun', 'Piyasa yapısı değiştiğinde stratejiyi bilinçli ve veriye dayalı şekilde gözden geçirin.']
+      ],
+      [
+        ["Sembolün likidite ve spread'ini kontrol edin", 'İşleme girmeden önce ilgili sembolün spread ve işlem hacmini kontrol ederek ekstra maliyetlerden kaçının.'],
+        ['Limit emirleri kullanın', 'Mümkünse market yerine limit emirleri kullanarak daha kesin bir giriş noktası elde edin.'],
+        ["Girişten sonra zarar durdur'u kaydırmayın", "Küçük bir zarardan kaçmak için zarar durdur'u değiştirmek genellikle daha büyük zarara yol açar."],
+        ['Kârı kademeli olarak alın', 'Kârlı işlemlerde, fiyat hareket ederken kârın bir kısmını alarak geri dönüş riskini azaltın.'],
+        ['Hareketli zarar durdur kullanın', "Güçlü trendlerde, zarar durdur'u kâr yönünde kademeli kaydırmak kârın bir kısmını kilitleyebilir."],
+        ['Her işlemin ayrıntılarını hassas kaydedin', 'Sonraki analiz için giriş, çıkış noktasını, işlem nedenini ve sonucunu not edin.'],
+        ['Komisyonların farkında olun', 'Sık işlemlerde borsa komisyonu kârın önemli bir kısmını azaltabilir.'],
+        ['Hesap ve cüzdan güvenliği', 'Her zaman iki aşamalı doğrulama kullanın ve dijital varlıklarınızı güvenli şekilde saklayın.'],
+        ['Yorgunken işlem yapmaktan kaçının', 'Yorgun veya aceleyle karar vermek, uygulama hatası olasılığını artırır.'],
+        ['Sürekli öğrenmeye devam edin', 'Kripto piyasası sürekli değişiyor; bilgiyi güncel tutmak yatırımcının rekabet avantajını korur.']
+      ]
+    ],
+
+    // ---------------- 🇸🇦 ARABIC (العربية) ----------------
+    ar: [
+      [
+        ['تحديد وقف الخسارة قبل الدخول', 'لا تدخل صفقة أبدًا دون أن تعرف مسبقًا عند أي سعر ستخرج منها. يجب تحديد وقف الخسارة بناءً على هيكل السعر وليس رقمًا عشوائيًا.'],
+        ['تحديد سقف المخاطرة في كل صفقة', 'عادةً خاطر بنسبة 1 إلى 2 بالمئة فقط من رأس المال الكلي في كل صفقة حتى لا تقضي سلسلة خسائر متتالية على حسابك.'],
+        ['نسبة عائد إلى مخاطرة مناسبة', 'قبل الدخول، تحقق من أن الربح المحتمل يعادل ضعفين إلى ثلاثة أضعاف المخاطرة على الأقل، وإلا تجاهل الصفقة.'],
+        ['التنويع بين الأصول', 'لا تركز كل رأس المال على عملة رقمية واحدة؛ توزيع المخاطرة بين عدة أصول يقلل من تقلبات الحساب.'],
+        ['إدارة الرافعة المالية بحذر', 'استخدام رافعة مالية عالية يضاعف الأرباح والخسائر معًا؛ بالنسبة لمعظم المتداولين، الرافعة المنخفضة والمحسوبة أكثر منطقية.'],
+        ['الحفاظ على رأس المال أولوية', 'الهدف الأساسي لأي متداول محترف هو حماية رأس المال وليس تحقيق ربح سريع؛ فبدون رأس المال لا تبقى فرصة للتداول.'],
+        ['تجنب التوسط الهابط دون خطة', 'إضافة مركز إلى صفقة خاسرة دون تحليل أو وقف خسارة محدد يزيد المخاطرة بشكل كبير.'],
+        ['تحديد سقف خسارة يومي', 'حدد لنفسك سقف خسارة يومي أو أسبوعي وتوقف عن التداول عند الوصول إليه.'],
+        ['فصل المدخرات عن حساب التداول', 'احتفظ دائمًا بجزء من رأس المال خارج السوق كاحتياطي للطوارئ.'],
+        ['مراجعة دورية لحجم المركز', 'مع نمو أو انخفاض رأس المال، عدّل حجم الصفقات بما يتناسب مع الرصيد الجديد.']
+      ],
+      [
+        ['السيطرة على الخوف والطمع', 'هذان الشعوران هما أكبر أعداء القرار المنطقي؛ اتخذ قراراتك بناءً على خطتك لا بناءً على الانفعال اللحظي.'],
+        ['تجنب التداول للتعويض عن الخسارة', 'بعد الخسارة، محاولة التعويض السريع تؤدي عادةً إلى قرارات عالية المخاطرة وخسائر أكبر.'],
+        ['تقبل عدم اليقين في السوق', 'لا يوجد تحليل صحيح مئة بالمئة؛ التداول يعني العمل بالاحتمالات لا التنبؤ القاطع.'],
+        ['الحفاظ على الهدوء في التقلبات الحادة', 'في الأيام شديدة التقلب، يمكن للقرار العاطفي أن يهدم نتيجة أشهر من التحليل السليم.'],
+        ['أخذ مسافة بعد خسائر متتالية', 'إذا خسرت عدة صفقات متتالية، خذ استراحة وأعد ضبط حالتك الذهنية.'],
+        ['تجنب الثقة الزائدة الكاذبة', 'الأرباح المتتالية قد تدفعك لزيادة المخاطرة دون داعٍ؛ التزم بخطتك.'],
+        ['تسجيل مشاعرك مع صفقاتك', 'دوّن حالتك النفسية عند الدخول والخروج في دفتر التداول للتعرف على أنماط سلوكك.'],
+        ['تجنب الخوف من فوات الفرصة (FOMO)', 'الدخول المتسرع في حركة سعرية كبيرة دون تحليل من أكثر الأخطاء شيوعًا لدى المتداولين المبتدئين.'],
+        ['الواقعية بشأن العوائد', 'توقع أرباح سريعة وغير واقعية يدفعك نحو مخاطر غير منطقية.'],
+        ['أخذ راحة ذهنية منتظمة', 'الإرهاق الذهني يقلل التركيز ويزيد الأخطاء في التحليل وتنفيذ الصفقات.']
+      ],
+      [
+        ['تحديد الاتجاه الرئيسي للسوق', 'قبل أي قرار، حدد ما إذا كان الاتجاه السائد صاعدًا أو هابطًا أو عرضيًا وتداول في ذلك الاتجاه.'],
+        ['أهمية مستويات الدعم والمقاومة', 'هذه المستويات هي نقاط شهدت ردة فعل سعرية سابقة، واحتمال تكرار ردة الفعل فيها مرتفع.'],
+        ['تأكيد الإشارة عبر عدة أطر زمنية', 'تكون الإشارة أكثر موثوقية عندما تتوافق في الإطار الزمني الأعلى والأدنى.'],
+        ['الانتباه إلى حجم التداول', 'ارتفاع الحجم في اتجاه الحركة يعزز مصداقية تلك الحركة.'],
+        ['استخدام المؤشرات بشكل هادف', 'المؤشرات أدوات مساعدة لتأكيد التحليل، وليست المصدر الأساسي للقرار.'],
+        ['التعرف على الأنماط السعرية', 'أنماط مثل المثلث والعلم والرأس والكتفين يمكن أن تشير إلى استمرار الاتجاه أو انعكاسه.'],
+        ['دراسة مناطق السيولة في السوق', 'كثير من الحركات السعرية المفاجئة ناتجة عن تجميع السيولة بالقرب من المستويات الرئيسية.'],
+        ['أهمية شموع التأكيد', 'قبل الدخول بناءً على مستوى معين، انتظر إغلاق شمعة تأكيدية في تلك المنطقة.'],
+        ['تجنب الإفراط في التحليل', 'دراسة عدد كبير من المؤشرات في آن واحد قد يسبب الارتباك وتأخير القرار.'],
+        ['تسجيل ومراجعة التحليلات السابقة', 'مقارنة التوقعات السابقة بنتيجة السوق الفعلية تحسّن دقة تحليلك بمرور الوقت.']
+      ],
+      [
+        ['امتلاك خطة تداول مكتوبة', 'حدد شروط الدخول والخروج ووقف الخسارة وجني الأرباح بوضوح وكتابةً قبل التداول.'],
+        ['الالتزام باستراتيجية محددة', 'التغيير المستمر للاستراتيجية بناءً على نتائج قصيرة المدى يمنعك من تقييم أدائها الحقيقي.'],
+        ['اختبار الاستراتيجية في حساب تجريبي', 'قبل استخدام رأس مال حقيقي، قيّم أداء الاستراتيجية في بيئة تجريبية.'],
+        ['تعريف معيار نجاح الصفقة', 'قيّم نجاح الصفقة بناءً على الالتزام بالخطة، لا فقط بناءً على نتيجتها ربحًا أو خسارة.'],
+        ['التخطيط لسيناريوهات مختلفة', 'ضع في اعتبارك سيناريو الصعود والهبوط والاستقرار لكل صفقة مسبقًا.'],
+        ['أهمية توقيت سوق العملات الرقمية', 'تتفاوت تقلبات سوق العملات الرقمية باختلاف ساعات اليوم؛ تعرّف على الأوقات عالية الحجم.'],
+        ['متابعة الأحداث المهمة في السوق', 'الأخبار الاقتصادية الكلية والأحداث المرتبطة بالمشاريع قد تسبب تقلبات حادة.'],
+        ['مراجعة الأداء أسبوعيًا', 'في نهاية كل أسبوع، راجع صفقاتك لتحديد نقاط القوة والضعف في استراتيجيتك.'],
+        ['تحديد هدف طويل الأمد', 'قيّم نمو رأس المال على مدى زمني طويل، لا بناءً على نتيجة صفقة أو صفقات قليلة.'],
+        ['المرونة أمام ظروف السوق الجديدة', 'عند تغير هيكل السوق، راجع الاستراتيجية بوعي وبناءً على البيانات.']
+      ],
+      [
+        ['فحص سيولة وفارق سعر الرمز', 'قبل الدخول في صفقة، تحقق من فارق السعر وحجم التداول للرمز لتجنب تكاليف إضافية.'],
+        ['استخدام الأوامر المحددة', 'استخدم أوامر limit بدلاً من market قدر الإمكان للحصول على نقطة دخول أدق.'],
+        ['عدم تحريك وقف الخسارة بعد الدخول', 'تغيير وقف الخسارة للهروب من خسارة صغيرة يؤدي عادةً إلى خسارة أكبر.'],
+        ['جني الأرباح تدريجيًا', 'في الصفقات الرابحة، اجنِ جزءًا من الربح أثناء الحركة لتقليل مخاطر الانعكاس.'],
+        ['استخدام وقف الخسارة المتحرك', 'في الاتجاهات القوية، تحريك وقف الخسارة تدريجيًا باتجاه الربح يمكن أن يثبّت جزءًا من الأرباح.'],
+        ['تسجيل تفاصيل كل صفقة بدقة', 'دوّن نقطة الدخول والخروج وسبب الصفقة ونتيجتها للتحليل لاحقًا.'],
+        ['الوعي بالرسوم', 'في الصفقات المتكررة، يمكن لرسوم المنصة أن تقلل جزءًا كبيرًا من الأرباح.'],
+        ['أمان الحساب والمحفظة', 'تأكد دائمًا من تفعيل التحقق بخطوتين والتخزين الآمن لأصولك الرقمية.'],
+        ['تجنب التداول في حالة الإرهاق', 'اتخاذ القرار في حالة التعب أو التسرع يزيد من احتمال أخطاء التنفيذ.'],
+        ['التعلم المستمر', 'سوق العملات الرقمية في تغير دائم؛ مواكبة المعرفة تحافظ على الميزة التنافسية للمتداول.']
+      ]
+    ],
+
+    // ---------------- 🇷🇺 RUSSIAN (Русский) ----------------
+    ru: [
+      [
+        ['Определяйте стоп-лосс перед входом', 'Никогда не входите в сделку, не зная заранее, при какой цене вы из неё выйдете. Стоп-лосс должен определяться структурой цены, а не произвольным числом.'],
+        ['Ограничивайте риск на сделку', 'Обычно рискуйте лишь 1–2% от общего капитала на сделку, чтобы серия убытков не уничтожила счёт.'],
+        ['Соблюдайте адекватное соотношение прибыли к риску', 'Перед входом убедитесь, что потенциальная прибыль минимум в 2–3 раза превышает риск; иначе откажитесь от сделки.'],
+        ['Диверсифицируйте активы', 'Не концентрируйте весь капитал на одной криптовалюте; распределение риска между несколькими активами снижает волатильность счёта.'],
+        ['Управляйте кредитным плечом осторожно', 'Высокое плечо многократно увеличивает как прибыль, так и убытки; для большинства трейдеров разумнее низкое, контролируемое плечо.'],
+        ['Сохранение капитала — приоритет', 'Главная цель профессионального трейдера — сохранить капитал, а не быстро заработать; без капитала не остаётся возможности торговать.'],
+        ['Избегайте усреднения без плана', 'Добавление к убыточной позиции без анализа и чёткого стоп-лосса резко увеличивает риск.'],
+        ['Устанавливайте дневной лимит убытка', 'Определите для себя дневной или недельный предел убытка и прекращайте торговлю при его достижении.'],
+        ['Держите сбережения отдельно от торгового счёта', 'Всегда держите часть капитала вне рынка как резерв на случай непредвиденных ситуаций.'],
+        ['Периодически пересматривайте размер позиции', 'По мере роста или снижения капитала корректируйте размер сделок в соответствии с новым балансом.']
+      ],
+      [
+        ['Контролируйте страх и жадность', 'Эти два чувства — главные враги рационального решения; принимайте решения на основе плана, а не сиюминутных эмоций.'],
+        ['Не торгуйте, чтобы отыграться', 'После убытка попытка быстро его компенсировать обычно приводит к более рискованным решениям и ещё большим потерям.'],
+        ['Принимайте неопределённость рынка', 'Ни один анализ не бывает верным на сто процентов; трейдинг — это работа с вероятностями, а не точное предсказание.'],
+        ['Сохраняйте спокойствие при резких колебаниях', 'В дни высокой волатильности эмоциональное решение может свести на нет результат месяцев верного анализа.'],
+        ['Делайте паузу после серии убытков', 'Если несколько сделок подряд закрылись в минус, отдохните и восстановите своё психологическое состояние.'],
+        ['Остерегайтесь ложной самоуверенности', 'Серия побед может подтолкнуть к неоправданному увеличению риска; придерживайтесь плана.'],
+        ['Фиксируйте эмоции вместе со сделками', 'Записывайте своё психологическое состояние при входе и выходе в торговом дневнике, чтобы распознавать поведенческие паттерны.'],
+        ['Избегайте FOMO (страха упустить возможность)', 'Поспешный вход в крупное ценовое движение без анализа — одна из самых частых ошибок начинающих трейдеров.'],
+        ['Будьте реалистичны в ожиданиях доходности', 'Ожидание быстрой нереалистичной прибыли толкает к неразумным рискам.'],
+        ['Регулярно давайте себе умственный отдых', 'Умственная усталость снижает концентрацию и увеличивает число ошибок в анализе и исполнении сделок.']
+      ],
+      [
+        ['Определяйте основной тренд рынка', 'Перед любым решением определите, является ли доминирующий тренд восходящим, нисходящим или боковым, и торгуйте в этом направлении.'],
+        ['Учитывайте уровни поддержки и сопротивления', 'Это точки, где цена уже реагировала ранее, и вероятность повторной реакции высока.'],
+        ['Подтверждайте сигнал на нескольких таймфреймах', 'Сигнал надёжнее, когда он совпадает на более высоком и более низком таймфрейме.'],
+        ['Обращайте внимание на объём торгов', 'Рост объёма в направлении движения цены усиливает достоверность этого движения.'],
+        ['Используйте индикаторы целенаправленно', 'Индикаторы — вспомогательный инструмент подтверждения анализа, а не основной источник решения.'],
+        ['Распознавайте ценовые паттерны', 'Такие фигуры, как треугольник, флаг и голова-плечи, могут указывать на продолжение или разворот тренда.'],
+        ['Изучайте зоны ликвидности рынка', 'Многие резкие движения цены — результат сбора ликвидности рядом с ключевыми уровнями.'],
+        ['Дожидайтесь подтверждающих свечей', 'Прежде чем входить от уровня, дождитесь закрытия подтверждающей свечи в этой зоне.'],
+        ['Избегайте чрезмерного анализа', 'Одновременное изучение слишком многих индикаторов может вызвать путаницу и задержку решения.'],
+        ['Фиксируйте и пересматривайте прошлые анализы', 'Сравнение прежних прогнозов с реальным результатом рынка со временем повышает точность вашего анализа.']
+      ],
+      [
+        ['Ведите письменный торговый план', 'Чётко и письменно определяйте условия входа, выхода, стоп-лосса и тейк-профита до сделки.'],
+        ['Придерживайтесь определённой стратегии', 'Постоянная смена стратегии из-за краткосрочных результатов мешает объективно оценить её эффективность.'],
+        ['Тестируйте стратегию на демо-счёте', 'Прежде чем использовать реальный капитал, оцените эффективность стратегии в тестовой среде.'],
+        ['Определите критерий успешной сделки', 'Оценивайте успех сделки по следованию плану, а не только по итоговой прибыли или убытку.'],
+        ['Планируйте разные сценарии', 'Заранее продумывайте бычий, медвежий и нейтральный сценарий для каждой сделки.'],
+        ['Учитывайте особенности времени на крипторынке', 'Волатильность крипторынка меняется в течение суток; изучите часы высокой активности.'],
+        ['Следите за важными рыночными событиями', 'Макроэкономические новости и события, связанные с проектами, могут вызвать резкие колебания.'],
+        ['Проводите еженедельный обзор результатов', 'В конце каждой недели анализируйте свои сделки, чтобы выявить сильные и слабые стороны стратегии.'],
+        ['Ставьте долгосрочную цель', 'Оценивайте рост капитала на длительном временном горизонте, а не по результату одной или нескольких сделок.'],
+        ['Будьте гибкими при изменении рынка', 'При изменении структуры рынка осознанно пересматривайте стратегию на основе данных.']
+      ],
+      [
+        ['Проверяйте ликвидность и спред символа', 'Перед входом в сделку проверьте спред и объём торгов по инструменту, чтобы избежать лишних издержек.'],
+        ['Используйте лимитные ордера', 'По возможности используйте лимитные, а не рыночные ордера для более точной точки входа.'],
+        ['Не двигайте стоп-лосс после входа', 'Перемещение стоп-лосса, чтобы избежать небольшого убытка, обычно приводит к более крупному.'],
+        ['Фиксируйте прибыль постепенно', 'В прибыльных сделках забирайте часть прибыли по ходу движения, чтобы снизить риск разворота.'],
+        ['Используйте скользящий стоп-лосс', 'В сильных трендах постепенное смещение стоп-лосса в сторону прибыли позволяет зафиксировать её часть.'],
+        ['Точно фиксируйте детали каждой сделки', 'Записывайте точку входа, выхода, причину сделки и её результат для последующего анализа.'],
+        ['Помните о комиссиях', 'При частых сделках биржевые комиссии могут существенно снижать прибыль.'],
+        ['Обеспечивайте безопасность счёта и кошелька', 'Всегда используйте двухфакторную аутентификацию и надёжное хранение цифровых активов.'],
+        ['Избегайте торговли в состоянии усталости', 'Принятие решений в уставшем или спешном состоянии повышает вероятность ошибок исполнения.'],
+        ['Продолжайте постоянно учиться', 'Рынок криптовалют непрерывно меняется; актуальные знания сохраняют конкурентное преимущество трейдера.']
+      ]
+    ]
+  };
+
+  // ============ GUIDE DATA ============
+  function getGuideData(lang){
+    var langItems = GUIDE_ITEMS[lang] || GUIDE_ITEMS.fa;
+    return GUIDE_META.map(function(meta, i){
+      return { icon: meta.icon, color: meta.color, items: langItems[i] };
     });
-    
-    saveState();
   }
 
   // ============ RENDER GUIDE ============
   function renderGuide(lang){
     var t = LANG[lang] || LANG.fa;
-    var wrap = document.getElementById('guideCats');
-    wrap.innerHTML = '';
-    
-    var categories = [
-      { key: 'risk', icon: 'shield', color: 'pesteh' },
-      { key: 'psychology', icon: 'brain', color: 'ghermez' },
-      { key: 'technical', icon: 'chart', color: 'pesteh' },
-      { key: 'strategy', icon: 'target', color: 'ghermez' },
-      { key: 'execution', icon: 'bolt', color: 'pesteh' }
-    ];
-    
+    var categories = getGuideData(lang);
     var icons = {
       shield: '<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/>',
       brain: '<path d="M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-2 5v1a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/>',
@@ -1063,22 +1117,29 @@
       target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
       bolt: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>'
     };
-    
+    var catTitles = {
+      fa: ['مدیریت ریسک و سرمایه', 'روانشناسی معامله‌گری', 'تحلیل تکنیکال', 'استراتژی و برنامه‌ریزی', 'اجرای معامله و مهارت‌های عملی'],
+      en: ['Risk & Capital Management', 'Trading Psychology', 'Technical Analysis', 'Strategy & Planning', 'Trade Execution & Skills'],
+      tr: ['Risk ve Sermaye Yönetimi', 'İşlem Psikolojisi', 'Teknik Analiz', 'Strateji ve Planlama', 'İşlem Yürütme ve Beceriler'],
+      ar: ['إدارة المخاطر ورأس المال', 'علم نفس التداول', 'التحليل الفني', 'الاستراتيجية والتخطيط', 'تنفيذ الصفقات والمهارات العملية'],
+      ru: ['Управление рисками и капиталом', 'Психология трейдинга', 'Технический анализ', 'Стратегия и планирование', 'Исполнение сделок и навыки']
+    };
+    var wrap = document.getElementById('guideCats');
+    var t = LANG[lang] || LANG.fa;
+    // PERF: build everything off-DOM in a DocumentFragment first, then a
+    // single append — avoids N reflows/repaints when rendering ~50 cards.
+    var frag = document.createDocumentFragment();
     categories.forEach(function(cat, ci){
       var section = document.createElement('div');
       section.className = 'guide-cat';
       section.dataset.cat = ci;
-      
       var head = document.createElement('div');
       head.className = 'guide-cat-head';
       var iconBg = cat.color === 'pesteh' ? 'background:var(--pesteh-soft2); color:var(--pesteh-dark);' : 'background:var(--ghermez-soft); color:var(--ghermez-dark);';
-      var title = t.guideCats[cat.key] || cat.key;
-      var items = t.guideItems[cat.key] || [];
-      
-      head.innerHTML = '<div class="guide-cat-icon" style="' + iconBg + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + icons[cat.icon] + '</svg></div><div><h3>' + title + '</h3><span>' + items.length + ' نکته</span></div>';
+      var title = catTitles[lang] ? catTitles[lang][ci] : catTitles.fa[ci];
+      head.innerHTML = '<div class="guide-cat-icon" style="' + iconBg + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + icons[cat.icon] + '</svg></div><div><h3>' + title + '</h3><span>' + cat.items.length + ' ' + t.tipsUnit + '</span></div>';
       section.appendChild(head);
-      
-      items.forEach(function(item, i){
+      cat.items.forEach(function(item, i){
         var card = document.createElement('div');
         card.className = 'guide-card';
         card.dataset.text = (item[0] + ' ' + item[1]).toLowerCase();
@@ -1088,10 +1149,10 @@
         card.innerHTML = '<div class="gn" style="' + numBg + '">' + (i+1) + '</div><div class="gt"><b>' + item[0] + '</b><p>' + item[1] + '</p></div>';
         section.appendChild(card);
       });
-      
-      wrap.appendChild(section);
+      frag.appendChild(section);
     });
-    
+    wrap.innerHTML = '';
+    wrap.appendChild(frag);
     // Re-apply search filter
     var q = document.getElementById('guideSearch').value.trim().toLowerCase();
     filterGuide(q);
@@ -1140,37 +1201,79 @@
       root.style.setProperty('--shadow-2', '0 4px 14px rgba(38,48,31,0.10)');
       document.getElementById('themeLabel').textContent = t.themeLabel || 'تم روشن';
     }
-    saveState();
+    lset('sg_theme', theme);
   }
 
-  // ============ VIDEO OPTIMIZATION ============
-  function initVideos(){
-    document.querySelectorAll('video.media').forEach(function(video){
-      var card = video.closest('.card');
-      var loading = card ? card.querySelector('.video-loading') : null;
-      
-      video.addEventListener('loadstart', function(){
-        if(loading) loading.classList.add('active');
-      });
-      
-      video.addEventListener('loadeddata', function(){
-        if(loading) loading.classList.remove('active');
-        // Show thumbnail preview
-        video.currentTime = 0.1;
-      });
-      
-      video.addEventListener('error', function(){
-        if(loading) {
-          loading.textContent = '⚠️ خطا';
-          loading.classList.add('active');
-        }
-      });
-      
-      // Preload thumbnail
-      if(video.readyState >= 1){
-        if(loading) loading.classList.remove('active');
-      }
+  // ============ USER NOTICE ============
+  function showNoticeIfNeeded(){
+    var dismissed = lget('sg_notice_dismiss', null);
+    if(!dismissed || Date.now() - dismissed > 86400000){
+      document.getElementById('userNotice').style.display = 'flex';
+    }
+  }
+
+  // ============================================================
+  //  ⚙️ ENTERPRISE PERFORMANCE LAYER
+  //  ------------------------------------------------------------
+  //  Client-side caching, request de-duplication and retry/back-off
+  //  so the UI stays fast and resilient under heavy usage and flaky
+  //  connections. Notes on true million-user scaling are at the
+  //  bottom of this file.
+  // ============================================================
+
+  // In-memory TTL cache + in-flight request de-duplication.
+  // Prevents redundant network calls when several parts of the UI
+  // ask for the same data within a short window (e.g. multiple price
+  // alerts on the same symbol, or rapid tab switching).
+  var ApiCache = (function(){
+    var store = new Map();
+    var inflight = new Map();
+    function get(key){
+      var e = store.get(key);
+      if(!e) return null;
+      if(Date.now() > e.expires){ store.delete(key); return null; }
+      return e.value;
+    }
+    function set(key, value, ttlMs){ store.set(key, { value: value, expires: Date.now() + ttlMs }); }
+    function fetchCached(key, ttlMs, fetcher){
+      var cached = get(key);
+      if(cached) return Promise.resolve(cached);
+      if(inflight.has(key)) return inflight.get(key);
+      var p = fetcher().then(function(data){
+        set(key, data, ttlMs);
+        inflight.delete(key);
+        return data;
+      }).catch(function(err){ inflight.delete(key); throw err; });
+      inflight.set(key, p);
+      return p;
+    }
+    return { get: get, set: set, fetchCached: fetchCached };
+  })();
+
+  // Fetch with exponential back-off retry — keeps the app resilient
+  // against transient network/API failures instead of failing silently.
+  function fetchWithRetry(url, retries, backoffMs){
+    retries = retries == null ? 2 : retries;
+    backoffMs = backoffMs == null ? 400 : backoffMs;
+    return fetch(url).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).catch(function(err){
+      if(retries <= 0) throw err;
+      return new Promise(function(resolve){ setTimeout(resolve, backoffMs); })
+        .then(function(){ return fetchWithRetry(url, retries - 1, backoffMs * 2); });
     });
+  }
+
+  // Debounce helper — used to avoid re-filtering/re-rendering on every
+  // single keystroke in high-frequency input events.
+  function debounce(fn, waitMs){
+    var timer = null;
+    return function(){
+      var ctx = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function(){ fn.apply(ctx, args); }, waitMs);
+    };
   }
 
   // ============ TICKER ============
@@ -1185,13 +1288,16 @@
   }
   function fetchTicker(){
     var symbols = tickerCoins.map(function(c){ return c+'USDT'; });
-    fetch('https://api.binance.com/api/v3/ticker/24hr?symbols='+encodeURIComponent(JSON.stringify(symbols)))
-      .then(function(r){ return r.json(); })
+    var url = 'https://api.binance.com/api/v3/ticker/24hr?symbols='+encodeURIComponent(JSON.stringify(symbols));
+    // Cached for 15s + deduplicated + retried — resilient under load
+    // without hammering the upstream API when many tabs/users poll it.
+    ApiCache.fetchCached('ticker24h', 15000, function(){ return fetchWithRetry(url); })
       .then(function(data){ if(Array.isArray(data)&&data.length) renderTicker(data); })
       .catch(function(){});
   }
 
   // ============ CHART ============
+
   var coins = ["BTC","ETH","BNB","XRP","SOL","ADA","DOGE","TRX","DOT","MATIC","LTC","AVAX","LINK","ATOM","UNI","XLM","ETC","FIL","APT","ARB","NEAR","OP","INJ","SUI","SHIB","ICP","HBAR","VET","ALGO","SAND","MANA","AXS","EGLD","FTM","THETA","XTZ","EOS","AAVE","MKR","GRT","CHZ","ENJ","ZEC","DASH","NEO","IOTA","KSM","RUNE","CAKE","CRV","COMP","SNX","YFI","1INCH","BAT","ZIL","ONE","HOT","ANKR","CELR","SKL","OCEAN","RSR","STORJ","BAND","KAVA","RVN","WAVES","QTUM","ICX","ONT","ZRX","KNC","LRC","REN","BAL","UMA","SUSHI","ALPHA","PERP","CVC","NKN","COTI","CTSI","DENT","DUSK","FET","GALA","GAL","GMT","GTC","HIGH","HOOK","IDEX","ILV","IMX","JASMY","JOE","KDA","KLAY","LDO","LEVER","LINA","LIT","LOOM","LPT","LQTY","LUNA","LUNC","MAGIC","MASK","MDT","MINA","MTL","MULTI","NMR","OGN","OMG","ORN","OXT","PAXG","PEOPLE","PHA","POLYX","PROM","PUNDIX","QUICK","RAD","RARE","RARI","RAY","REEF","REI","REQ","RGT","RLC","ROSE","RPL","SC","SFP","SLP","SNT","SPELL","SSV","STG","STMX","STPT","STRAX","STX","SUPER","SXP","SYS","TFUEL","TLM","TOMO","TRB","TRU","TVK","TWT","UNFI","UTK","VOXEL","VTHO","WAN","WING","WOO","XEC","XEM","XNO","XVS","YGG","ZEN","ZK","PEPE","WIF","BONK","FLOKI","TON","PYTH","JUP","STRK","TIA","SEI","ORDI","WLD","ENA","W","ETHFI","ONDO","NOT","RENDER","TAO","AR","KAS","BEAM","BLUR","CFX","GLMR","ASTR","CKB"];
   var select = document.getElementById('symbolSelect');
   coins.forEach(function(c){ var o=document.createElement('option'); o.value=c+'USDT'; o.textContent=c+' / USDT'; select.appendChild(o); });
@@ -1200,28 +1306,28 @@
   function initChart(){
     var container = document.getElementById('chartContainer');
     container.innerHTML = '';
-    if(typeof TradingView !== 'undefined'){
-      new TradingView.widget({
-        autosize: true,
-        symbol: 'BINANCE:' + select.value,
-        interval: '60',
-        timezone: 'Asia/Tehran',
-        theme: 'dark',
-        style: '1',
-        locale: 'fa_IR',
-        backgroundColor: '#0C0E09',
-        toolbar_bg: '#0C0E09',
-        enable_publishing: false,
-        hide_top_toolbar: false,
-        hide_side_toolbar: false,
-        hide_legend: false,
-        withdateranges: true,
-        allow_symbol_change: false,
-        details: true,
-        studies: ['MASimple@tv-basicstudies'],
-        container_id: 'chartContainer'
-      });
-    }
+    var tz = 'Etc/UTC';
+    try{ tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Etc/UTC'; }catch(e){}
+    new TradingView.widget({
+      autosize: true,
+      symbol: 'BINANCE:' + select.value,
+      interval: '60',
+      timezone: tz,
+      theme: 'dark',
+      style: '1',
+      locale: LOCALE_MAP[state.lang] || 'en',
+      backgroundColor: '#0C0E09',
+      toolbar_bg: '#0C0E09',
+      enable_publishing: false,
+      hide_top_toolbar: false,
+      hide_side_toolbar: false,
+      hide_legend: false,
+      withdateranges: true,
+      allow_symbol_change: false,
+      details: true,
+      studies: ['MASimple@tv-basicstudies'],
+      container_id: 'chartContainer'
+    });
     chartInited = true;
   }
 
@@ -1230,16 +1336,17 @@
   function renderAlerts(){
     var list = document.getElementById('alertList');
     list.innerHTML = '';
+    var t = LANG[state.lang] || LANG.fa;
     var symAlerts = state.alerts.filter(function(a){ return a.symbol === select.value; });
     symAlerts.forEach(function(a){
       var chip = document.createElement('div');
       chip.className = 'alert-chip' + (a.triggered ? ' triggered' : '');
-      chip.innerHTML = '<span>' + a.symbol.replace('USDT','') + ' در $' + a.target + (a.triggered ? ' (فعال شد)' : '') + '</span>';
+      chip.innerHTML = '<span>' + a.symbol.replace('USDT','') + ' ' + t.alertAtWord + a.target + (a.triggered ? t.alertTriggeredWord : '') + '</span>';
       var rm = document.createElement('button');
       rm.textContent = '×';
       rm.addEventListener('click', function(){
         state.alerts = state.alerts.filter(function(x){ return x.id !== a.id; });
-        saveState();
+        lset('sg_alerts', state.alerts);
         updateBellDot();
         renderAlerts();
       });
@@ -1252,9 +1359,11 @@
     if(!state.alerts.length) return;
     var symbols = Array.from(new Set(state.alerts.map(function(a){ return a.symbol; })));
     Promise.all(symbols.map(function(s){
-      return fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + s)
-        .then(function(r){ return r.json(); })
-        .catch(function(){ return null; });
+      // Short TTL cache + retry: dedupes calls when several alerts
+      // share the same symbol and survives brief network hiccups.
+      return ApiCache.fetchCached('price:' + s, 4000, function(){
+        return fetchWithRetry('https://api.binance.com/api/v3/ticker/price?symbol=' + s, 1, 300);
+      }).catch(function(){ return null; });
     })).then(function(results){
       var changed = false;
       results.forEach(function(r){
@@ -1266,13 +1375,14 @@
               a.triggered = true;
               changed = true;
               if(state.settings.notifications && 'Notification' in window && Notification.permission === 'granted'){
-                new Notification('Price Alert', { body: a.symbol.replace('USDT','') + ' reached $' + a.target });
+                var t = LANG[state.lang] || LANG.fa;
+                new Notification(t.notifTitle, { body: a.symbol.replace('USDT','') + ' ' + t.notifBodySuffix + a.target });
               }
             }
           }
         });
       });
-      if(changed){ saveState(); renderAlerts(); }
+      if(changed){ lset('sg_alerts', state.alerts); renderAlerts(); }
     });
   }
 
@@ -1292,17 +1402,36 @@
       card.classList.toggle('hidden-card', !show);
       if(show) shown++;
     });
-    document.getElementById('gridCount').textContent = shown + ' مورد';
+    var t = LANG[state.lang] || LANG.fa;
+    document.getElementById('gridCount').textContent = shown + ' ' + t.itemsUnit;
     document.getElementById('gridEmpty').style.display = (shown === 0) ? 'block' : 'none';
   }
 
   // ============ LIVE REFRESH ============
   var liveTimer = null;
   function bust(u){ return u + '?v=' + Date.now(); }
+  // PERF: only cards actually visible in the viewport are tracked here
+  // (via IntersectionObserver) and refreshed — off-screen cards aren't
+  // reloaded every tick, cutting wasted bandwidth/requests at scale.
+  var visibleCards = new Set();
+  if('IntersectionObserver' in window){
+    var mediaObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting) visibleCards.add(entry.target);
+        else visibleCards.delete(entry.target);
+      });
+    }, { root: null, threshold: 0.1 });
+    document.querySelectorAll('.card').forEach(function(card){ mediaObserver.observe(card); });
+  }
   function refreshAssets(){
     document.getElementById('bgImg').style.backgroundImage = "url('" + bust('m9.jpg') + "')";
-    document.querySelectorAll('img[data-live]').forEach(function(img){ img.src = bust(img.dataset.base); });
-    document.querySelectorAll('video.media').forEach(function(v){ if(v.paused){ v.src = bust(v.dataset.base); } });
+    var targets = visibleCards.size ? visibleCards : document.querySelectorAll('.card');
+    targets.forEach(function(card){
+      var img = card.querySelector('img[data-live]');
+      if(img) img.src = bust(img.dataset.base);
+      var v = card.querySelector('video.media');
+      if(v && v.paused) v.src = bust(v.dataset.base);
+    });
   }
   function setLiveRefresh(on){
     if(liveTimer){ clearInterval(liveTimer); liveTimer = null; }
@@ -1358,7 +1487,6 @@
         lbBg.style.backgroundImage = "url('" + src + "')";
         var img = document.createElement('img');
         img.src = src;
-        img.loading = 'lazy';
         lbFrame.appendChild(img);
       } else {
         lbBg.style.backgroundImage = "url('m9.jpg')";
@@ -1368,7 +1496,6 @@
         vid.autoplay = true;
         vid.playsInline = true;
         vid.muted = false;
-        vid.preload = 'auto';
         lbFrame.appendChild(vid);
       }
       lightbox.classList.add('open');
@@ -1395,23 +1522,26 @@
   switchLive.addEventListener('click', function(){
     state.settings.liveRefresh = !state.settings.liveRefresh;
     switchLive.classList.toggle('on', state.settings.liveRefresh);
-    saveState();
+    lset('sg_settings', state.settings);
     setLiveRefresh(state.settings.liveRefresh);
   });
   switchNotif.addEventListener('click', function(){
     state.settings.notifications = !state.settings.notifications;
     switchNotif.classList.toggle('on', state.settings.notifications);
-    saveState();
+    lset('sg_settings', state.settings);
     if(state.settings.notifications && 'Notification' in window && Notification.permission === 'default'){
       Notification.requestPermission();
     }
   });
   document.getElementById('clearDataBtn').addEventListener('click', function(){
-    if(!confirm('همه‌ی داده‌ها پاک شوند؟')) return;
+    var t = LANG[state.lang] || LANG.fa;
+    if(!confirm(t.confirmClear)) return;
     state.favorites = [];
     state.notes = {};
     state.alerts = [];
-    saveState();
+    lset('sg_favorites', state.favorites);
+    lset('sg_notes', state.notes);
+    lset('sg_alerts', state.alerts);
     applyCardStates();
     applyFilter();
     renderAlerts();
@@ -1438,7 +1568,7 @@
   // Notice dismiss
   document.getElementById('noticeDismiss').addEventListener('click', function(){
     document.getElementById('userNotice').style.display = 'none';
-    localStorage.setItem('sg_notice_dismiss', String(Date.now()));
+    lset('sg_notice_dismiss', Date.now());
   });
   // Filter chips
   document.querySelectorAll('.chip').forEach(function(c){
@@ -1456,7 +1586,7 @@
       var i = state.favorites.indexOf(id);
       if(i > -1) state.favorites.splice(i,1);
       else state.favorites.push(id);
-      saveState();
+      lset('sg_favorites', state.favorites);
       applyCardStates();
       applyFilter();
     });
@@ -1476,7 +1606,7 @@
   document.getElementById('noteSaveBtn').addEventListener('click', function(){
     if(activeNoteId){
       state.notes[activeNoteId] = noteTextarea.value;
-      saveState();
+      lset('sg_notes', state.notes);
       applyCardStates();
     }
     noteOverlay.classList.remove('open');
@@ -1488,7 +1618,7 @@
     var val = parseFloat(input.value);
     if(!val || val <= 0) return;
     state.alerts.push({ id: 'a'+Date.now(), symbol: select.value, target: val, triggered: false });
-    saveState();
+    lset('sg_alerts', state.alerts);
     input.value = '';
     renderAlerts();
     if(state.settings.notifications && 'Notification' in window && Notification.permission !== 'granted'){
@@ -1504,26 +1634,26 @@
     if(chartInited) initChart();
     renderAlerts();
   });
-  // Guide search
-  document.getElementById('guideSearch').addEventListener('input', function(){
+  // Guide search — debounced to avoid re-filtering ~50 cards on every keystroke
+  document.getElementById('guideSearch').addEventListener('input', debounce(function(){
     var q = this.value.trim().toLowerCase();
     filterGuide(q);
-  });
+  }, 120));
 
   // ============ BACKGROUND PARALLAX ============
+  // rAF-throttled: coalesces rapid scroll events into one transform
+  // update per animation frame instead of one per scroll event.
   var bgImg = document.getElementById('bgImg');
+  var scrollTicking = false;
   window.addEventListener('scroll', function(){
-    var y = window.scrollY || 0;
-    bgImg.style.transform = 'scale(1.18) translateY(' + (y * 0.04) + 'px)';
+    if(scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(function(){
+      var y = window.scrollY || 0;
+      bgImg.style.transform = 'scale(1.18) translateY(' + (y * 0.04) + 'px)';
+      scrollTicking = false;
+    });
   }, {passive: true});
-
-  // ============ SHOW NOTICE ============
-  function showNoticeIfNeeded(){
-    var dismissed = localStorage.getItem('sg_notice_dismiss');
-    if(!dismissed || Date.now() - parseInt(dismissed) > 86400000){
-      document.getElementById('userNotice').style.display = 'flex';
-    }
-  }
 
   // ============ INITIALIZATION ============
   function init(){
@@ -1537,17 +1667,24 @@
     applyFilter();
     renderAlerts();
     renderGuide(state.lang);
-    initVideos();
+    // Check alerts every 8 seconds
     setInterval(checkAlerts, 8000);
+    // Refresh assets initially
     setTimeout(refreshAssets, 500);
   }
 
-  // ============ START ============
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  init();
+
+  // ============================================================
+  //  NOTE ON SCALING TO MILLIONS OF USERS
+  //  This file is a client-side app: caching, request dedup and
+  //  retry/back-off above keep IT fast on one device. Serving that
+  //  many concurrent users also needs infrastructure outside this
+  //  file — a CDN (Cloudflare/Fastly) in front of static assets with
+  //  long cache-control headers, a horizontally-scaled API/backend
+  //  behind a load balancer, and (for the ticker) a shared WebSocket/
+  //  SSE feed instead of every client polling Binance directly.
+  // ============================================================
 
 })();
 </script>
