@@ -3,580 +3,2161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<title>Signal Platform | Crypto Dashboard</title>
+<title>Signal Pro | Crypto Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== Reset & Variables ===== */
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  :root{
-    --pesteh:#7FAF5B;
-    --pesteh-dark:#5C8B3E;
-    --pesteh-soft:#DCEBC7;
-    --ink:#26301F;
-    --ink-soft:#5B6653;
-    --ink-dim:#8FA184;
-    --glass:rgba(255,255,255,0.75);
-    --glass-strong:rgba(255,255,255,0.92);
-    --line:rgba(38,48,31,0.09);
-    --radius-lg:18px;
-    --radius-md:12px;
-    --shadow:0 6px 20px rgba(38,48,31,0.10);
-    --bg-base:#EFF3E8;
-    --font-base:'Vazirmatn', sans-serif;
-    --header-height:56px;
-    --nav-height:68px;
-  }
-  html,body{width:100%;overflow-x:hidden;font-family:var(--font-base);color:var(--ink);background:var(--bg-base);}
-  body{min-height:100vh;min-height:100dvh;background:var(--bg-base);}
-  button{font-family:inherit;border:none;outline:none;background:none;cursor:pointer;}
-  img,video{display:block;max-width:100%;}
-  ::selection{background:var(--pesteh-soft);}
-
-  /* ===== Simple Background ===== */
-  .bg-wrap{position:fixed;inset:0;z-index:0;background:var(--bg-base);}
-  .bg-wrap::after{
-    content:'';
-    position:absolute;inset:0;
-    background:radial-gradient(ellipse at 50% 0%, rgba(127,175,91,0.12) 0%, transparent 70%);
-    pointer-events:none;
+  /* ============================================================
+     CSS VARIABLES & RESET
+     ============================================================ */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /* ===== App Shell ===== */
-  .app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding:8px 12px calc(var(--nav-height) + 16px) 12px;}
+  :root {
+    --bg-primary: #F0F4EB;
+    --bg-secondary: #FFFFFF;
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --bg-glass: rgba(255, 255, 255, 0.55);
+    --text-primary: #1A2315;
+    --text-secondary: #4A5A40;
+    --text-dim: #8A9A80;
+    --border-color: rgba(26, 35, 21, 0.08);
+    --shadow-sm: 0 2px 12px rgba(26, 35, 21, 0.06);
+    --shadow-md: 0 8px 32px rgba(26, 35, 21, 0.08);
+    --shadow-lg: 0 16px 48px rgba(26, 35, 21, 0.12);
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+    --green: #6B9E4A;
+    --green-dark: #4F7A34;
+    --green-soft: #E5F0DA;
+    --red: #D94A4A;
+    --red-soft: #FADADA;
+    --gold: #F5A623;
+    --gold-soft: #FDF0D5;
+    --header-height: 64px;
+    --nav-height: 72px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-  /* ===== Header ===== */
-  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:6px;height:var(--header-height);}
-  .brand{display:flex;align-items:center;gap:8px;min-width:0;}
-  .brand-mark{width:34px;height:34px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);}
-  .brand-mark svg{width:16px;height:16px;}
-  .brand-text h1{font-size:12px;font-weight:800;white-space:nowrap;}
-  .brand-text p{font-size:9px;color:var(--ink-soft);font-weight:500;white-space:nowrap;}
-  .topbar-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;}
-  .icon-pill{width:32px;height:32px;border-radius:50%;background:var(--glass-strong);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);}
-  .icon-pill:active{transform:scale(0.92);}
-  .icon-pill svg{width:14px;height:14px;}
+  [data-theme="dark"] {
+    --bg-primary: #121812;
+    --bg-secondary: #1E261E;
+    --bg-card: rgba(30, 38, 30, 0.85);
+    --bg-glass: rgba(30, 38, 30, 0.50);
+    --text-primary: #E8EDE4;
+    --text-secondary: #A8B89E;
+    --text-dim: #6A7A60;
+    --border-color: rgba(200, 215, 185, 0.10);
+    --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+    --green: #7FAF5B;
+    --green-dark: #5C8B3E;
+    --green-soft: #1A2A12;
+    --red: #D94A4A;
+    --red-soft: #2A1212;
+    --gold: #F5A623;
+    --gold-soft: #2A2012;
+  }
 
-  /* ===== Hamburger Menu ===== */
-  .hamburger-menu{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.25);display:none;align-items:flex-start;justify-content:flex-end;}
-  .hamburger-menu.open{display:flex;}
-  .menu-panel{width:72%;max-width:300px;height:100%;background:var(--glass-strong);padding:16px 14px;box-shadow:-6px 0 30px rgba(0,0,0,0.12);display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
-  .menu-close{display:flex;justify-content:flex-end;margin-bottom:4px;}
-  .menu-close button{width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;}
-  .menu-close svg{width:14px;height:14px;}
-  .menu-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius-md);background:rgba(255,255,255,0.4);border:1px solid var(--line);font-weight:700;font-size:12px;color:var(--ink);transition:all .12s;text-decoration:none;}
-  .menu-item:active{transform:scale(.96);background:var(--pesteh-soft);}
-  .menu-item svg{width:15px;height:15px;color:var(--pesteh-dark);flex-shrink:0;}
-  .menu-divider{height:1px;background:var(--line);margin:3px 0;}
-  .lang-selector{display:flex;gap:4px;flex-wrap:wrap;padding:4px 0;}
-  .lang-btn{padding:4px 10px;border-radius:100px;font-size:10px;font-weight:700;background:rgba(255,255,255,0.4);border:1px solid var(--line);color:var(--ink-soft);}
-  .lang-btn.active{background:var(--pesteh);color:#fff;border-color:var(--pesteh);}
-  .lang-btn:active{transform:scale(0.94);}
+  html, body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    transition: var(--transition);
+  }
 
-  /* ===== Ticker ===== */
-  .ticker-bar{overflow:hidden;white-space:nowrap;background:var(--glass-strong);border:1px solid var(--line);border-radius:100px;padding:5px 0;margin-bottom:8px;box-shadow:var(--shadow);}
-  .ticker-track{display:inline-flex;animation:tickerScroll 32s linear infinite;}
-  .ticker-item{display:inline-flex;align-items:center;gap:4px;padding:0 10px;font-size:9.5px;font-weight:700;border-inline-end:1px solid var(--line);}
-  .ticker-item .sym{color:var(--ink);}
-  .ticker-item .px{color:var(--ink-soft);font-weight:600;}
-  .ticker-item .chg{padding:1px 5px;border-radius:100px;font-size:8px;font-weight:800;}
-  .ticker-item .chg.up{background:var(--pesteh-soft);color:var(--pesteh-dark);}
-  .ticker-item .chg.down{background:#FBDCDA;color:#C23C3C;}
-  @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 100px; }
 
-  /* ===== User Notice ===== */
-  .user-notice{background:#FFF8E7;border:1px solid #FFD699;border-radius:var(--radius-md);padding:10px 12px;margin-bottom:8px;display:none;gap:6px;align-items:flex-start;box-shadow:0 2px 8px rgba(255,150,50,0.10);}
-  .user-notice svg{flex-shrink:0;width:16px;height:16px;color:#CC7A00;margin-top:1px;}
-  .user-notice-content{flex:1;}
-  .user-notice-content strong{display:block;font-size:11px;font-weight:800;color:#5C3D00;}
-  .user-notice-content p{margin:1px 0 0;font-size:10px;color:#664D33;line-height:1.5;}
-  .notice-dismiss{background:none;border:none;color:#B37A3A;font-size:16px;padding:0 2px;cursor:pointer;flex-shrink:0;}
+  /* ============================================================
+     BACKGROUND
+     ============================================================ */
+  .bg-gradient {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(107, 158, 74, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(217, 74, 74, 0.08) 0%, transparent 50%),
+      var(--bg-primary);
+    pointer-events: none;
+  }
 
-  /* ===== Filter Chips ===== */
-  .filter-chips{display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;}
-  .chip{padding:4px 12px;border-radius:100px;font-size:9.5px;font-weight:700;background:var(--glass);border:1px solid var(--line);color:var(--ink-soft);transition:all .15s;}
-  .chip.active{background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;border-color:transparent;box-shadow:0 3px 8px rgba(92,139,62,0.25);}
-  .chip:active{transform:scale(0.94);}
+  /* ============================================================
+     APP SHELL
+     ============================================================ */
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 calc(var(--nav-height) + 24px) 0;
+    min-height: 100vh;
+  }
 
-  /* ===== Section Head ===== */
-  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 6px 2px;}
-  .section-head h2{font-size:13px;font-weight:800;}
-  .section-head span{font-size:9px;color:var(--ink-dim);font-weight:500;}
+  /* ============================================================
+     HEADER
+     ============================================================ */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    padding: 8px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg-primary);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
 
-  /* ===== Signal Grid ===== */
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .card{position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:3/4;background:var(--glass);border:1px solid rgba(255,255,255,0.5);box-shadow:var(--shadow);transition:transform .15s;will-change:transform;}
-  .card.hidden-card{display:none;}
-  .card:active{transform:scale(0.96);}
-  .card .media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  .card .media-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--pesteh-soft),#EEF5E2);color:var(--pesteh-dark);}
-  .card .media-fallback svg{width:24px;height:24px;opacity:.5;}
-  .card .scrim{position:absolute;inset:0;background:linear-gradient(180deg, rgba(20,26,14,0) 55%, rgba(15,20,10,0.35) 100%);pointer-events:none;}
-  .card .top-actions{position:absolute;top:5px;left:5px;right:5px;display:flex;justify-content:space-between;z-index:2;}
-  .icon-btn{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.10);}
-  .icon-btn svg{width:10px;height:10px;stroke:var(--ink-soft);}
-  .icon-btn.fav.active{background:#E15252;}
-  .icon-btn.fav.active svg{fill:#fff;stroke:#fff;}
-  .icon-btn.note.has-note{background:var(--pesteh);}
-  .icon-btn.note.has-note svg{stroke:#fff;}
-  .card .play-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.15);}
-  .card .play-icon svg{width:13px;height:13px;margin-inline-start:2px;fill:#E15252;}
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-  /* ===== Bottom Nav ===== */
-  .navbar{position:fixed;bottom:8px;left:0;right:0;display:flex;justify-content:center;z-index:40;padding-bottom:env(safe-area-inset-bottom);}
-  .navbar-inner{display:flex;align-items:center;gap:2px;background:var(--glass-strong);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.6);border-radius:100px;padding:3px;box-shadow:0 8px 24px rgba(38,48,31,0.14);width:calc(100% - 16px);max-width:448px;height:var(--nav-height);}
-  .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:5px 2px 4px;border-radius:100px;color:var(--ink-soft);font-size:9px;font-weight:700;transition:all .18s;}
-  .nav-btn svg{width:16px;height:16px;}
-  .nav-btn.active{background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;box-shadow:0 4px 10px rgba(92,139,62,0.25);}
-  .nav-btn[data-tab="guide"].active{background:linear-gradient(135deg,#E15252,#C23C3C);box-shadow:0 4px 10px rgba(194,60,60,0.25);}
-  .nav-btn:active:not(.active){transform:scale(0.92);}
+  .header-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(107, 158, 74, 0.3);
+  }
 
-  /* ===== Modals ===== */
-  .modal{position:fixed;inset:0;z-index:100;display:none;background:var(--bg-base);flex-direction:column;}
-  .modal.open{display:flex;}
-  .modal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--glass-strong);border-bottom:1px solid var(--line);flex-shrink:0;min-height:48px;}
-  .modal-header h3{font-size:13px;font-weight:800;}
-  .close-btn{width:28px;height:28px;border-radius:50%;background:rgba(38,48,31,0.06);display:flex;align-items:center;justify-content:center;}
-  .close-btn svg{width:13px;height:13px;}
-  .close-btn:active{background:rgba(38,48,31,0.12);}
+  .header-logo svg {
+    width: 20px;
+    height: 20px;
+    stroke: #fff;
+    stroke-width: 2.2;
+  }
 
-  /* ===== Chart ===== */
-  .chart-toolbar{display:flex;gap:4px;padding:6px 10px;background:#fff;border-bottom:1px solid var(--line);flex-shrink:0;}
-  .symbol-select-wrap{position:relative;flex:1;}
-  .symbol-select-wrap svg.chev{position:absolute;top:50%;inset-inline-start:6px;transform:translateY(-50%);width:10px;height:10px;pointer-events:none;color:var(--ink-soft);}
-  select#symbolSelect{width:100%;appearance:none;-webkit-appearance:none;background:var(--pesteh-soft2);border:1.5px solid var(--pesteh-soft);color:var(--ink);font-family:inherit;font-weight:700;font-size:11px;padding:7px 24px 7px 7px;border-radius:var(--radius-md);}
-  .bell-btn{width:34px;height:34px;border-radius:var(--radius-md);background:var(--pesteh-soft2);border:1.5px solid var(--pesteh-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
-  .bell-btn svg{width:14px;height:14px;color:var(--pesteh-dark);}
-  .bell-btn .dot{position:absolute;top:3px;inset-inline-end:3px;width:5px;height:5px;border-radius:50%;background:#E15252;display:none;}
-  .bell-btn.has-alerts .dot{display:block;}
-  .alert-panel{display:none;background:#fff;border-bottom:1px solid var(--line);padding:6px 10px;flex-shrink:0;}
-  .alert-panel.open{display:block;}
-  .alert-row{display:flex;gap:4px;margin-bottom:4px;}
-  .alert-row input{flex:1;min-width:0;border:1.5px solid var(--pesteh-soft);background:var(--pesteh-soft2);border-radius:var(--radius-md);padding:6px 8px;font-weight:700;font-size:11px;color:var(--ink);}
-  .alert-add-btn{background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;font-weight:800;font-size:10px;padding:0 12px;border-radius:var(--radius-md);flex-shrink:0;}
-  .alert-hint{font-size:9px;color:var(--ink-dim);margin-bottom:4px;}
-  .alert-list{display:flex;flex-direction:column;gap:2px;max-height:80px;overflow-y:auto;}
-  .alert-chip{display:flex;align-items:center;justify-content:space-between;background:var(--pesteh-soft2);border-radius:6px;padding:5px 8px;font-size:10px;font-weight:700;}
-  .alert-chip.triggered{background:#FBDCDA;}
-  .alert-chip button{color:#C23C3C;font-size:14px;line-height:1;padding:0 2px;}
-  #chartContainer{flex:1;width:100%;background:#0C0E09;min-height:0;}
+  .header-title h1 {
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+  }
 
-  /* ===== Lightbox ===== */
-  .lightbox{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);}
-  .lightbox.open{display:flex;}
-  .lightbox-stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-  .lightbox-frame{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-  .lightbox-frame img,.lightbox-frame video{width:100%;height:100%;object-fit:contain;background:#000;}
-  .lightbox-close{position:fixed;top:12px;inset-inline-start:12px;z-index:6;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;color:#fff;}
-  .lightbox-close svg{width:14px;height:14px;stroke:#fff;}
-  .lightbox-hint{position:fixed;bottom:14px;left:0;right:0;text-align:center;z-index:6;font-size:9px;color:rgba(255,255,255,0.4);font-weight:600;pointer-events:none;}
+  .header-title p {
+    font-size: 9.5px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
 
-  /* ===== Guide ===== */
-  .guide-search-wrap{padding:6px 12px 0;background:var(--glass-strong);border-bottom:1px solid var(--line);flex-shrink:0;}
-  .guide-search{position:relative;margin-bottom:6px;}
-  .guide-search svg{position:absolute;top:50%;inset-inline-start:8px;transform:translateY(-50%);width:12px;height:12px;color:var(--ink-dim);}
-  .guide-search input{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:var(--radius-md);padding:7px 30px 7px 8px;font-size:11px;font-weight:600;color:var(--ink);}
-  .guide-scroll{flex:1;overflow-y:auto;padding:10px 10px 20px;}
-  .guide-intro{background:linear-gradient(135deg,#EEF5E2,var(--pesteh-soft));border-radius:var(--radius-md);padding:10px 14px;margin-bottom:10px;border:1px solid var(--pesteh-soft);}
-  .guide-intro b{font-size:12px;display:block;margin-bottom:2px;}
-  .guide-intro span{font-size:10px;color:var(--ink-soft);line-height:1.7;}
-  .guide-cat{margin-bottom:12px;}
-  .guide-cat-head{display:flex;align-items:center;gap:6px;margin-bottom:4px;padding:0 2px;}
-  .guide-cat-icon{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-  .guide-cat-icon svg{width:12px;height:12px;}
-  .guide-cat-head h3{font-size:11.5px;font-weight:800;}
-  .guide-cat-head span{font-size:9px;color:var(--ink-dim);font-weight:600;}
-  .guide-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);padding:8px 10px;margin-bottom:4px;border-inline-start:3px solid transparent;display:flex;gap:6px;align-items:flex-start;box-shadow:var(--shadow);}
-  .guide-card.dim{display:none;}
-  .guide-card .gn{flex-shrink:0;width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;margin-top:1px;}
-  .guide-card .gt{flex:1;min-width:0;}
-  .guide-card .gt b{display:block;font-size:11px;font-weight:700;margin-bottom:1px;color:var(--ink);}
-  .guide-card .gt p{margin:0;font-size:10px;line-height:1.6;color:var(--ink-soft);}
-  .guide-empty{display:none;text-align:center;padding:24px 14px;color:var(--ink-dim);font-size:11px;font-weight:600;}
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
 
-  /* ===== Sheets ===== */
-  .sheet-overlay{position:fixed;inset:0;background:rgba(20,26,14,0.3);z-index:220;display:none;align-items:flex-end;justify-content:center;}
-  .sheet-overlay.open{display:flex;}
-  .sheet{width:100%;max-width:480px;background:#fff;border-radius:20px 20px 0 0;padding:8px 14px calc(12px + env(safe-area-inset-bottom)) 14px;box-shadow:0 -8px 28px rgba(0,0,0,0.12);transform:translateY(100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);}
-  .sheet-overlay.open .sheet{transform:translateY(0);}
-  .sheet-handle{width:28px;height:3px;background:var(--line);border-radius:100px;margin:0 auto 8px auto;}
-  .sheet h4{font-size:12.5px;font-weight:800;}
-  .sheet p.sub{font-size:10px;color:var(--ink-soft);margin-bottom:6px;}
-  .sheet textarea{width:100%;min-height:70px;border:1.5px solid var(--line);border-radius:var(--radius-md);padding:8px;font-size:11px;line-height:1.5;color:var(--ink);resize:none;margin-bottom:6px;}
-  .sheet-btn{width:100%;background:linear-gradient(135deg,var(--pesteh),var(--pesteh-dark));color:#fff;font-weight:800;font-size:11px;padding:9px;border-radius:var(--radius-md);}
-  .setting-row{display:flex;align-items:center;justify-content:space-between;padding:8px 2px;border-bottom:1px solid var(--line);}
-  .setting-row:last-of-type{border-bottom:none;}
-  .setting-row b{display:block;font-size:11px;font-weight:700;}
-  .setting-row span{display:block;font-size:9px;color:var(--ink-dim);margin-top:1px;}
-  .switch{position:relative;width:36px;height:20px;border-radius:100px;background:var(--line);flex-shrink:0;transition:background .2s;}
-  .switch.on{background:var(--pesteh);}
-  .switch::after{content:'';position:absolute;top:2px;inset-inline-start:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.12);transition:inset-inline-start .2s;}
-  .switch.on::after{inset-inline-start:18px;}
-  .danger-btn{width:100%;margin-top:4px;background:#FBDCDA;color:#C23C3C;font-weight:800;font-size:11px;padding:8px;border-radius:var(--radius-md);}
+  .header-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+  }
 
-  /* ===== Scrollbar ===== */
-  ::-webkit-scrollbar{width:3px;}
-  ::-webkit-scrollbar-track{background:transparent;}
-  ::-webkit-scrollbar-thumb{background:var(--ink-dim);border-radius:100px;}
+  .header-btn:active {
+    transform: scale(0.92);
+  }
 
-  /* ===== Responsive ===== */
-  @media(max-width:360px){.app{padding-inline:8px;}.grid{gap:6px;}}
+  .header-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ============================================================
+     HAMBURGER MENU
+     ============================================================ */
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .menu-overlay.open {
+    display: flex;
+  }
+
+  .menu-panel {
+    width: 76%;
+    max-width: 340px;
+    height: 100%;
+    background: var(--bg-secondary);
+    padding: 20px 16px;
+    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: slideIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow-y: auto;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(30px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 8px;
+  }
+
+  .menu-header span {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .menu-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-close svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--text-primary);
+    transition: var(--transition);
+    text-decoration: none;
+  }
+
+  .menu-item:active {
+    transform: scale(0.96);
+    background: var(--green-soft);
+  }
+
+  .menu-item svg {
+    width: 16px;
+    height: 16px;
+    color: var(--green);
+    flex-shrink: 0;
+  }
+
+  .menu-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 4px 0;
+  }
+
+  .menu-lang {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    padding: 4px 0;
+  }
+
+  .lang-btn {
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    transition: var(--transition);
+  }
+
+  .lang-btn.active {
+    background: var(--green);
+    color: #fff;
+    border-color: var(--green);
+  }
+
+  .lang-btn:active {
+    transform: scale(0.94);
+  }
+
+  /* ============================================================
+     STATS ROW
+     ============================================================ */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 4px 12px 12px 12px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 6px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+  }
+
+  .stat-card:active {
+    transform: scale(0.96);
+  }
+
+  .stat-value {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+  }
+
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+  .stat-value.gold { color: var(--gold); }
+
+  .stat-label {
+    font-size: 8.5px;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  /* ============================================================
+     TICKER
+     ============================================================ */
+  .ticker-wrapper {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 100px;
+    padding: 6px 0;
+    margin: 0 12px 12px 12px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .ticker-track {
+    display: inline-flex;
+    animation: tickerScroll 32s linear infinite;
+  }
+
+  .ticker-track:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 14px;
+    font-size: 10px;
+    font-weight: 700;
+    border-inline-end: 1px solid var(--border-color);
+  }
+
+  .ticker-sym { color: var(--text-primary); }
+  .ticker-px { color: var(--text-secondary); font-weight: 600; }
+  .ticker-chg {
+    padding: 1px 6px;
+    border-radius: 100px;
+    font-size: 8.5px;
+    font-weight: 800;
+  }
+  .ticker-chg.up { background: var(--green-soft); color: var(--green-dark); }
+  .ticker-chg.down { background: var(--red-soft); color: var(--red); }
+
+  /* ============================================================
+     FILTER ROW
+     ============================================================ */
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    margin: 0 12px 10px 12px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    transition: var(--transition);
+  }
+
+  .chip.active {
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(107, 158, 74, 0.25);
+  }
+
+  .chip:active {
+    transform: scale(0.94);
+  }
+
+  /* ============================================================
+     SECTION HEAD
+     ============================================================ */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 14px 10px 14px;
+  }
+
+  .section-head h2 {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+
+  .section-head span {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  /* ============================================================
+     SIGNAL GRID - FULL SCREEN CARDS
+     ============================================================ */
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 12px;
+  }
+
+  .card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .card:active {
+    transform: scale(0.98);
+  }
+
+  .card.hidden-card {
+    display: none;
+  }
+
+  .card .image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--bg-primary);
+  }
+
+  .card .image-wrap .media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card .image-wrap .media-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, var(--green-soft), var(--bg-primary));
+    color: var(--green-dark);
+  }
+
+  .card .image-wrap .media-fallback svg {
+    width: 40px;
+    height: 40px;
+    opacity: 0.4;
+  }
+
+  .card .image-wrap .scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.25) 100%);
+    pointer-events: none;
+  }
+
+  .card .image-wrap .top-actions {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 2;
+  }
+
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    transition: var(--transition);
+  }
+
+  .icon-btn:active {
+    transform: scale(0.90);
+  }
+
+  .icon-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: var(--text-secondary);
+  }
+
+  .icon-btn.fav.active {
+    background: var(--red);
+  }
+  .icon-btn.fav.active svg {
+    fill: #fff;
+    stroke: #fff;
+  }
+
+  .icon-btn.note.has-note {
+    background: var(--green);
+  }
+  .icon-btn.note.has-note svg {
+    stroke: #fff;
+  }
+
+  /* ============================================================
+     CARD DESCRIPTION - ترجمه شده به هر زبان
+     ============================================================ */
+  .card-desc {
+    padding: 12px 14px 14px 14px;
+    background: var(--bg-secondary);
+  }
+
+  .card-desc .desc-text {
+    font-size: 11px;
+    line-height: 2;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+
+  .card-desc .desc-text .emoji {
+    font-size: 13px;
+  }
+
+  /* ============================================================
+     RISK MANAGEMENT BANNER
+     ============================================================ */
+  .risk-banner {
+    margin: 16px 12px 8px 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--gold-soft), var(--green-soft));
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .risk-banner .risk-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .risk-banner .risk-text {
+    font-size: 10px;
+    line-height: 2;
+    color: var(--text-secondary);
+  }
+
+  .risk-banner .risk-text .highlight {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .risk-banner .risk-footer {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border-color);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--green-dark);
+    text-align: center;
+  }
+
+  /* ============================================================
+     BOTTOM NAV
+     ============================================================ */
+  .navbar {
+    position: fixed;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 40;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--bg-secondary);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 100px;
+    padding: 4px;
+    box-shadow: var(--shadow-lg);
+    width: calc(100% - 24px);
+    max-width: 448px;
+    height: var(--nav-height);
+  }
+
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    padding: 6px 4px 5px;
+    border-radius: 100px;
+    color: var(--text-secondary);
+    font-size: 9px;
+    font-weight: 700;
+    transition: var(--transition);
+  }
+
+  .nav-btn svg {
+    width: 18px;
+    height: 18px;
+    transition: var(--transition);
+  }
+
+  .nav-btn.active {
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(107, 158, 74, 0.30);
+  }
+
+  .nav-btn[data-tab="guide"].active {
+    background: linear-gradient(135deg, var(--red), #B33A3A);
+    box-shadow: 0 4px 16px rgba(217, 74, 74, 0.30);
+  }
+
+  .nav-btn:active:not(.active) {
+    transform: scale(0.92);
+  }
+
+  /* ============================================================
+     MODALS
+     ============================================================ */
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    background: var(--bg-primary);
+    flex-direction: column;
+  }
+
+  .modal.open {
+    display: flex;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+    min-height: 56px;
+  }
+
+  .modal-header h3 {
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .close-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .close-btn:active {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .chart-toolbar {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+  }
+
+  .symbol-select-wrap {
+    position: relative;
+    flex: 1;
+  }
+
+  .symbol-select-wrap svg {
+    position: absolute;
+    top: 50%;
+    inset-inline-start: 8px;
+    transform: translateY(-50%);
+    width: 11px;
+    height: 11px;
+    pointer-events: none;
+    color: var(--text-dim);
+  }
+
+  select#symbolSelect {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 11.5px;
+    padding: 8px 28px 8px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .bell-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .bell-btn svg {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+  }
+
+  .bell-btn .dot {
+    position: absolute;
+    top: 4px;
+    inset-inline-end: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    display: none;
+  }
+
+  .bell-btn.has-alerts .dot {
+    display: block;
+  }
+
+  .alert-panel {
+    display: none;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 8px 12px;
+    flex-shrink: 0;
+  }
+
+  .alert-panel.open {
+    display: block;
+  }
+
+  .alert-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .alert-row input {
+    flex: 1;
+    min-width: 0;
+    border: 1.5px solid var(--border-color);
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    font-weight: 700;
+    font-size: 11.5px;
+    color: var(--text-primary);
+  }
+
+  .alert-add-btn {
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: #fff;
+    font-weight: 800;
+    font-size: 10.5px;
+    padding: 0 14px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+  }
+
+  .alert-hint {
+    font-size: 9.5px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-height: 90px;
+    overflow-y: auto;
+  }
+
+  .alert-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .alert-chip.triggered {
+    background: var(--red-soft);
+  }
+
+  .alert-chip button {
+    color: var(--red);
+    font-size: 15px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+
+  #chartContainer {
+    flex: 1;
+    width: 100%;
+    background: #0C0E09;
+    min-height: 0;
+  }
+
+  /* ============================================================
+     LIGHTBOX
+     ============================================================ */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .lightbox.open {
+    display: flex;
+  }
+
+  .lightbox-stage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .lightbox-close {
+    position: fixed;
+    top: 16px;
+    inset-inline-start: 16px;
+    z-index: 6;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  .lightbox-close svg {
+    width: 16px;
+    height: 16px;
+    stroke: #fff;
+  }
+
+  .lightbox-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 6;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     GUIDE
+     ============================================================ */
+  .guide-search-wrap {
+    padding: 8px 12px 0;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+  }
+
+  .guide-search {
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  .guide-search svg {
+    position: absolute;
+    top: 50%;
+    inset-inline-start: 10px;
+    transform: translateY(-50%);
+    width: 13px;
+    height: 13px;
+    color: var(--text-dim);
+  }
+
+  .guide-search input {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 8px 34px 8px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .guide-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 12px 24px;
+  }
+
+  .guide-intro {
+    background: var(--green-soft);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+  }
+
+  .guide-intro b {
+    font-size: 13px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .guide-intro span {
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+
+  .guide-cat {
+    margin-bottom: 14px;
+  }
+
+  .guide-cat-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    padding: 0 2px;
+  }
+
+  .guide-cat-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .guide-cat-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .guide-cat-head h3 {
+    font-size: 12.5px;
+    font-weight: 800;
+  }
+
+  .guide-cat-head span {
+    font-size: 9.5px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  .guide-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-inline-start: 3px solid var(--green);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+  }
+
+  .guide-card.dim {
+    display: none;
+  }
+
+  .guide-card .gn {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+    margin-top: 1px;
+    background: var(--green-soft);
+    color: var(--green-dark);
+  }
+
+  .guide-card .gt {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .guide-card .gt b {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    margin-bottom: 1px;
+    color: var(--text-primary);
+  }
+
+  .guide-card .gt p {
+    margin: 0;
+    font-size: 10.5px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+
+  .guide-empty {
+    display: none;
+    text-align: center;
+    padding: 30px 14px;
+    color: var(--text-dim);
+    font-size: 11.5px;
+    font-weight: 600;
+  }
+
+  /* ============================================================
+     SHEETS
+     ============================================================ */
+  .sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 220;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .sheet-overlay.open {
+    display: flex;
+  }
+
+  .sheet {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: 12px 16px calc(20px + env(safe-area-inset-bottom)) 16px;
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.15);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sheet-overlay.open .sheet {
+    transform: translateY(0);
+  }
+
+  .sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 100px;
+    margin: 0 auto 12px auto;
+  }
+
+  .sheet h4 {
+    font-size: 13.5px;
+    font-weight: 800;
+    margin-bottom: 2px;
+  }
+
+  .sheet p.sub {
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .sheet textarea {
+    width: 100%;
+    min-height: 80px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    resize: none;
+    margin-bottom: 8px;
+  }
+
+  .sheet-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: #fff;
+    font-weight: 800;
+    font-size: 11.5px;
+    padding: 11px;
+    border-radius: var(--radius-sm);
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 2px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .setting-row:last-of-type {
+    border-bottom: none;
+  }
+
+  .setting-row b {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+  }
+
+  .setting-row span {
+    display: block;
+    font-size: 9.5px;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  .switch {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    border-radius: 100px;
+    background: var(--border-color);
+    flex-shrink: 0;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+
+  .switch.on {
+    background: var(--green);
+  }
+
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    inset-inline-start: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: inset-inline-start 0.2s;
+  }
+
+  .switch.on::after {
+    inset-inline-start: 20px;
+  }
+
+  .danger-btn {
+    width: 100%;
+    margin-top: 4px;
+    background: var(--red-soft);
+    color: var(--red);
+    font-weight: 800;
+    font-size: 11.5px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 380px) {
+    .stats-row { gap: 4px; margin: 4px 8px 10px 8px; }
+    .stat-card { padding: 6px 4px; }
+    .stat-value { font-size: 13px; }
+    .filter-row { margin: 0 8px 8px 8px; }
+    .card-desc { padding: 10px 12px 12px 12px; }
+    .card-desc .desc-text { font-size: 10px; }
+    .risk-banner { margin: 12px 8px 6px 8px; padding: 10px 12px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- Background -->
-<div class="bg-wrap"></div>
+<!-- ============================================================
+     BACKGROUND
+     ============================================================ -->
+<div class="bg-gradient"></div>
 
-<!-- App -->
+<!-- ============================================================
+     APP
+     ============================================================ -->
 <div class="app">
 
-  <!-- Header -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h7v7"/></svg></div>
-      <div class="brand-text"><h1 id="brandTitle">پلتفرم سیگنال</h1><p id="brandSub">تحلیل بازار کریپتو</p></div>
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="header-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
+          <path d="M3 17l5-5 4 4 8-9"/>
+          <path d="M14 7h7v7"/>
+        </svg>
+      </div>
+      <div class="header-title">
+        <h1 id="brandTitle">سیگنال‌پرو</h1>
+        <p id="brandSub">تحلیل هوشمند بازار</p>
+      </div>
     </div>
-    <div class="topbar-actions">
-      <button class="icon-pill" id="hamburgerBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-      <button class="icon-pill" id="settingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    <div class="header-actions">
+      <button class="header-btn" id="themeToggle" aria-label="Toggle Theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+      </button>
+      <button class="header-btn" id="hamburgerBtn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </button>
     </div>
-  </div>
+  </header>
 
-  <!-- Hamburger Menu -->
-  <div class="hamburger-menu" id="hamburgerMenu">
+  <!-- ============================================================
+       HAMBURGER MENU
+       ============================================================ -->
+  <div class="menu-overlay" id="hamburgerMenu">
     <div class="menu-panel">
-      <div class="menu-close"><button id="menuCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-      <div class="lang-selector" id="langSelector">
+      <div class="menu-header">
+        <span>⚡ منوی اصلی</span>
+        <button class="menu-close" id="menuCloseBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="menu-lang" id="langSelector">
         <button class="lang-btn active" data-lang="fa">🇮🇷 فارسی</button>
         <button class="lang-btn" data-lang="en">🇬🇧 English</button>
         <button class="lang-btn" data-lang="tr">🇹🇷 Türkçe</button>
         <button class="lang-btn" data-lang="ar">🇸🇦 العربية</button>
         <button class="lang-btn" data-lang="ru">🇷🇺 Русский</button>
       </div>
+
       <div class="menu-divider"></div>
-      <a class="menu-item" href="https://t.me/shahraghee" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 4.5L2.5 11.5L9.5 14.5L12.5 21.5L21.5 4.5Z"/><path d="M9.5 14.5L15.5 8.5"/></svg><span id="menuTelegram">عضویت در تلگرام</span></a>
-      <a class="menu-item" href="https://www.instagram.com/tahlil.arzdejtal?igsi=MW50YzIydDFtMXdi" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg><span id="menuInstagram">عضویت در اینستاگرام</span></a>
+
+      <a class="menu-item" href="https://t.me/yourchannel" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 4.5L2.5 11.5L9.5 14.5L12.5 21.5L21.5 4.5Z"/>
+          <path d="M9.5 14.5L15.5 8.5"/>
+        </svg>
+        <span id="menuTelegram">عضویت در تلگرام</span>
+      </a>
+
+      <a class="menu-item" href="https://instagram.com/yourpage" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1"/>
+        </svg>
+        <span id="menuInstagram">عضویت در اینستاگرام</span>
+      </a>
+
       <div class="menu-divider"></div>
-      <button class="menu-item" id="themeToggle" style="background:none;text-align:right;width:100%;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span id="themeLabel">تم روشن</span></button>
+
+      <button class="menu-item" id="settingsBtn" style="background:none;text-align:right;width:100%;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span id="settingsLabel">تنظیمات</span>
+      </button>
     </div>
   </div>
 
-  <!-- Ticker -->
-  <div class="ticker-bar"><div class="ticker-track" id="tickerTrack"></div></div>
-
-  <!-- User Notice -->
-  <div class="user-notice" id="userNotice" style="display:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-    <div class="user-notice-content">
-      <strong id="noticeTitle">📌 نکته مهم</strong>
-      <p id="noticeText">لطفاً قبل از هر معامله، بخش راهنمایی را مطالعه کنید. مدیریت ریسک کلید موفقیت است.</p>
+  <!-- ============================================================
+       STATS ROW
+       ============================================================ -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-value green" id="statProfit">+12.4%</div>
+      <div class="stat-label" id="statLabel1">سود امروز</div>
     </div>
-    <button class="notice-dismiss" id="noticeDismiss">✕</button>
+    <div class="stat-card">
+      <div class="stat-value" id="statSignals">۴</div>
+      <div class="stat-label" id="statLabel2">سیگنال‌ها</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value gold" id="statWinRate">۶۷%</div>
+      <div class="stat-label" id="statLabel3">موفقیت</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="statTrades">۱۲</div>
+      <div class="stat-label" id="statLabel4">معاملات</div>
+    </div>
   </div>
 
-  <!-- Filter Chips -->
-  <div class="filter-chips">
-    <button class="chip active" data-filter="all"><span id="filterAll">همه سیگنال‌ها</span></button>
-    <button class="chip" data-filter="fav"><span id="filterFav">علاقه‌مندی‌ها</span> <span id="favCountWrap"></span></button>
+  <!-- ============================================================
+       TICKER
+       ============================================================ -->
+  <div class="ticker-wrapper">
+    <div class="ticker-track" id="tickerTrack"></div>
   </div>
 
-  <!-- Section Head -->
-  <div class="section-head"><h2 id="signalsTitle">سیگنال‌های امروز</h2><span id="gridCount">۶ مورد</span></div>
+  <!-- ============================================================
+       FILTER ROW
+       ============================================================ -->
+  <div class="filter-row">
+    <button class="chip active" data-filter="all"><span id="filterAll">همه</span></button>
+    <button class="chip" data-filter="fav"><span id="filterFav">⭐ علاقه‌مندی‌ها</span> <span id="favCountWrap"></span></button>
+  </div>
 
-  <!-- Signal Grid -->
+  <!-- ============================================================
+       SECTION HEAD
+       ============================================================ -->
+  <div class="section-head">
+    <h2 id="signalsTitle">📊 سیگنال‌های امروز</h2>
+    <span id="gridCount">۴ مورد</span>
+  </div>
+
+  <!-- ============================================================
+       SIGNAL GRID - FULL SCREEN CARDS
+       ============================================================ -->
   <div class="grid" id="signalGrid">
-    <!-- Card 1 -->
+
+    <!-- ============================================================
+         CARD 1
+         ============================================================ -->
     <div class="card" data-id="m1" data-type="image" data-src="m1.png">
-      <img class="media" src="m1.png" alt="Signal 1" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-      <div class="scrim"></div>
-      <div class="top-actions">
-        <button class="icon-btn note" data-id="m1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
-        <button class="icon-btn fav" data-id="m1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+      <div class="image-wrap">
+        <img class="media" src="m1.png" alt="Signal 1" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="m1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="m1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
+      </div>
+      <div class="card-desc">
+        <div class="desc-text" id="desc1">
+          <span class="emoji">📌</span> <span id="d1_line1">این سیگنال بر اساس تحلیل تکنیکال و بررسی روند بازار تهیه شده است.</span><br>
+          <span class="emoji">⏱️</span> <span id="d1_line2">لطفاً قبل از هر اقدام، مدیریت ریسک را رعایت کنید.</span><br>
+          <span class="emoji">💡</span> <span id="d1_line3">همیشه با سرمایه‌ای معامله کنید که توانایی از دست دادن آن را دارید.</span>
+        </div>
       </div>
     </div>
-    <!-- Card 2 -->
+
+    <!-- ============================================================
+         CARD 2
+         ============================================================ -->
     <div class="card" data-id="m2" data-type="image" data-src="m2.png">
-      <img class="media" src="m2.png" alt="Signal 2" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-      <div class="scrim"></div>
-      <div class="top-actions">
-        <button class="icon-btn note" data-id="m2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
-        <button class="icon-btn fav" data-id="m2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+      <div class="image-wrap">
+        <img class="media" src="m2.png" alt="Signal 2" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="m2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="m2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
+      </div>
+      <div class="card-desc">
+        <div class="desc-text" id="desc2">
+          <span class="emoji">📌</span> <span id="d2_line1">این سیگنال با استفاده از الگوهای قیمتی و حجم معاملات شناسایی شده است.</span><br>
+          <span class="emoji">⏱️</span> <span id="d2_line2">سیگنال‌های این اپ ۴ ساعته هستند — پس از آن اعتبار کاهش می‌یابد.</span><br>
+          <span class="emoji">💡</span> <span id="d2_line3">در صورت مشاهده سود، حتماً بخشی از آن را برداشت کنید.</span>
+        </div>
       </div>
     </div>
-    <!-- Card 3 -->
+
+    <!-- ============================================================
+         CARD 3
+         ============================================================ -->
     <div class="card" data-id="m3" data-type="image" data-src="m3.png">
-      <img class="media" src="m3.png" alt="Signal 3" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-      <div class="scrim"></div>
-      <div class="top-actions">
-        <button class="icon-btn note" data-id="m3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
-        <button class="icon-btn fav" data-id="m3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+      <div class="image-wrap">
+        <img class="media" src="m3.png" alt="Signal 3" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="m3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="m3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
+      </div>
+      <div class="card-desc">
+        <div class="desc-text" id="desc3">
+          <span class="emoji">📌</span> <span id="d3_line1">این سیگنال بر اساس اندیکاتورهای RSI و MACD تحلیل شده است.</span><br>
+          <span class="emoji">⏱️</span> <span id="d3_line2">لطفاً پیش از ورود به معامله، حد ضرر خود را مشخص کنید.</span><br>
+          <span class="emoji">💡</span> <span id="d3_line3">از اهرم بالا پرهیز کنید — ریسک مدیریت‌شده کلید موفقیت است.</span>
+        </div>
       </div>
     </div>
-    <!-- Card 4 -->
+
+    <!-- ============================================================
+         CARD 4
+         ============================================================ -->
     <div class="card" data-id="m4" data-type="image" data-src="m4.png">
-      <img class="media" src="m4.png" alt="Signal 4" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-      <div class="scrim"></div>
-      <div class="top-actions">
-        <button class="icon-btn note" data-id="m4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
-        <button class="icon-btn fav" data-id="m4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+      <div class="image-wrap">
+        <img class="media" src="m4.png" alt="Signal 4" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="media-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="scrim"></div>
+        <div class="top-actions">
+          <button class="icon-btn note" data-id="m4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="icon-btn fav" data-id="m4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
+      </div>
+      <div class="card-desc">
+        <div class="desc-text" id="desc4">
+          <span class="emoji">📌</span> <span id="d4_line1">این سیگنال با بررسی سطوح حمایت و مقاومت کلیدی تهیه شده است.</span><br>
+          <span class="emoji">⏱️</span> <span id="d4_line2">همیشه قبل از معامله، اخبار و رویدادهای مهم بازار را چک کنید.</span><br>
+          <span class="emoji">💡</span> <span id="d4_line3">با تشکر از همراهی شما — آرزوی موفقیت و سودآوری داریم.</span>
+        </div>
       </div>
     </div>
-    <!-- Card 5 (Video) -->
-    <div class="card" data-id="v1" data-type="video" data-src="m2.mp4">
-      <video class="media" src="m1.mp4" muted preload="metadata" playsinline></video>
-      <div class="scrim"></div>
-      <div class="top-actions">
-        <button class="icon-btn note" data-id="v1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
-        <button class="icon-btn fav" data-id="v1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
-      </div>
-      <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+
+  </div><!-- end grid -->
+
+  <!-- ============================================================
+       RISK MANAGEMENT BANNER
+       ============================================================ -->
+  <div class="risk-banner">
+    <div class="risk-title">
+      <span>⚠️</span> <span id="riskTitle">مدیریت ریسک — راهنمای معاملاتی</span>
     </div>
-    <!-- Card 6 (Video) -->
-    <div class="card" data-id="v2" data-type="video" data-src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4">
-      <video class="media" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" muted preload="metadata" playsinline></video>
-      <div class="scrim"></div>
-      <div class="top-actions">
-        <button class="icon-btn note" data-id="v2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
-        <button class="icon-btn fav" data-id="v2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
-      </div>
-      <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+    <div class="risk-text" id="riskText">
+      <div>🔹 <span class="highlight" id="risk1">مدیریت ریسک را جدی بگیرید</span> — <span id="risk1b">هیچ‌وقت بیش از ۲٪ سرمایه خود را در یک معامله ریسک نکنید.</span></div>
+      <div>🔹 <span class="highlight" id="risk2">اهرام را پایین نگه دارید</span> — <span id="risk2b">استفاده از اهرم بالا (بالای ۵x) برای معامله‌گران تازه‌کار خطرناک است.</span></div>
+      <div>🔹 <span class="highlight" id="risk3">سیگنال‌های این اپ ۴ ساعته هستند</span> — <span id="risk3b">پس از ۴ ساعت، اعتبار سیگنال کاهش می‌یابد.</span></div>
+      <div>🔹 <span class="highlight" id="risk4">سیو سود فراموش نشود</span> — <span id="risk4b">اگر قیمت به سمت سود رفت، حتماً بخشی از سود را برداشت کنید.</span></div>
+    </div>
+    <div class="risk-footer" id="riskFooter">
+      🙏 با تشکر از همه کاربران — پر سود باشید 🚀
     </div>
   </div>
-  <div class="guide-empty" id="gridEmpty">هنوز سیگنالی را به علاقه‌مندی‌ها اضافه نکرده‌اید.</div>
-</div>
 
-<!-- Bottom Nav -->
-<div class="navbar">
+</div><!-- end .app -->
+
+<!-- ============================================================
+     BOTTOM NAV
+     ============================================================ -->
+<nav class="navbar">
   <div class="navbar-inner">
-    <button class="nav-btn active" data-tab="signal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M2 12h4l2-7 4 14 3-10 2 6h5"/></svg><span id="navSignal">سیگنال</span></button>
-    <button class="nav-btn" data-tab="chart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span id="navChart">چارت</span></button>
-    <button class="nav-btn" data-tab="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span id="navGuide">راهنمایی</span></button>
+    <button class="nav-btn active" data-tab="signal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+        <path d="M2 12h4l2-7 4 14 3-10 2 6h5"/>
+      </svg>
+      <span id="navSignal">سیگنال</span>
+    </button>
+    <button class="nav-btn" data-tab="chart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+        <path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/>
+      </svg>
+      <span id="navChart">چارت</span>
+    </button>
+    <button class="nav-btn" data-tab="guide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      </svg>
+      <span id="navGuide">راهنما</span>
+    </button>
   </div>
-</div>
+</nav>
 
-<!-- Chart Modal -->
+<!-- ============================================================
+     CHART MODAL
+     ============================================================ -->
 <div class="modal" id="chartModal">
-  <div class="modal-header"><h3 id="chartTitle">چارت زنده</h3><button class="close-btn" data-close="chart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+  <div class="modal-header">
+    <h3 id="chartTitle">📈 چارت زنده</h3>
+    <button class="close-btn" data-close="chart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
   <div class="chart-toolbar">
-    <div class="symbol-select-wrap"><select id="symbolSelect"></select><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
-    <button class="bell-btn" id="bellBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></button>
+    <div class="symbol-select-wrap">
+      <select id="symbolSelect"></select>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 9l6 6 6-6"/>
+      </svg>
+    </div>
+    <button class="bell-btn" id="bellBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+        <path d="M13.7 21a2 2 0 0 1-3.4 0"/>
+      </svg>
+      <span class="dot"></span>
+    </button>
   </div>
   <div class="alert-panel" id="alertPanel">
     <div class="alert-hint" id="alertHint">هشدار قیمت برای نماد انتخاب‌شده</div>
-    <div class="alert-row"><input type="number" id="alertPriceInput" placeholder="قیمت هدف (دلار)"><button class="alert-add-btn" id="alertAddBtn">افزودن</button></div>
+    <div class="alert-row">
+      <input type="number" id="alertPriceInput" placeholder="قیمت هدف (دلار)">
+      <button class="alert-add-btn" id="alertAddBtn">افزودن</button>
+    </div>
     <div class="alert-list" id="alertList"></div>
   </div>
   <div id="chartContainer"></div>
 </div>
 
-<!-- Guide Modal -->
+<!-- ============================================================
+     GUIDE MODAL
+     ============================================================ -->
 <div class="modal" id="guideModal">
-  <div class="modal-header"><h3 id="guideTitle">راهنمای ترید</h3><button class="close-btn" data-close="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-  <div class="guide-search-wrap"><div class="guide-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="text" id="guideSearch" placeholder="جست‌وجو در نکات..."></div></div>
+  <div class="modal-header">
+    <h3 id="guideTitle">📖 راهنمای ترید</h3>
+    <button class="close-btn" data-close="guide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="guide-search-wrap">
+    <div class="guide-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="M21 21l-4.3-4.3"/>
+      </svg>
+      <input type="text" id="guideSearch" placeholder="جست‌وجو در نکات...">
+    </div>
+  </div>
   <div class="guide-scroll" id="guideScroll">
-    <div class="guide-intro"><b id="guideIntroTitle">راهنمای جامع معامله‌گری</b><span id="guideIntroText">این راهنما حاصل جمع‌بندی اصول پایه‌ی مدیریت ریسک، روانشناسی معاملاتی و تحلیل بازار است.</span></div>
+    <div class="guide-intro">
+      <b id="guideIntroTitle">📌 راهنمای جامع معامله‌گری</b>
+      <span id="guideIntroText">این راهنما حاصل جمع‌بندی اصول پایه‌ی مدیریت ریسک، روانشناسی معاملاتی و تحلیل بازار است.</span>
+    </div>
     <div id="guideCats"></div>
     <div class="guide-empty" id="guideNoResult" style="display:none;">نتیجه‌ای یافت نشد.</div>
   </div>
 </div>
 
-<!-- Lightbox -->
+<!-- ============================================================
+     LIGHTBOX
+     ============================================================ -->
 <div class="lightbox" id="lightbox">
-  <button class="lightbox-close" id="lightboxClose"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-  <div class="lightbox-stage"><div class="lightbox-frame" id="lightboxFrame"></div></div>
+  <button class="lightbox-close" id="lightboxClose">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+  </button>
+  <div class="lightbox-stage">
+    <div class="lightbox-frame" id="lightboxFrame"></div>
+  </div>
   <div class="lightbox-hint">برای بستن، لمس کنید</div>
 </div>
 
-<!-- Note Sheet -->
+<!-- ============================================================
+     NOTE SHEET
+     ============================================================ -->
 <div class="sheet-overlay" id="noteOverlay">
-  <div class="sheet"><div class="sheet-handle"></div><h4 id="noteTitle">یادداشت شخصی</h4><p class="sub" id="noteSub">تحلیل یا دلیل ورود به این سیگنال را ثبت کنید.</p><textarea id="noteTextarea" placeholder="مثلاً: ورود در ناحیه حمایت..."></textarea><button class="sheet-btn" id="noteSaveBtn">ذخیره یادداشت</button></div>
-</div>
-
-<!-- Settings Sheet -->
-<div class="sheet-overlay" id="settingsOverlay">
-  <div class="sheet"><div class="sheet-handle"></div><h4 id="settingsTitle">تنظیمات</h4><p class="sub" id="settingsSub">مدیریت اپ و داده‌های ذخیره‌شده</p>
-    <div class="setting-row"><div><b id="setLiveLabel">به‌روزرسانی زنده تصاویر</b><span id="setLiveDesc">هر ۲ ثانیه</span></div><div class="switch on" id="switchLive"></div></div>
-    <div class="setting-row"><div><b id="setNotifLabel">اعلان مرورگر</b><span id="setNotifDesc">نوتیفیکیشن هشدار قیمت</span></div><div class="switch" id="switchNotif"></div></div>
-    <button class="danger-btn" id="clearDataBtn">پاک‌کردن علاقه‌مندی‌ها، یادداشت‌ها و هشدارها</button>
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h4 id="noteTitle">✏️ یادداشت شخصی</h4>
+    <p class="sub" id="noteSub">تحلیل یا دلیل ورود به این سیگنال را ثبت کنید.</p>
+    <textarea id="noteTextarea" placeholder="مثلاً: ورود در ناحیه حمایت..."></textarea>
+    <button class="sheet-btn" id="noteSaveBtn">💾 ذخیره یادداشت</button>
   </div>
 </div>
 
+<!-- ============================================================
+     SETTINGS SHEET
+     ============================================================ -->
+<div class="sheet-overlay" id="settingsOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h4 id="settingsTitle">⚙️ تنظیمات</h4>
+    <p class="sub" id="settingsSub">مدیریت اپ و داده‌های ذخیره‌شده</p>
+
+    <div class="setting-row">
+      <div>
+        <b id="setThemeLabel">🌙 تم تاریک</b>
+        <span id="setThemeDesc">حالت شب برای نمایش</span>
+      </div>
+      <div class="switch" id="switchTheme"></div>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <b id="setNotifLabel">🔔 اعلان مرورگر</b>
+        <span id="setNotifDesc">نوتیفیکیشن هشدار قیمت</span>
+      </div>
+      <div class="switch" id="switchNotif"></div>
+    </div>
+
+    <button class="danger-btn" id="clearDataBtn">🗑️ پاک‌کردن علاقه‌مندی‌ها، یادداشت‌ها و هشدارها</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-(function(){
+(function() {
   'use strict';
 
-  var BROADCAST = {
-    fa: { title: '📌 نکته مهم', text: 'لطفاً قبل از هر معامله، بخش راهنمایی را مطالعه کنید. مدیریت ریسک کلید موفقیت است.' },
-    en: { title: '📌 Important Note', text: 'Please review the guide section before any trade. Risk management is key to success.' },
-    tr: { title: '📌 Önemli Not', text: 'Her işlem öncesi rehber bölümünü inceleyin. Risk yönetimi başarının anahtarıdır.' },
-    ar: { title: '📌 ملاحظة مهمة', text: 'يرجى مراجعة قسم الدليل قبل أي صفقة. إدارة المخاطر هي مفتاح النجاح.' },
-    ru: { title: '📌 Важное примечание', text: 'Пожалуйста, ознакомьтесь с разделом руководства перед любой сделкой. Управление рисками — ключ к успеху.' }
-  };
-
+  // ============================================================
+  // TRANSLATIONS - همه زبان‌ها با توضیحات زیر عکس
+  // ============================================================
   var LANG = {
     fa: {
-      brandTitle:'پلتفرم سیگنال', brandSub:'تحلیل بازار کریپتو',
-      filterAll:'همه سیگنال‌ها', filterFav:'علاقه‌مندی‌ها',
-      signalsTitle:'سیگنال‌های امروز', navSignal:'سیگنال', navChart:'چارت', navGuide:'راهنمایی',
-      chartTitle:'چارت زنده', alertHint:'هشدار قیمت برای نماد انتخاب‌شده',
-      guideTitle:'راهنمای ترید', guideIntroTitle:'راهنمای جامع معامله‌گری',
-      guideIntroText:'این راهنما حاصل جمع‌بندی اصول پایه‌ی مدیریت ریسک، روانشناسی معاملاتی و تحلیل بازار است.',
-      noteTitle:'یادداشت شخصی', noteSub:'تحلیل یا دلیل ورود به این سیگنال را ثبت کنید.',
-      settingsTitle:'تنظیمات', settingsSub:'مدیریت اپ و داده‌های ذخیره‌شده',
-      setLiveLabel:'به‌روزرسانی زنده تصاویر', setLiveDesc:'هر ۲ ثانیه',
-      setNotifLabel:'اعلان مرورگر', setNotifDesc:'نوتیفیکیشن هشدار قیمت',
-      menuTelegram:'عضویت در تلگرام', menuInstagram:'عضویت در اینستاگرام',
-      themeLabel:'تم روشن', gridEmpty:'هنوز سیگنالی را به علاقه‌مندی‌ها اضافه نکرده‌اید.',
-      searchPlaceholder:'جست‌وجو در نکات...', alertAdd:'افزودن',
-      alertPricePlaceholder:'قیمت هدف (دلار)', saveNote:'ذخیره یادداشت',
-      clearData:'پاک‌کردن علاقه‌مندی‌ها، یادداشت‌ها و هشدارها',
-      lightboxHint:'برای بستن، لمس کنید', tipsUnit:'نکته', itemsUnit:'مورد',
-      alertAtWord:'در $', alertTriggeredWord:' (فعال شد)',
-      confirmClear:'همه‌ی داده‌ها پاک شوند؟', notifTitle:'هشدار قیمت',
-      notifBodySuffix:'به قیمت هدف $'
+      brandTitle: 'سیگنال‌پرو',
+      brandSub: 'تحلیل هوشمند بازار',
+      filterAll: 'همه',
+      filterFav: '⭐ علاقه‌مندی‌ها',
+      signalsTitle: '📊 سیگنال‌های امروز',
+      navSignal: 'سیگنال',
+      navChart: 'چارت',
+      navGuide: 'راهنما',
+      chartTitle: '📈 چارت زنده',
+      alertHint: 'هشدار قیمت برای نماد انتخاب‌شده',
+      guideTitle: '📖 راهنمای ترید',
+      guideIntroTitle: '📌 راهنمای جامع معامله‌گری',
+      guideIntroText: 'این راهنما حاصل جمع‌بندی اصول پایه‌ی مدیریت ریسک، روانشناسی معاملاتی و تحلیل بازار است.',
+      noteTitle: '✏️ یادداشت شخصی',
+      noteSub: 'تحلیل یا دلیل ورود به این سیگنال را ثبت کنید.',
+      settingsTitle: '⚙️ تنظیمات',
+      settingsSub: 'مدیریت اپ و داده‌های ذخیره‌شده',
+      setThemeLabel: '🌙 تم تاریک',
+      setThemeDesc: 'حالت شب برای نمایش',
+      setNotifLabel: '🔔 اعلان مرورگر',
+      setNotifDesc: 'نوتیفیکیشن هشدار قیمت',
+      menuTelegram: 'عضویت در تلگرام',
+      menuInstagram: 'عضویت در اینستاگرام',
+      settingsLabel: 'تنظیمات',
+      gridEmpty: 'هنوز سیگنالی را به علاقه‌مندی‌ها اضافه نکرده‌اید.',
+      searchPlaceholder: 'جست‌وجو در نکات...',
+      alertAdd: 'افزودن',
+      alertPricePlaceholder: 'قیمت هدف (دلار)',
+      saveNote: '💾 ذخیره یادداشت',
+      clearData: '🗑️ پاک‌کردن علاقه‌مندی‌ها، یادداشت‌ها و هشدارها',
+      lightboxHint: 'برای بستن، لمس کنید',
+      tipsUnit: 'نکته',
+      itemsUnit: 'مورد',
+      alertAtWord: 'در $',
+      alertTriggeredWord: ' ✅ فعال شد',
+      confirmClear: 'همه‌ی داده‌ها پاک شوند؟',
+      notifTitle: 'هشدار قیمت',
+      notifBodySuffix: 'به قیمت هدف $',
+      statLabel1: 'سود امروز',
+      statLabel2: 'سیگنال‌ها',
+      statLabel3: 'موفقیت',
+      statLabel4: 'معاملات',
+      riskTitle: 'مدیریت ریسک — راهنمای معاملاتی',
+      risk1: 'مدیریت ریسک را جدی بگیرید',
+      risk1b: 'هیچ‌وقت بیش از ۲٪ سرمایه خود را در یک معامله ریسک نکنید.',
+      risk2: 'اهرام را پایین نگه دارید',
+      risk2b: 'استفاده از اهرم بالا (بالای ۵x) برای معامله‌گران تازه‌کار خطرناک است.',
+      risk3: 'سیگنال‌های این اپ ۴ ساعته هستند',
+      risk3b: 'پس از ۴ ساعت، اعتبار سیگنال کاهش می‌یابد.',
+      risk4: 'سیو سود فراموش نشود',
+      risk4b: 'اگر قیمت به سمت سود رفت، حتماً بخشی از سود را برداشت کنید.',
+      riskFooter: '🙏 با تشکر از همه کاربران — پر سود باشید 🚀',
+      // توضیحات کارت ۱
+      d1_line1: 'این سیگنال بر اساس تحلیل تکنیکال و بررسی روند بازار تهیه شده است.',
+      d1_line2: 'لطفاً قبل از هر اقدام، مدیریت ریسک را رعایت کنید.',
+      d1_line3: 'همیشه با سرمایه‌ای معامله کنید که توانایی از دست دادن آن را دارید.',
+      // توضیحات کارت ۲
+      d2_line1: 'این سیگنال با استفاده از الگوهای قیمتی و حجم معاملات شناسایی شده است.',
+      d2_line2: 'سیگنال‌های این اپ ۴ ساعته هستند — پس از آن اعتبار کاهش می‌یابد.',
+      d2_line3: 'در صورت مشاهده سود، حتماً بخشی از آن را برداشت کنید.',
+      // توضیحات کارت ۳
+      d3_line1: 'این سیگنال بر اساس اندیکاتورهای RSI و MACD تحلیل شده است.',
+      d3_line2: 'لطفاً پیش از ورود به معامله، حد ضرر خود را مشخص کنید.',
+      d3_line3: 'از اهرم بالا پرهیز کنید — ریسک مدیریت‌شده کلید موفقیت است.',
+      // توضیحات کارت ۴
+      d4_line1: 'این سیگنال با بررسی سطوح حمایت و مقاومت کلیدی تهیه شده است.',
+      d4_line2: 'همیشه قبل از معامله، اخبار و رویدادهای مهم بازار را چک کنید.',
+      d4_line3: 'با تشکر از همراهی شما — آرزوی موفقیت و سودآوری داریم.'
     },
     en: {
-      brandTitle:'Signal Platform', brandSub:'Crypto Market Analysis',
-      filterAll:'All Signals', filterFav:'Favorites',
-      signalsTitle:'Today\'s Signals', navSignal:'Signal', navChart:'Chart', navGuide:'Guide',
-      chartTitle:'Live Chart', alertHint:'Price alert for selected symbol',
-      guideTitle:'Trading Guide', guideIntroTitle:'Comprehensive Trading Guide',
-      guideIntroText:'This guide summarizes the basics of risk management, trading psychology, and market analysis.',
-      noteTitle:'Personal Note', noteSub:'Record your analysis or reason for entering this signal.',
-      settingsTitle:'Settings', settingsSub:'Manage app and stored data',
-      setLiveLabel:'Live Image Refresh', setLiveDesc:'Every 2 seconds',
-      setNotifLabel:'Browser Notifications', setNotifDesc:'Price alert notifications',
-      menuTelegram:'Join Telegram', menuInstagram:'Join Instagram',
-      themeLabel:'Light Theme', gridEmpty:'You haven\'t added any signals to favorites yet.',
-      searchPlaceholder:'Search tips...', alertAdd:'Add',
-      alertPricePlaceholder:'Target Price (USD)', saveNote:'Save Note',
-      clearData:'Clear Favorites, Notes & Alerts',
-      lightboxHint:'Tap to close', tipsUnit:'tips', itemsUnit:'items',
-      alertAtWord:'at $', alertTriggeredWord:' (triggered)',
-      confirmClear:'Clear all data?', notifTitle:'Price Alert',
-      notifBodySuffix:'reached target $'
+      brandTitle: 'Signal Pro',
+      brandSub: 'Smart Market Analysis',
+      filterAll: 'All',
+      filterFav: '⭐ Favorites',
+      signalsTitle: '📊 Today\'s Signals',
+      navSignal: 'Signal',
+      navChart: 'Chart',
+      navGuide: 'Guide',
+      chartTitle: '📈 Live Chart',
+      alertHint: 'Price alert for selected symbol',
+      guideTitle: '📖 Trading Guide',
+      guideIntroTitle: '📌 Comprehensive Trading Guide',
+      guideIntroText: 'This guide summarizes the basics of risk management, trading psychology, and market analysis.',
+      noteTitle: '✏️ Personal Note',
+      noteSub: 'Record your analysis or reason for entering this signal.',
+      settingsTitle: '⚙️ Settings',
+      settingsSub: 'Manage app and stored data',
+      setThemeLabel: '🌙 Dark Theme',
+      setThemeDesc: 'Night mode display',
+      setNotifLabel: '🔔 Browser Notifications',
+      setNotifDesc: 'Price alert notifications',
+      menuTelegram: 'Join Telegram',
+      menuInstagram: 'Join Instagram',
+      settingsLabel: 'Settings',
+      gridEmpty: 'You haven\'t added any signals to favorites yet.',
+      searchPlaceholder: 'Search tips...',
+      alertAdd: 'Add',
+      alertPricePlaceholder: 'Target Price (USD)',
+      saveNote: '💾 Save Note',
+      clearData: '🗑️ Clear Favorites, Notes & Alerts',
+      lightboxHint: 'Tap to close',
+      tipsUnit: 'tips',
+      itemsUnit: 'items',
+      alertAtWord: 'at $',
+      alertTriggeredWord: ' ✅ triggered',
+      confirmClear: 'Clear all data?',
+      notifTitle: 'Price Alert',
+      notifBodySuffix: 'reached target $',
+      statLabel1: 'Today\'s Profit',
+      statLabel2: 'Signals',
+      statLabel3: 'Success Rate',
+      statLabel4: 'Trades',
+      riskTitle: '⚠️ Risk Management — Trading Guide',
+      risk1: 'Take risk management seriously',
+      risk1b: 'Never risk more than 2% of your capital on a single trade.',
+      risk2: 'Keep leverage low',
+      risk2b: 'High leverage (above 5x) is dangerous for beginner traders.',
+      risk3: 'Signals are 4-hour based',
+      risk3b: 'After 4 hours, signal validity decreases.',
+      risk4: 'Don\'t forget to take profit',
+      risk4b: 'If price moves in your favor, take partial profits.',
+      riskFooter: '🙏 Thank you all — Stay profitable 🚀',
+      d1_line1: 'This signal is based on technical analysis and market trend evaluation.',
+      d1_line2: 'Please practice risk management before taking any action.',
+      d1_line3: 'Always trade with capital you can afford to lose.',
+      d2_line1: 'This signal identified using price patterns and trading volume.',
+      d2_line2: 'Signals are 4-hour based — validity decreases after that.',
+      d2_line3: 'If you see profit, make sure to take some off the table.',
+      d3_line1: 'This signal analyzed using RSI and MACD indicators.',
+      d3_line2: 'Set your stop-loss before entering any trade.',
+      d3_line3: 'Avoid high leverage — managed risk is the key to success.',
+      d4_line1: 'This signal prepared using key support and resistance levels.',
+      d4_line2: 'Always check news and major events before trading.',
+      d4_line3: 'Thank you for your support — wishing you success and profits.'
     },
     tr: {
-      brandTitle:'Sinyal Platformu', brandSub:'Kripto Piyasa Analizi',
-      filterAll:'Tüm Sinyaller', filterFav:'Favoriler',
-      signalsTitle:'Bugünün Sinyalleri', navSignal:'Sinyal', navChart:'Grafik', navGuide:'Rehber',
-      chartTitle:'Canlı Grafik', alertHint:'Seçilen sembol için fiyat uyarısı',
-      guideTitle:'Alım Satım Rehberi', guideIntroTitle:'Kapsamlı Alım Satım Rehberi',
-      guideIntroText:'Bu rehber, risk yönetimi, işlem psikolojisi ve piyasa analizinin temellerini özetler.',
-      noteTitle:'Kişisel Not', noteSub:'Bu sinyale girme nedeninizi veya analizinizi kaydedin.',
-      settingsTitle:'Ayarlar', settingsSub:'Uygulama ve kayıtlı verileri yönetin',
-      setLiveLabel:'Canlı Görsel Yenileme', setLiveDesc:'Her 2 saniye',
-      setNotifLabel:'Tarayıcı Bildirimleri', setNotifDesc:'Fiyat uyarı bildirimleri',
-      menuTelegram:'Telegram\'a Katıl', menuInstagram:'Instagram\'a Katıl',
-      themeLabel:'Açık Tema', gridEmpty:'Henüz favorilere sinyal eklemediniz.',
-      searchPlaceholder:'Rehberde ara...', alertAdd:'Ekle',
-      alertPricePlaceholder:'Hedef Fiyat (USD)', saveNote:'Notu Kaydet',
-      clearData:'Favorileri, Notları ve Uyarıları Temizle',
-      lightboxHint:'Kapatmak için dokunun', tipsUnit:'ipucu', itemsUnit:'sinyal',
-      alertAtWord:'$ fiyatında', alertTriggeredWord:' (tetiklendi)',
-      confirmClear:'Tüm veriler silinsin mi?', notifTitle:'Fiyat Uyarısı',
-      notifBodySuffix:'hedef fiyata ulaştı: $'
+      brandTitle: 'Sinyal Pro',
+      brandSub: 'Akıllı Piyasa Analizi',
+      filterAll: 'Tümü',
+      filterFav: '⭐ Favoriler',
+      signalsTitle: '📊 Bugünün Sinyalleri',
+      navSignal: 'Sinyal',
+      navChart: 'Grafik',
+      navGuide: 'Rehber',
+      chartTitle: '📈 Canlı Grafik',
+      alertHint: 'Seçilen sembol için fiyat uyarısı',
+      guideTitle: '📖 Alım Satım Rehberi',
+      guideIntroTitle: '📌 Kapsamlı Alım Satım Rehberi',
+      guideIntroText: 'Bu rehber, risk yönetimi, işlem psikolojisi ve piyasa analizinin temellerini özetler.',
+      noteTitle: '✏️ Kişisel Not',
+      noteSub: 'Bu sinyale girme nedeninizi veya analizinizi kaydedin.',
+      settingsTitle: '⚙️ Ayarlar',
+      settingsSub: 'Uygulama ve kayıtlı verileri yönetin',
+      setThemeLabel: '🌙 Karanlık Tema',
+      setThemeDesc: 'Gece modu görünümü',
+      setNotifLabel: '🔔 Tarayıcı Bildirimleri',
+      setNotifDesc: 'Fiyat uyarı bildirimleri',
+      menuTelegram: 'Telegram\'a Katıl',
+      menuInstagram: 'Instagram\'a Katıl',
+      settingsLabel: 'Ayarlar',
+      gridEmpty: 'Henüz favorilere sinyal eklemediniz.',
+      searchPlaceholder: 'Rehberde ara...',
+      alertAdd: 'Ekle',
+      alertPricePlaceholder: 'Hedef Fiyat (USD)',
+      saveNote: '💾 Notu Kaydet',
+      clearData: '🗑️ Favorileri, Notları ve Uyarıları Temizle',
+      lightboxHint: 'Kapatmak için dokunun',
+      tipsUnit: 'ipucu',
+      itemsUnit: 'sinyal',
+      alertAtWord: '$ fiyatında',
+      alertTriggeredWord: ' ✅ tetiklendi',
+      confirmClear: 'Tüm veriler silinsin mi?',
+      notifTitle: 'Fiyat Uyarısı',
+      notifBodySuffix: 'hedef fiyata ulaştı: $',
+      statLabel1: 'Bugünkü Kâr',
+      statLabel2: 'Sinyaller',
+      statLabel3: 'Başarı Oranı',
+      statLabel4: 'İşlemler',
+      riskTitle: '⚠️ Risk Yönetimi — İşlem Rehberi',
+      risk1: 'Risk yönetimini ciddiye alın',
+      risk1b: 'Tek bir işlemde sermayenizin %2\'sinden fazlasını riske atmayın.',
+      risk2: 'Kaldıracı düşük tutun',
+      risk2b: 'Yüksek kaldıraç (5x üzeri) yeni başlayanlar için tehlikelidir.',
+      risk3: 'Sinyaller 4 saatliktir',
+      risk3b: '4 saat sonra sinyal geçerliliği azalır.',
+      risk4: 'Kâr almayı unutmayın',
+      risk4b: 'Fiyat lehinize giderse, kârın bir kısmını alın.',
+      riskFooter: '🙏 Tüm kullanıcılara teşekkürler — Kârlı olun 🚀',
+      d1_line1: 'Bu sinyal teknik analiz ve piyasa trendi değerlendirmesine dayanmaktadır.',
+      d1_line2: 'Lütfen herhangi bir işlem öncesi risk yönetimini uygulayın.',
+      d1_line3: 'Her zaman kaybetmeyi göze alabileceğiniz sermaye ile işlem yapın.',
+      d2_line1: 'Bu sinyal fiyat modelleri ve işlem hacmi kullanılarak belirlenmiştir.',
+      d2_line2: 'Sinyaller 4 saatliktir — bundan sonra geçerlilik azalır.',
+      d2_line3: 'Kâr görürseniz, mutlaka bir kısmını alın.',
+      d3_line1: 'Bu sinyal RSI ve MACD göstergeleri kullanılarak analiz edilmiştir.',
+      d3_line2: 'Herhangi bir işleme girmeden önce zarar durdur belirleyin.',
+      d3_line3: 'Yüksek kaldıraçtan kaçının — yönetilen risk başarının anahtarıdır.',
+      d4_line1: 'Bu sinyal anahtar destek ve direnç seviyeleri kullanılarak hazırlanmıştır.',
+      d4_line2: 'İşlem öncesi her zaman haberleri ve önemli olayları kontrol edin.',
+      d4_line3: 'Desteğiniz için teşekkürler — başarı ve kâr dileriz.'
     },
     ar: {
-      brandTitle:'منصة الإشارات', brandSub:'تحليل سوق العملات المشفرة',
-      filterAll:'جميع الإشارات', filterFav:'المفضلة',
-      signalsTitle:'إشارات اليوم', navSignal:'إشارة', navChart:'الرسم البياني', navGuide:'الدليل',
-      chartTitle:'الرسم البياني المباشر', alertHint:'تنبيه السعر للرمز المحدد',
-      guideTitle:'دليل التداول', guideIntroTitle:'الدليل الشامل للتداول',
-      guideIntroText:'يلخص هذا الدليل أساسيات إدارة المخاطر وعلم نفس التداول وتحليل السوق.',
-      noteTitle:'ملاحظة شخصية', noteSub:'سجل تحليلك أو سبب دخولك لهذه الإشارة.',
-      settingsTitle:'الإعدادات', settingsSub:'إدارة التطبيق والبيانات المخزنة',
-      setLiveLabel:'تحديث الصور المباشر', setLiveDesc:'كل 2 ثانية',
-      setNotifLabel:'إشعارات المتصفح', setNotifDesc:'إشعارات تنبيه السعر',
-      menuTelegram:'انضم إلى تيليجرام', menuInstagram:'انضم إلى إنستغرام',
-      themeLabel:'الوضع الفاتح', gridEmpty:'لم تقم بإضافة أي إشارات إلى المفضلة بعد.',
-      searchPlaceholder:'ابحث في الدليل...', alertAdd:'إضافة',
-      alertPricePlaceholder:'السعر المستهدف (دولار)', saveNote:'حفظ الملاحظة',
-      clearData:'مسح المفضلة والملاحظات والتنبيهات',
-      lightboxHint:'اضغط للإغلاق', tipsUnit:'نصيحة', itemsUnit:'عنصر',
-      alertAtWord:'عند $', alertTriggeredWord:' (تم التفعيل)',
-      confirmClear:'هل تريد مسح جميع البيانات؟', notifTitle:'تنبيه السعر',
-      notifBodySuffix:'وصل إلى السعر المستهدف $'
+      brandTitle: 'سيجنال برو',
+      brandSub: 'تحليل السوق الذكي',
+      filterAll: 'الكل',
+      filterFav: '⭐ المفضلة',
+      signalsTitle: '📊 إشارات اليوم',
+      navSignal: 'إشارة',
+      navChart: 'الرسم البياني',
+      navGuide: 'الدليل',
+      chartTitle: '📈 الرسم البياني المباشر',
+      alertHint: 'تنبيه السعر للرمز المحدد',
+      guideTitle: '📖 دليل التداول',
+      guideIntroTitle: '📌 الدليل الشامل للتداول',
+      guideIntroText: 'يلخص هذا الدليل أساسيات إدارة المخاطر وعلم نفس التداول وتحليل السوق.',
+      noteTitle: '✏️ ملاحظة شخصية',
+      noteSub: 'سجل تحليلك أو سبب دخولك لهذه الإشارة.',
+      settingsTitle: '⚙️ الإعدادات',
+      settingsSub: 'إدارة التطبيق والبيانات المخزنة',
+      setThemeLabel: '🌙 الوضع المظلم',
+      setThemeDesc: 'عرض الوضع الليلي',
+      setNotifLabel: '🔔 إشعارات المتصفح',
+      setNotifDesc: 'إشعارات تنبيه السعر',
+      menuTelegram: 'انضم إلى تيليجرام',
+      menuInstagram: 'انضم إلى إنستغرام',
+      settingsLabel: 'الإعدادات',
+      gridEmpty: 'لم تقم بإضافة أي إشارات إلى المفضلة بعد.',
+      searchPlaceholder: 'ابحث في الدليل...',
+      alertAdd: 'إضافة',
+      alertPricePlaceholder: 'السعر المستهدف (دولار)',
+      saveNote: '💾 حفظ الملاحظة',
+      clearData: '🗑️ مسح المفضلة والملاحظات والتنبيهات',
+      lightboxHint: 'اضغط للإغلاق',
+      tipsUnit: 'نصيحة',
+      itemsUnit: 'عنصر',
+      alertAtWord: 'عند $',
+      alertTriggeredWord: ' ✅ تم التفعيل',
+      confirmClear: 'هل تريد مسح جميع البيانات؟',
+      notifTitle: 'تنبيه السعر',
+      notifBodySuffix: 'وصل إلى السعر المستهدف $',
+      statLabel1: 'ربح اليوم',
+      statLabel2: 'الإشارات',
+      statLabel3: 'نسبة النجاح',
+      statLabel4: 'الصفقات',
+      riskTitle: '⚠️ إدارة المخاطر — دليل التداول',
+      risk1: 'خذ إدارة المخاطر على محمل الجد',
+      risk1b: 'لا تخاطر بأكثر من ٢٪ من رأس مالك في صفقة واحدة.',
+      risk2: 'أبقي الرافعة المالية منخفضة',
+      risk2b: 'الرافعة العالية (فوق ٥x) خطيرة للمتداولين المبتدئين.',
+      risk3: 'الإشارات تعتمد على ٤ ساعات',
+      risk3b: 'بعد ٤ ساعات، تنخفض صلاحية الإشارة.',
+      risk4: 'لا تنسى جني الأرباح',
+      risk4b: 'إذا تحرك السعر لصالحك، خذ جزءاً من الأرباح.',
+      riskFooter: '🙏 شكراً لجميع المستخدمين — كن مربحاً 🚀',
+      d1_line1: 'تعتمد هذه الإشارة على التحليل الفني وتقييم اتجاه السوق.',
+      d1_line2: 'يرجى ممارسة إدارة المخاطر قبل اتخاذ أي إجراء.',
+      d1_line3: 'تداول دائماً برأس مال يمكنك تحمل خسارته.',
+      d1_line4: 'الإشارات المتعددة تعزز دقة التحليل.',
+      d2_line1: 'تم تحديد هذه الإشارة باستخدام أنماط السعر وحجم التداول.',
+      d2_line2: 'الإشارات تعتمد على ٤ ساعات — تنخفض صلاحيتها بعد ذلك.',
+      d2_line3: 'إذا رأيت ربحاً، تأكد من أخذ جزء منه.',
+      d3_line1: 'تم تحليل هذه الإشارة باستخدام مؤشرات RSI و MACD.',
+      d3_line2: 'حدد وقف الخسارة قبل الدخول في أي صفقة.',
+      d3_line3: 'تجنب الرافعة العالية — المخاطرة المدارة هي مفتاح النجاح.',
+      d4_line1: 'تم إعداد هذه الإشارة باستخدام مستويات الدعم والمقاومة الرئيسية.',
+      d4_line2: 'تحقق دائماً من الأخبار والأحداث الهامة قبل التداول.',
+      d4_line3: 'شكراً لدعمكم — نتمنى لكم النجاح والأرباح.'
     },
     ru: {
-      brandTitle:'Сигнальная платформа', brandSub:'Анализ крипторынка',
-      filterAll:'Все сигналы', filterFav:'Избранное',
-      signalsTitle:'Сигналы сегодня', navSignal:'Сигнал', navChart:'График', navGuide:'Руководство',
-      chartTitle:'Живой график', alertHint:'Ценовое оповещение для выбранного символа',
-      guideTitle:'Руководство по трейдингу', guideIntroTitle:'Полное руководство по трейдингу',
-      guideIntroText:'В этом руководстве собраны основы управления рисками, психологии трейдинга и анализа рынка.',
-      noteTitle:'Личная заметка', noteSub:'Запишите свой анализ или причину входа в этот сигнал.',
-      settingsTitle:'Настройки', settingsSub:'Управление приложением и сохранёнными данными',
-      setLiveLabel:'Обновление изображений', setLiveDesc:'Каждые 2 секунды',
-      setNotifLabel:'Уведомления браузера', setNotifDesc:'Уведомления о ценовых оповещениях',
-      menuTelegram:'Присоединиться к Telegram', menuInstagram:'Присоединиться к Instagram',
-      themeLabel:'Светлая тема', gridEmpty:'Вы ещё не добавили сигналы в избранное.',
-      searchPlaceholder:'Поиск по руководству...', alertAdd:'Добавить',
-      alertPricePlaceholder:'Целевая цена (USD)', saveNote:'Сохранить заметку',
-      clearData:'Очистить избранное, заметки и оповещения',
-      lightboxHint:'Нажмите, чтобы закрыть', tipsUnit:'советов', itemsUnit:'шт.',
-      alertAtWord:'на $', alertTriggeredWord:' (сработало)',
-      confirmClear:'Очистить все данные?', notifTitle:'Ценовое оповещение',
-      notifBodySuffix:'достигла цели $'
+      brandTitle: 'Сигнал Про',
+      brandSub: 'Умный анализ рынка',
+      filterAll: 'Все',
+      filterFav: '⭐ Избранное',
+      signalsTitle: '📊 Сигналы сегодня',
+      navSignal: 'Сигнал',
+      navChart: 'График',
+      navGuide: 'Руководство',
+      chartTitle: '📈 Живой график',
+      alertHint: 'Ценовое оповещение для выбранного символа',
+      guideTitle: '📖 Руководство по трейдингу',
+      guideIntroTitle: '📌 Полное руководство по трейдингу',
+      guideIntroText: 'В этом руководстве собраны основы управления рисками, психологии трейдинга и анализа рынка.',
+      noteTitle: '✏️ Личная заметка',
+      noteSub: 'Запишите свой анализ или причину входа в этот сигнал.',
+      settingsTitle: '⚙️ Настройки',
+      settingsSub: 'Управление приложением и сохранёнными данными',
+      setThemeLabel: '🌙 Тёмная тема',
+      setThemeDesc: 'Ночной режим',
+      setNotifLabel: '🔔 Уведомления браузера',
+      setNotifDesc: 'Уведомления о ценовых оповещениях',
+      menuTelegram: 'Присоединиться к Telegram',
+      menuInstagram: 'Присоединиться к Instagram',
+      settingsLabel: 'Настройки',
+      gridEmpty: 'Вы ещё не добавили сигналы в избранное.',
+      searchPlaceholder: 'Поиск по руководству...',
+      alertAdd: 'Добавить',
+      alertPricePlaceholder: 'Целевая цена (USD)',
+      saveNote: '💾 Сохранить заметку',
+      clearData: '🗑️ Очистить избранное, заметки и оповещения',
+      lightboxHint: 'Нажмите, чтобы закрыть',
+      tipsUnit: 'советов',
+      itemsUnit: 'шт.',
+      alertAtWord: 'на $',
+      alertTriggeredWord: ' ✅ сработало',
+      confirmClear: 'Очистить все данные?',
+      notifTitle: 'Ценовое оповещение',
+      notifBodySuffix: 'достигла цели $',
+      statLabel1: 'Прибыль сегодня',
+      statLabel2: 'Сигналы',
+      statLabel3: 'Успешность',
+      statLabel4: 'Сделки',
+      riskTitle: '⚠️ Управление рисками — Руководство по трейдингу',
+      risk1: 'Относитесь к управлению рисками серьёзно',
+      risk1b: 'Никогда не рискуйте более 2% капитала в одной сделке.',
+      risk2: 'Держите плечо низким',
+      risk2b: 'Высокое плечо (выше 5x) опасно для начинающих трейдеров.',
+      risk3: 'Сигналы основаны на 4-часовом таймфрейме',
+      risk3b: 'Через 4 часа достоверность сигнала снижается.',
+      risk4: 'Не забывайте фиксировать прибыль',
+      risk4b: 'Если цена движется в вашу пользу, заберите часть прибыли.',
+      riskFooter: '🙏 Спасибо всем пользователям — Будьте прибыльными 🚀',
+      d1_line1: 'Этот сигнал основан на техническом анализе и оценке рыночного тренда.',
+      d1_line2: 'Пожалуйста, применяйте управление рисками перед любыми действиями.',
+      d1_line3: 'Всегда торгуйте капиталом, который вы можете позволить себе потерять.',
+      d2_line1: 'Этот сигнал определён с использованием ценовых паттернов и объёма.',
+      d2_line2: 'Сигналы основаны на 4-часовом таймфрейме — достоверность снижается после.',
+      d2_line3: 'Если видите прибыль, обязательно заберите её часть.',
+      d3_line1: 'Этот сигнал проанализирован с использованием индикаторов RSI и MACD.',
+      d3_line2: 'Установите стоп-лосс перед входом в любую сделку.',
+      d3_line3: 'Избегайте высокого плеча — управляемый риск это ключ к успеху.',
+      d4_line1: 'Этот сигнал подготовлен с использованием ключевых уровней поддержки и сопротивления.',
+      d4_line2: 'Всегда проверяйте новости и важные события перед торговлей.',
+      d4_line3: 'Спасибо за вашу поддержку — желаем успеха и прибыли.'
     }
   };
 
-  var LOCALE_MAP = { fa:'fa_IR', en:'en', tr:'tr', ar:'ar', ru:'ru' };
-  var RTL_LANGS = { fa:true, ar:true };
-
-  function lget(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){return d;} }
-  function lset(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+  // ============================================================
+  // STATE & STORAGE
+  // ============================================================
+  function lget(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function lset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
   var state = {
-    lang: lget('sg_lang','fa'),
-    theme: lget('sg_theme','light'),
-    favorites: lget('sg_favorites',[]),
-    notes: lget('sg_notes',{}),
-    alerts: lget('sg_alerts',[]),
-    settings: lget('sg_settings',{liveRefresh:true,notifications:false}),
-    noticeDismiss: lget('sg_notice_dismiss',null)
+    lang: lget('sg_lang', 'fa'),
+    theme: lget('sg_theme', 'light'),
+    favorites: lget('sg_favorites', []),
+    notes: lget('sg_notes', {}),
+    alerts: lget('sg_alerts', [])
   };
 
-  var $ = function(s){ return document.querySelector(s); };
-  var $$ = function(s){ return document.querySelectorAll(s); };
+  var $ = function(s) { return document.querySelector(s); };
+  var $$ = function(s) { return document.querySelectorAll(s); };
 
-  function applyLanguage(lang){
+  // ============================================================
+  // THEME
+  // ============================================================
+  function applyTheme(theme) {
+    state.theme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    lset('sg_theme', theme);
+    var switchEl = document.getElementById('switchTheme');
+    if (switchEl) switchEl.classList.toggle('on', theme === 'dark');
+  }
+
+  function toggleTheme() {
+    applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+  }
+
+  // ============================================================
+  // LANGUAGE - با ترجمه کامل توضیحات زیر عکس
+  // ============================================================
+  function applyLanguage(lang) {
     state.lang = lang;
     var t = LANG[lang] || LANG.fa;
+
+    // هدر
     document.getElementById('brandTitle').textContent = t.brandTitle;
     document.getElementById('brandSub').textContent = t.brandSub;
+
+    // فیلترها
     document.getElementById('filterAll').textContent = t.filterAll;
     document.getElementById('filterFav').textContent = t.filterFav;
+
+    // بخش هدر سیگنال‌ها
     document.getElementById('signalsTitle').textContent = t.signalsTitle;
+
+    // نویگیشن
     document.getElementById('navSignal').textContent = t.navSignal;
     document.getElementById('navChart').textContent = t.navChart;
     document.getElementById('navGuide').textContent = t.navGuide;
+
+    // مودال‌ها
     document.getElementById('chartTitle').textContent = t.chartTitle;
     document.getElementById('alertHint').textContent = t.alertHint;
     document.getElementById('guideTitle').textContent = t.guideTitle;
     document.getElementById('guideIntroTitle').textContent = t.guideIntroTitle;
     document.getElementById('guideIntroText').textContent = t.guideIntroText;
+
+    // یادداشت
     document.getElementById('noteTitle').textContent = t.noteTitle;
     document.getElementById('noteSub').textContent = t.noteSub;
+
+    // تنظیمات
     document.getElementById('settingsTitle').textContent = t.settingsTitle;
     document.getElementById('settingsSub').textContent = t.settingsSub;
-    document.getElementById('setLiveLabel').textContent = t.setLiveLabel;
-    document.getElementById('setLiveDesc').textContent = t.setLiveDesc;
+    document.getElementById('setThemeLabel').textContent = t.setThemeLabel;
+    document.getElementById('setThemeDesc').textContent = t.setThemeDesc;
     document.getElementById('setNotifLabel').textContent = t.setNotifLabel;
     document.getElementById('setNotifDesc').textContent = t.setNotifDesc;
+
+    // منو
     document.getElementById('menuTelegram').textContent = t.menuTelegram;
     document.getElementById('menuInstagram').textContent = t.menuInstagram;
-    document.getElementById('themeLabel').textContent = state.theme === 'dark' ? 'تم تاریک' : t.themeLabel;
-    var bc = BROADCAST[lang] || BROADCAST.fa;
-    document.getElementById('noticeTitle').textContent = bc.title;
-    document.getElementById('noticeText').textContent = bc.text;
+    document.getElementById('settingsLabel').textContent = t.settingsLabel;
+
+    // پیام‌های خالی
     document.getElementById('gridEmpty').textContent = t.gridEmpty;
     document.getElementById('guideSearch').placeholder = t.searchPlaceholder;
     document.getElementById('alertAddBtn').textContent = t.alertAdd;
@@ -584,183 +2165,120 @@
     document.getElementById('noteSaveBtn').textContent = t.saveNote;
     document.getElementById('clearDataBtn').textContent = t.clearData;
     document.querySelector('.lightbox-hint').textContent = t.lightboxHint;
+
+    // آمارها
+    document.getElementById('statLabel1').textContent = t.statLabel1;
+    document.getElementById('statLabel2').textContent = t.statLabel2;
+    document.getElementById('statLabel3').textContent = t.statLabel3;
+    document.getElementById('statLabel4').textContent = t.statLabel4;
+
+    // بنر مدیریت ریسک
+    document.getElementById('riskTitle').textContent = t.riskTitle;
+    document.getElementById('risk1').textContent = t.risk1;
+    document.getElementById('risk1b').textContent = t.risk1b;
+    document.getElementById('risk2').textContent = t.risk2;
+    document.getElementById('risk2b').textContent = t.risk2b;
+    document.getElementById('risk3').textContent = t.risk3;
+    document.getElementById('risk3b').textContent = t.risk3b;
+    document.getElementById('risk4').textContent = t.risk4;
+    document.getElementById('risk4b').textContent = t.risk4b;
+    document.getElementById('riskFooter').textContent = t.riskFooter;
+
+    // ============================================================
+    // توضیحات زیر عکس‌ها - ترجمه کامل
+    // ============================================================
+    // کارت ۱
+    document.getElementById('d1_line1').textContent = t.d1_line1;
+    document.getElementById('d1_line2').textContent = t.d1_line2;
+    document.getElementById('d1_line3').textContent = t.d1_line3;
+
+    // کارت ۲
+    document.getElementById('d2_line1').textContent = t.d2_line1;
+    document.getElementById('d2_line2').textContent = t.d2_line2;
+    document.getElementById('d2_line3').textContent = t.d2_line3;
+
+    // کارت ۳
+    document.getElementById('d3_line1').textContent = t.d3_line1;
+    document.getElementById('d3_line2').textContent = t.d3_line2;
+    document.getElementById('d3_line3').textContent = t.d3_line3;
+
+    // کارت ۴
+    document.getElementById('d4_line1').textContent = t.d4_line1;
+    document.getElementById('d4_line2').textContent = t.d4_line2;
+    document.getElementById('d4_line3').textContent = t.d4_line3;
+
+    // راهنما
     renderGuide(lang);
     applyFilter();
     renderAlerts();
+
+    // جهت صفحه
     document.documentElement.lang = lang;
-    document.documentElement.dir = RTL_LANGS[lang] ? 'rtl' : 'ltr';
+    document.documentElement.dir = (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr';
+
     lset('sg_lang', lang);
-    $$('.lang-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === lang); });
-  }
 
-  var GUIDE_ITEMS = {
-    fa: [
-      ['تعیین حد ضرر پیش از ورود','هرگز وارد معامله نشوید مگر آنکه از قبل بدانید در چه قیمتی از آن خارج خواهید شد.'],
-      ['محدودیت ریسک در هر معامله','به‌طور معمول بین یک تا دو درصد از کل سرمایه در هر معامله ریسک کنید.'],
-      ['نسبت سود به ریسک مناسب','پیش از ورود بسنجید که آیا سود بالقوه حداقل دو تا سه برابر ریسک احتمالی است.'],
-      ['تنوع در دارایی‌ها','تمام سرمایه را روی یک ارز دیجیتال متمرکز نکنید.'],
-      ['مدیریت اهرم','استفاده از اهرم بالا سود و زیان را چند برابر می‌کند.'],
-      ['حفظ سرمایه در اولویت است','هدف اصلی هر معامله‌گر حرفه‌ای، حفظ سرمایه است.'],
-      ['اجتناب از میانگین‌گیری نزولی بدون برنامه','افزودن به یک موقعیت زیان‌ده بدون تحلیل ریسک را افزایش می‌دهد.'],
-      ['تعیین سقف ضرر روزانه','برای خود یک سقف ضرر روزانه تعیین کنید.'],
-      ['ذخیره‌ی مالی جدا از حساب معاملاتی','همیشه بخشی از سرمایه را خارج از بازار نگه دارید.'],
-      ['بازبینی دوره‌ای اندازه‌ی موقعیت','با رشد یا کاهش سرمایه، اندازه‌ی معاملات را تنظیم کنید.']
-    ],
-    en: [
-      ['Set your stop-loss before entering','Never enter a trade without knowing the exact exit price in advance.'],
-      ['Limit risk per trade','Typically risk only 1–2% of your total capital per trade.'],
-      ['Keep a proper reward-to-risk ratio','Ensure potential reward is at least 2–3 times the risk.'],
-      ['Diversify across assets','Do not concentrate all your capital in a single coin.'],
-      ['Manage leverage carefully','High leverage multiplies both gains and losses.'],
-      ['Capital preservation comes first','A professional trader\'s main goal is protecting capital.'],
-      ['Avoid unplanned averaging down','Adding to a losing position without analysis sharply increases risk.'],
-      ['Set a daily loss limit','Define a daily maximum loss for yourself.'],
-      ['Keep savings separate from your trading account','Always keep part of your capital outside the market.'],
-      ['Review position sizing periodically','Adjust trade size to match your new balance.']
-    ],
-    tr: [
-      ['Girişten önce zarar durdur belirleyin','Çıkış fiyatını önceden bilmeden asla işleme girmeyin.'],
-      ['İşlem başına riski sınırlayın','Genellikle toplam sermayenizin %1-2\'sini riske atın.'],
-      ['Uygun kâr/risk oranı kullanın','Potansiyel kârın riskin en az 2-3 katı olduğundan emin olun.'],
-      ['Varlıklarınızı çeşitlendirin','Tüm sermayenizi tek bir kripto paraya bağlamayın.'],
-      ['Kaldıracı dikkatli yönetin','Yüksek kaldıraç hem kârı hem zararı katlar.'],
-      ['Sermayeyi korumak önceliklidir','Profesyonel yatırımcının asıl amacı sermayeyi korumaktır.'],
-      ['Plansız ortalama düşürmekten kaçının','Analiz olmadan zarardaki pozisyona eklemek riski artırır.'],
-      ['Günlük zarar sınırı belirleyin','Kendinize günlük bir zarar tavanı koyun.'],
-      ['Birikiminizi işlem hesabından ayrı tutun','Sermayenizin bir kısmını piyasa dışında saklayın.'],
-      ['Pozisyon büyüklüğünü gözden geçirin','Sermaye değişimine göre işlem büyüklüğünü ayarlayın.']
-    ],
-    ar: [
-      ['تحديد وقف الخسارة قبل الدخول','لا تدخل صفقة دون معرفة سعر الخروج مسبقاً.'],
-      ['تحديد سقف المخاطرة في كل صفقة','خاطر بنسبة 1 إلى 2 بالمئة من رأس المال في كل صفقة.'],
-      ['نسبة عائد إلى مخاطرة مناسبة','تأكد أن الربح المحتمل يعادل ضعفين إلى ثلاثة أضعاف المخاطرة.'],
-      ['التنويع بين الأصول','لا تركز كل رأس المال على عملة واحدة.'],
-      ['إدارة الرافعة المالية بحذر','الرافعة العالية تضاعف الأرباح والخسائر.'],
-      ['الحفاظ على رأس المال أولوية','الهدف الأساسي هو حماية رأس المال.'],
-      ['تجنب التوسط الهابط دون خطة','إضافة مركز خاسر دون تحليل يزيد المخاطرة.'],
-      ['تحديد سقف خسارة يومي','حدد سقف خسارة يومي لنفسك.'],
-      ['فصل المدخرات عن حساب التداول','احتفظ بجزء من رأس المال خارج السوق.'],
-      ['مراجعة دورية لحجم المركز','عدّل حجم الصفقات مع تغير رأس المال.']
-    ],
-    ru: [
-      ['Определяйте стоп-лосс перед входом','Никогда не входите в сделку, не зная цены выхода.'],
-      ['Ограничивайте риск на сделку','Рискуйте лишь 1–2% от капитала на сделку.'],
-      ['Соблюдайте соотношение прибыли к риску','Убедитесь, что прибыль минимум в 2–3 раза превышает риск.'],
-      ['Диверсифицируйте активы','Не концентрируйте капитал на одной криптовалюте.'],
-      ['Управляйте плечом осторожно','Высокое плечо увеличивает как прибыль, так и убытки.'],
-      ['Сохранение капитала — приоритет','Главная цель — сохранить капитал.'],
-      ['Избегайте усреднения без плана','Добавление к убыточной позиции без анализа увеличивает риск.'],
-      ['Устанавливайте дневной лимит убытка','Определите дневной предел убытка.'],
-      ['Держите сбережения отдельно от счёта','Держите часть капитала вне рынка.'],
-      ['Пересматривайте размер позиции','Корректируйте размер сделок при изменении капитала.']
-    ]
-  };
-
-  function renderGuide(lang){
-    var items = GUIDE_ITEMS[lang] || GUIDE_ITEMS.fa;
-    var t = LANG[lang] || LANG.fa;
-    var wrap = document.getElementById('guideCats');
-    var frag = document.createDocumentFragment();
-    var section = document.createElement('div');
-    section.className = 'guide-cat';
-    var head = document.createElement('div');
-    head.className = 'guide-cat-head';
-    head.innerHTML = '<div class="guide-cat-icon" style="background:var(--pesteh-soft2);color:var(--pesteh-dark);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></div><div><h3>مدیریت ریسک و سرمایه</h3><span>'+items.length+' '+t.tipsUnit+'</span></div>';
-    section.appendChild(head);
-    items.forEach(function(item, i){
-      var card = document.createElement('div');
-      card.className = 'guide-card';
-      card.dataset.text = (item[0] + ' ' + item[1]).toLowerCase();
-      card.style.borderInlineStartColor = 'var(--pesteh)';
-      card.innerHTML = '<div class="gn" style="background:var(--pesteh-soft2);color:var(--pesteh-dark);">'+(i+1)+'</div><div class="gt"><b>'+item[0]+'</b><p>'+item[1]+'</p></div>';
-      section.appendChild(card);
+    // دکمه‌های زبان
+    $$('.lang-btn').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.lang === lang);
     });
-    frag.appendChild(section);
-    wrap.innerHTML = '';
-    wrap.appendChild(frag);
-    var q = document.getElementById('guideSearch').value.trim().toLowerCase();
-    filterGuide(q);
   }
 
-  function filterGuide(q){
-    var anyVisible = false;
-    document.querySelectorAll('.guide-cat').forEach(function(sec){
-      var vis = 0;
-      sec.querySelectorAll('.guide-card').forEach(function(card){
-        var match = !q || card.dataset.text.indexOf(q) > -1;
-        card.classList.toggle('dim', !match);
-        if(match) vis++;
-      });
-      sec.style.display = vis ? '' : 'none';
-      if(vis) anyVisible = true;
-    });
-    document.getElementById('guideNoResult').style.display = anyVisible ? 'none' : 'block';
+  // ============================================================
+  // TICKER
+  // ============================================================
+  var tickerCoins = ['BTC', 'ETH', 'BNB', 'SOL', 'XRP', 'DOGE', 'ADA', 'TON', 'TRX', 'LINK', 'AVAX', 'LTC'];
+
+  function fmtPrice(p) {
+    p = parseFloat(p);
+    if (p >= 1000) return p.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    if (p >= 1) return p.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    return p.toLocaleString('en-US', { maximumFractionDigits: 6 });
   }
 
-  function applyTheme(theme){
-    state.theme = theme;
-    var root = document.documentElement;
-    var t = LANG[state.lang] || LANG.fa;
-    if(theme === 'dark'){
-      root.style.setProperty('--bg-base', '#1a1f17');
-      root.style.setProperty('--ink', '#e8ede4');
-      root.style.setProperty('--ink-soft', '#a8b89e');
-      root.style.setProperty('--ink-dim', '#7a8a70');
-      root.style.setProperty('--glass', 'rgba(30,36,24,0.75)');
-      root.style.setProperty('--glass-strong', 'rgba(40,48,34,0.92)');
-      root.style.setProperty('--line', 'rgba(200,215,185,0.15)');
-      root.style.setProperty('--shadow', '0 6px 20px rgba(0,0,0,0.4)');
-      document.getElementById('themeLabel').textContent = 'تم تاریک';
-    } else {
-      root.style.setProperty('--bg-base', '#EFF3E8');
-      root.style.setProperty('--ink', '#26301F');
-      root.style.setProperty('--ink-soft', '#5B6653');
-      root.style.setProperty('--ink-dim', '#8FA184');
-      root.style.setProperty('--glass', 'rgba(255,255,255,0.75)');
-      root.style.setProperty('--glass-strong', 'rgba(255,255,255,0.92)');
-      root.style.setProperty('--line', 'rgba(38,48,31,0.09)');
-      root.style.setProperty('--shadow', '0 6px 20px rgba(38,48,31,0.10)');
-      document.getElementById('themeLabel').textContent = t.themeLabel || 'تم روشن';
-    }
-    lset('sg_theme', theme);
-  }
-
-  function showNoticeIfNeeded(){
-    var dismissed = lget('sg_notice_dismiss', null);
-    if(!dismissed || Date.now() - dismissed > 86400000){
-      document.getElementById('userNotice').style.display = 'flex';
-    }
-  }
-
-  // Ticker
-  var tickerCoins = ['BTC','ETH','BNB','SOL','XRP','DOGE','ADA','TON','TRX','LINK','AVAX','LTC','PEPE','WIF','SUI'];
-  function fmtPrice(p){ p=parseFloat(p); if(p>=1000) return p.toLocaleString('en-US',{maximumFractionDigits:0}); if(p>=1) return p.toLocaleString('en-US',{maximumFractionDigits:2}); return p.toLocaleString('en-US',{maximumFractionDigits:6}); }
-  function renderTicker(data){
+  function renderTicker(data) {
     var track = document.getElementById('tickerTrack');
     var html = '';
-    data.forEach(function(d){ var up=parseFloat(d.priceChangePercent)>=0; html+='<span class="ticker-item"><span class="sym">'+d.symbol.replace('USDT','')+'</span><span class="px">$'+fmtPrice(d.lastPrice)+'</span><span class="chg '+(up?'up':'down')+'">'+(up?'▲':'▼')+' '+Math.abs(parseFloat(d.priceChangePercent)).toFixed(1)+'%</span></span>'; });
+    data.forEach(function(d) {
+      var up = parseFloat(d.priceChangePercent) >= 0;
+      html += '<span class="ticker-item">' +
+        '<span class="ticker-sym">' + d.symbol.replace('USDT', '') + '</span>' +
+        '<span class="ticker-px">$' + fmtPrice(d.lastPrice) + '</span>' +
+        '<span class="ticker-chg ' + (up ? 'up' : 'down') + '">' +
+        (up ? '▲' : '▼') + ' ' + Math.abs(parseFloat(d.priceChangePercent)).toFixed(1) + '%' +
+        '</span></span>';
+    });
     track.innerHTML = html + html;
   }
-  function fetchTicker(){
-    var symbols = tickerCoins.map(function(c){ return c+'USDT'; });
-    fetch('https://api.binance.com/api/v3/ticker/24hr?symbols='+encodeURIComponent(JSON.stringify(symbols)))
-      .then(function(r){ return r.json(); })
-      .then(function(data){ if(Array.isArray(data)&&data.length) renderTicker(data); })
-      .catch(function(){});
+
+  function fetchTicker() {
+    var symbols = tickerCoins.map(function(c) { return c + 'USDT'; });
+    fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=' + encodeURIComponent(JSON.stringify(symbols)))
+      .then(function(r) { return r.json(); })
+      .then(function(data) { if (Array.isArray(data) && data.length) renderTicker(data); })
+      .catch(function() {});
   }
 
-  // Chart
+  // ============================================================
+  // CHART
+  // ============================================================
   var chartInited = false;
-  var coins = ["BTC","ETH","BNB","XRP","SOL","ADA","DOGE","TRX","LINK","AVAX","LTC","MATIC","DOT","UNI","ATOM","ARB","NEAR","OP","SUI","PEPE","WIF","TON"];
+  var chartCoins = ['BTC', 'ETH', 'BNB', 'XRP', 'SOL', 'ADA', 'DOGE', 'TRX', 'LINK', 'AVAX', 'LTC', 'MATIC', 'DOT', 'UNI'];
   var select = document.getElementById('symbolSelect');
-  coins.forEach(function(c){ var o=document.createElement('option'); o.value=c+'USDT'; o.textContent=c+' / USDT'; select.appendChild(o); });
+
+  chartCoins.forEach(function(c) {
+    var o = document.createElement('option');
+    o.value = c + 'USDT';
+    o.textContent = c + ' / USDT';
+    select.appendChild(o);
+  });
   select.value = 'BTCUSDT';
 
-  function initChart(){
+  function initChart() {
     var container = document.getElementById('chartContainer');
     container.innerHTML = '';
     var tz = 'Etc/UTC';
-    try{ tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Etc/UTC'; }catch(e){}
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Etc/UTC'; } catch (e) {}
     new TradingView.widget({
       autosize: true,
       symbol: 'BINANCE:' + select.value,
@@ -768,7 +2286,7 @@
       timezone: tz,
       theme: 'dark',
       style: '1',
-      locale: LOCALE_MAP[state.lang] || 'en',
+      locale: 'en',
       backgroundColor: '#0C0E09',
       toolbar_bg: '#0C0E09',
       enable_publishing: false,
@@ -781,21 +2299,27 @@
     chartInited = true;
   }
 
-  // Alerts
-  function updateBellDot(){ document.getElementById('bellBtn').classList.toggle('has-alerts', state.alerts.length > 0); }
-  function renderAlerts(){
+  // ============================================================
+  // ALERTS
+  // ============================================================
+  function updateBellDot() {
+    document.getElementById('bellBtn').classList.toggle('has-alerts', state.alerts.length > 0);
+  }
+
+  function renderAlerts() {
     var list = document.getElementById('alertList');
     list.innerHTML = '';
     var t = LANG[state.lang] || LANG.fa;
-    var symAlerts = state.alerts.filter(function(a){ return a.symbol === select.value; });
-    symAlerts.forEach(function(a){
+    var symAlerts = state.alerts.filter(function(a) { return a.symbol === select.value; });
+
+    symAlerts.forEach(function(a) {
       var chip = document.createElement('div');
       chip.className = 'alert-chip' + (a.triggered ? ' triggered' : '');
-      chip.innerHTML = '<span>' + a.symbol.replace('USDT','') + ' ' + t.alertAtWord + a.target + (a.triggered ? t.alertTriggeredWord : '') + '</span>';
+      chip.innerHTML = '<span>' + a.symbol.replace('USDT', '') + ' ' + t.alertAtWord + a.target + (a.triggered ? t.alertTriggeredWord : '') + '</span>';
       var rm = document.createElement('button');
       rm.textContent = '×';
-      rm.addEventListener('click', function(){
-        state.alerts = state.alerts.filter(function(x){ return x.id !== a.id; });
+      rm.addEventListener('click', function() {
+        state.alerts = state.alerts.filter(function(x) { return x.id !== a.id; });
         lset('sg_alerts', state.alerts);
         updateBellDot();
         renderAlerts();
@@ -805,166 +2329,198 @@
     });
     updateBellDot();
   }
-  function checkAlerts(){
-    if(!state.alerts.length) return;
-    var symbols = Array.from(new Set(state.alerts.map(function(a){ return a.symbol; })));
-    Promise.all(symbols.map(function(s){
-      return fetch('https://api.binance.com/api/v3/ticker/price?symbol='+s)
-        .then(function(r){ return r.json(); })
-        .catch(function(){ return null; });
-    })).then(function(results){
+
+  function checkAlerts() {
+    if (!state.alerts.length) return;
+    var symbols = Array.from(new Set(state.alerts.map(function(a) { return a.symbol; })));
+    Promise.all(symbols.map(function(s) {
+      return fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + s)
+        .then(function(r) { return r.json(); })
+        .catch(function() { return null; });
+    })).then(function(results) {
       var changed = false;
-      results.forEach(function(r){
-        if(!r || !r.price) return;
+      results.forEach(function(r) {
+        if (!r || !r.price) return;
         var price = parseFloat(r.price);
-        state.alerts.forEach(function(a){
-          if(a.symbol === r.symbol && !a.triggered && price >= a.target){
+        state.alerts.forEach(function(a) {
+          if (a.symbol === r.symbol && !a.triggered && price >= a.target) {
             a.triggered = true;
             changed = true;
-            if(state.settings.notifications && 'Notification' in window && Notification.permission === 'granted'){
+            if ('Notification' in window && Notification.permission === 'granted') {
               var t = LANG[state.lang] || LANG.fa;
-              new Notification(t.notifTitle, { body: a.symbol.replace('USDT','') + ' ' + t.notifBodySuffix + a.target });
+              new Notification(t.notifTitle, { body: a.symbol.replace('USDT', '') + ' ' + t.notifBodySuffix + a.target });
             }
           }
         });
       });
-      if(changed){ lset('sg_alerts', state.alerts); renderAlerts(); }
+      if (changed) { lset('sg_alerts', state.alerts);
+        renderAlerts(); }
     });
   }
 
-  // Favorites & Notes
-  function updateFavCount(){ var w=document.getElementById('favCountWrap'); w.textContent = state.favorites.length ? '('+state.favorites.length+')' : ''; }
-  function applyCardStates(){
-    document.querySelectorAll('.icon-btn.fav').forEach(function(b){ b.classList.toggle('active', state.favorites.indexOf(b.dataset.id) > -1); });
-    document.querySelectorAll('.icon-btn.note').forEach(function(b){ b.classList.toggle('has-note', !!(state.notes[b.dataset.id] && state.notes[b.dataset.id].trim())); });
+  // ============================================================
+  // FAVORITES & NOTES
+  // ============================================================
+  function updateFavCount() {
+    var w = document.getElementById('favCountWrap');
+    w.textContent = state.favorites.length ? '(' + state.favorites.length + ')' : '';
+  }
+
+  function applyCardStates() {
+    $$('.icon-btn.fav').forEach(function(b) {
+      b.classList.toggle('active', state.favorites.indexOf(b.dataset.id) > -1);
+    });
+    $$('.icon-btn.note').forEach(function(b) {
+      b.classList.toggle('has-note', !!(state.notes[b.dataset.id] && state.notes[b.dataset.id].trim()));
+    });
     updateFavCount();
   }
-  function applyFilter(){
-    var cards = document.querySelectorAll('.card');
+
+  function applyFilter() {
+    var cards = $$('.card');
     var shown = 0;
     var filter = document.querySelector('.chip.active') ? document.querySelector('.chip.active').dataset.filter : 'all';
-    cards.forEach(function(card){
+
+    cards.forEach(function(card) {
       var show = filter === 'all' || (filter === 'fav' && state.favorites.indexOf(card.dataset.id) > -1);
       card.classList.toggle('hidden-card', !show);
-      if(show) shown++;
+      if (show) shown++;
     });
+
     var t = LANG[state.lang] || LANG.fa;
     document.getElementById('gridCount').textContent = shown + ' ' + t.itemsUnit;
     document.getElementById('gridEmpty').style.display = (shown === 0) ? 'block' : 'none';
   }
 
-  // Live Refresh
-  var liveTimer = null;
-  function refreshAssets(){
-    document.querySelectorAll('.card img.media').forEach(function(img){
-      var src = img.src;
-      if(src && !src.includes('picsum.photos') && !src.includes('commondatastorage')){
-        var sep = src.indexOf('?') > -1 ? '&' : '?';
-        img.src = src + sep + 'v=' + Date.now();
-      }
-    });
-  }
-  function setLiveRefresh(on){
-    if(liveTimer){ clearInterval(liveTimer); liveTimer = null; }
-    if(on){ liveTimer = setInterval(refreshAssets, 2000); }
-  }
-
-  // Navigation
-  var navBtns = document.querySelectorAll('.nav-btn');
+  // ============================================================
+  // NAVIGATION
+  // ============================================================
+  var navBtns = $$('.nav-btn');
   var chartModal = document.getElementById('chartModal');
   var guideModal = document.getElementById('guideModal');
-  function setActiveTab(tab){
-    navBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.tab === tab); });
+
+  function setActiveTab(tab) {
+    navBtns.forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
   }
-  navBtns.forEach(function(b){
-    b.addEventListener('click', function(){
+
+  navBtns.forEach(function(b) {
+    b.addEventListener('click', function() {
       var tab = b.dataset.tab;
       setActiveTab(tab);
-      if(tab === 'signal'){
+
+      if (tab === 'signal') {
         chartModal.classList.remove('open');
         guideModal.classList.remove('open');
-        window.scrollTo({top:0, behavior:'smooth'});
-      } else if(tab === 'chart'){
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (tab === 'chart') {
         guideModal.classList.remove('open');
         chartModal.classList.add('open');
-        if(!chartInited){ initChart(); }
+        if (!chartInited) { initChart(); }
         renderAlerts();
-      } else if(tab === 'guide'){
+      } else if (tab === 'guide') {
         chartModal.classList.remove('open');
         guideModal.classList.add('open');
         renderGuide(state.lang);
       }
     });
   });
-  document.querySelectorAll('[data-close]').forEach(function(b){
-    b.addEventListener('click', function(){
+
+  $$('[data-close]').forEach(function(b) {
+    b.addEventListener('click', function() {
       chartModal.classList.remove('open');
       guideModal.classList.remove('open');
       setActiveTab('signal');
     });
   });
 
-  // Lightbox
+  // ============================================================
+  // LIGHTBOX
+  // ============================================================
   var lightbox = document.getElementById('lightbox');
   var lbFrame = document.getElementById('lightboxFrame');
-  document.querySelectorAll('.card').forEach(function(card){
-    card.addEventListener('click', function(e){
-      if(e.target.closest('.icon-btn')) return;
-      var type = card.dataset.type;
+
+  $$('.card').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.icon-btn')) return;
       var src = card.dataset.src;
       lbFrame.innerHTML = '';
-      if(type === 'image'){
-        var img = document.createElement('img');
-        img.src = src;
-        img.alt = 'Signal';
-        lbFrame.appendChild(img);
-      } else {
-        var vid = document.createElement('video');
-        vid.src = src;
-        vid.controls = true;
-        vid.autoplay = true;
-        vid.playsInline = true;
-        vid.muted = false;
-        lbFrame.appendChild(vid);
-      }
+      var img = document.createElement('img');
+      img.src = src;
+      img.alt = 'Signal';
+      lbFrame.appendChild(img);
       lightbox.classList.add('open');
     });
   });
-  function closeLightbox(){
+
+  function closeLightbox() {
     lightbox.classList.remove('open');
-    setTimeout(function(){
-      lbFrame.querySelectorAll('video').forEach(function(v){ v.pause(); });
+    setTimeout(function() {
       lbFrame.innerHTML = '';
     }, 200);
   }
-  document.getElementById('lightboxClose').addEventListener('click', function(e){ e.stopPropagation(); closeLightbox(); });
-  lightbox.addEventListener('click', function(e){ if(e.target.tagName === 'VIDEO') return; closeLightbox(); });
+
+  document.getElementById('lightboxClose').addEventListener('click', function(e) {
+    e.stopPropagation();
+    closeLightbox();
+  });
+
+  lightbox.addEventListener('click', function(e) {
+    closeLightbox();
+  });
+
+  // ============================================================
+  // SHEETS
+  // ============================================================
+  var noteOverlay = document.getElementById('noteOverlay');
+  var noteTextarea = document.getElementById('noteTextarea');
+  var activeNoteId = null;
+
+  $$('.icon-btn.note').forEach(function(b) {
+    b.addEventListener('click', function(e) {
+      e.stopPropagation();
+      activeNoteId = b.dataset.id;
+      noteTextarea.value = state.notes[activeNoteId] || '';
+      noteOverlay.classList.add('open');
+    });
+  });
+
+  document.getElementById('noteSaveBtn').addEventListener('click', function() {
+    if (activeNoteId) {
+      state.notes[activeNoteId] = noteTextarea.value;
+      lset('sg_notes', state.notes);
+      applyCardStates();
+    }
+    noteOverlay.classList.remove('open');
+  });
+
+  noteOverlay.addEventListener('click', function(e) {
+    if (e.target === noteOverlay) noteOverlay.classList.remove('open');
+  });
 
   // Settings
   var settingsOverlay = document.getElementById('settingsOverlay');
-  var switchLive = document.getElementById('switchLive');
   var switchNotif = document.getElementById('switchNotif');
-  switchLive.classList.toggle('on', state.settings.liveRefresh);
-  switchNotif.classList.toggle('on', state.settings.notifications);
-  document.getElementById('settingsBtn').addEventListener('click', function(){ settingsOverlay.classList.add('open'); });
-  settingsOverlay.addEventListener('click', function(e){ if(e.target === settingsOverlay) settingsOverlay.classList.remove('open'); });
-  switchLive.addEventListener('click', function(){
-    state.settings.liveRefresh = !state.settings.liveRefresh;
-    switchLive.classList.toggle('on', state.settings.liveRefresh);
-    lset('sg_settings', state.settings);
-    setLiveRefresh(state.settings.liveRefresh);
+
+  document.getElementById('settingsBtn').addEventListener('click', function() {
+    settingsOverlay.classList.add('open');
   });
-  switchNotif.addEventListener('click', function(){
-    state.settings.notifications = !state.settings.notifications;
-    switchNotif.classList.toggle('on', state.settings.notifications);
-    lset('sg_settings', state.settings);
-    if(state.settings.notifications && 'Notification' in window && Notification.permission === 'default'){
+
+  settingsOverlay.addEventListener('click', function(e) {
+    if (e.target === settingsOverlay) settingsOverlay.classList.remove('open');
+  });
+
+  document.getElementById('switchTheme').addEventListener('click', toggleTheme);
+
+  switchNotif.addEventListener('click', function() {
+    var on = switchNotif.classList.toggle('on');
+    if (on && 'Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
   });
-  document.getElementById('clearDataBtn').addEventListener('click', function(){
+
+  document.getElementById('clearDataBtn').addEventListener('click', function() {
     var t = LANG[state.lang] || LANG.fa;
-    if(!confirm(t.confirmClear)) return;
+    if (!confirm(t.confirmClear)) return;
     state.favorites = [];
     state.notes = {};
     state.alerts = [];
@@ -977,100 +2533,222 @@
     settingsOverlay.classList.remove('open');
   });
 
-  // Event Bindings
-  document.querySelectorAll('.lang-btn').forEach(function(b){
-    b.addEventListener('click', function(){
+  // ============================================================
+  // GUIDE
+  // ============================================================
+  var GUIDE_ITEMS = {
+    fa: [
+      ['تعیین حد ضرر پیش از ورود', 'هرگز وارد معامله نشوید مگر آنکه از قبل بدانید در چه قیمتی از آن خارج خواهید شد.'],
+      ['محدودیت ریسک در هر معامله', 'به‌طور معمول بین یک تا دو درصد از کل سرمایه در هر معامله ریسک کنید.'],
+      ['نسبت سود به ریسک مناسب', 'پیش از ورود بسنجید که آیا سود بالقوه حداقل دو تا سه برابر ریسک احتمالی است.'],
+      ['تنوع در دارایی‌ها', 'تمام سرمایه را روی یک ارز دیجیتال متمرکز نکنید.'],
+      ['مدیریت اهرم', 'استفاده از اهرم بالا سود و زیان را چند برابر می‌کند.'],
+      ['حفظ سرمایه در اولویت است', 'هدف اصلی هر معامله‌گر حرفه‌ای، حفظ سرمایه است.'],
+      ['اجتناب از میانگین‌گیری نزولی بدون برنامه', 'افزودن به یک موقعیت زیان‌ده بدون تحلیل ریسک را افزایش می‌دهد.'],
+      ['تعیین سقف ضرر روزانه', 'برای خود یک سقف ضرر روزانه تعیین کنید.'],
+      ['ذخیره‌ی مالی جدا از حساب معاملاتی', 'همیشه بخشی از سرمایه را خارج از بازار نگه دارید.'],
+      ['بازبینی دوره‌ای اندازه‌ی موقعیت', 'با رشد یا کاهش سرمایه، اندازه‌ی معاملات را تنظیم کنید.']
+    ],
+    en: [
+      ['Set your stop-loss before entering', 'Never enter a trade without knowing the exact exit price in advance.'],
+      ['Limit risk per trade', 'Typically risk only 1–2% of your total capital per trade.'],
+      ['Keep a proper reward-to-risk ratio', 'Ensure potential reward is at least 2–3 times the risk.'],
+      ['Diversify across assets', 'Do not concentrate all your capital in a single coin.'],
+      ['Manage leverage carefully', 'High leverage multiplies both gains and losses.'],
+      ['Capital preservation comes first', 'A professional trader\'s main goal is protecting capital.'],
+      ['Avoid unplanned averaging down', 'Adding to a losing position without analysis sharply increases risk.'],
+      ['Set a daily loss limit', 'Define a daily maximum loss for yourself.'],
+      ['Keep savings separate from your trading account', 'Always keep part of your capital outside the market.'],
+      ['Review position sizing periodically', 'Adjust trade size to match your new balance.']
+    ],
+    tr: [
+      ['Girişten önce zarar durdur belirleyin', 'Çıkış fiyatını önceden bilmeden asla işleme girmeyin.'],
+      ['İşlem başına riski sınırlayın', 'Genellikle toplam sermayenizin %1-2\'sini riske atın.'],
+      ['Uygun kâr/risk oranı kullanın', 'Potansiyel kârın riskin en az 2-3 katı olduğundan emin olun.'],
+      ['Varlıklarınızı çeşitlendirin', 'Tüm sermayenizi tek bir kripto paraya bağlamayın.'],
+      ['Kaldıracı dikkatli yönetin', 'Yüksek kaldıraç hem kârı hem zararı katlar.'],
+      ['Sermayeyi korumak önceliklidir', 'Profesyonel yatırımcının asıl amacı sermayeyi korumaktır.'],
+      ['Plansız ortalama düşürmekten kaçının', 'Analiz olmadan zarardaki pozisyona eklemek riski artırır.'],
+      ['Günlük zarar sınırı belirleyin', 'Kendinize günlük bir zarar tavanı koyun.'],
+      ['Birikiminizi işlem hesabından ayrı tutun', 'Sermayenizin bir kısmını piyasa dışında saklayın.'],
+      ['Pozisyon büyüklüğünü gözden geçirin', 'Sermaye değişimine göre işlem büyüklüğünü ayarlayın.']
+    ],
+    ar: [
+      ['تحديد وقف الخسارة قبل الدخول', 'لا تدخل صفقة دون معرفة سعر الخروج مسبقاً.'],
+      ['تحديد سقف المخاطرة في كل صفقة', 'خاطر بنسبة 1 إلى 2 بالمئة من رأس المال في كل صفقة.'],
+      ['نسبة عائد إلى مخاطرة مناسبة', 'تأكد أن الربح المحتمل يعادل ضعفين إلى ثلاثة أضعاف المخاطرة.'],
+      ['التنويع بين الأصول', 'لا تركز كل رأس المال على عملة واحدة.'],
+      ['إدارة الرافعة المالية بحذر', 'الرافعة العالية تضاعف الأرباح والخسائر.'],
+      ['الحفاظ على رأس المال أولوية', 'الهدف الأساسي هو حماية رأس المال.'],
+      ['تجنب التوسط الهابط دون خطة', 'إضافة مركز خاسر دون تحليل يزيد المخاطرة.'],
+      ['تحديد سقف خسارة يومي', 'حدد سقف خسارة يومي لنفسك.'],
+      ['فصل المدخرات عن حساب التداول', 'احتفظ بجزء من رأس المال خارج السوق.'],
+      ['مراجعة دورية لحجم المركز', 'عدّل حجم الصفقات مع تغير رأس المال.']
+    ],
+    ru: [
+      ['Определяйте стоп-лосс перед входом', 'Никогда не входите в сделку, не зная цены выхода.'],
+      ['Ограничивайте риск на сделку', 'Рискуйте лишь 1–2% от капитала на сделку.'],
+      ['Соблюдайте соотношение прибыли к риску', 'Убедитесь, что прибыль минимум в 2–3 раза превышает риск.'],
+      ['Диверсифицируйте активы', 'Не концентрируйте капитал на одной криптовалюте.'],
+      ['Управляйте плечом осторожно', 'Высокое плечо увеличивает как прибыль, так и убытки.'],
+      ['Сохранение капитала — приоритет', 'Главная цель — сохранить капитал.'],
+      ['Избегайте усреднения без плана', 'Добавление к убыточной позиции без анализа увеличивает риск.'],
+      ['Устанавливайте дневной лимит убытка', 'Определите дневной предел убытка.'],
+      ['Держите сбережения отдельно от счёта', 'Держите часть капитала вне рынка.'],
+      ['Пересматривайте размер позиции', 'Корректируйте размер сделок при изменении капитала.']
+    ]
+  };
+
+  function renderGuide(lang) {
+    var items = GUIDE_ITEMS[lang] || GUIDE_ITEMS.fa;
+    var t = LANG[lang] || LANG.fa;
+    var wrap = document.getElementById('guideCats');
+    var frag = document.createDocumentFragment();
+
+    var section = document.createElement('div');
+    section.className = 'guide-cat';
+
+    var head = document.createElement('div');
+    head.className = 'guide-cat-head';
+    head.innerHTML =
+      '<div class="guide-cat-icon" style="background:var(--green-soft);color:var(--green-dark);">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' +
+      '<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/>' +
+      '</svg></div>' +
+      '<div><h3>مدیریت ریسک و سرمایه</h3><span>' + items.length + ' ' + t.tipsUnit + '</span></div>';
+    section.appendChild(head);
+
+    items.forEach(function(item, i) {
+      var card = document.createElement('div');
+      card.className = 'guide-card';
+      card.dataset.text = (item[0] + ' ' + item[1]).toLowerCase();
+      card.style.borderInlineStartColor = 'var(--green)';
+      card.innerHTML =
+        '<div class="gn" style="background:var(--green-soft);color:var(--green-dark);">' + (i + 1) + '</div>' +
+        '<div class="gt"><b>' + item[0] + '</b><p>' + item[1] + '</p></div>';
+      section.appendChild(card);
+    });
+
+    frag.appendChild(section);
+    wrap.innerHTML = '';
+    wrap.appendChild(frag);
+
+    var q = document.getElementById('guideSearch').value.trim().toLowerCase();
+    filterGuide(q);
+  }
+
+  function filterGuide(q) {
+    var anyVisible = false;
+    $$('.guide-cat').forEach(function(sec) {
+      var vis = 0;
+      sec.querySelectorAll('.guide-card').forEach(function(card) {
+        var match = !q || card.dataset.text.indexOf(q) > -1;
+        card.classList.toggle('dim', !match);
+        if (match) vis++;
+      });
+      sec.style.display = vis ? '' : 'none';
+      if (vis) anyVisible = true;
+    });
+    document.getElementById('guideNoResult').style.display = anyVisible ? 'none' : 'block';
+  }
+
+  // ============================================================
+  // EVENT BINDINGS
+  // ============================================================
+  // Language
+  $$('.lang-btn').forEach(function(b) {
+    b.addEventListener('click', function() {
       applyLanguage(b.dataset.lang);
       renderGuide(state.lang);
     });
   });
-  document.getElementById('themeToggle').addEventListener('click', function(){
-    applyTheme(state.theme === 'dark' ? 'light' : 'dark');
-  });
+
+  // Hamburger
   var hamburgerMenu = document.getElementById('hamburgerMenu');
-  document.getElementById('hamburgerBtn').addEventListener('click', function(){ hamburgerMenu.classList.add('open'); });
-  document.getElementById('menuCloseBtn').addEventListener('click', function(){ hamburgerMenu.classList.remove('open'); });
-  hamburgerMenu.addEventListener('click', function(e){ if(e.target === hamburgerMenu) hamburgerMenu.classList.remove('open'); });
-  document.getElementById('noticeDismiss').addEventListener('click', function(){
-    document.getElementById('userNotice').style.display = 'none';
-    lset('sg_notice_dismiss', Date.now());
+  document.getElementById('hamburgerBtn').addEventListener('click', function() {
+    hamburgerMenu.classList.add('open');
   });
-  document.querySelectorAll('.chip').forEach(function(c){
-    c.addEventListener('click', function(){
-      document.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('active'); });
+  document.getElementById('menuCloseBtn').addEventListener('click', function() {
+    hamburgerMenu.classList.remove('open');
+  });
+  hamburgerMenu.addEventListener('click', function(e) {
+    if (e.target === hamburgerMenu) hamburgerMenu.classList.remove('open');
+  });
+
+  // Theme Toggle (Header)
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+  // Filters
+  $$('.chip').forEach(function(c) {
+    c.addEventListener('click', function() {
+      $$('.chip').forEach(function(x) { x.classList.remove('active'); });
       c.classList.add('active');
       applyFilter();
     });
   });
-  document.querySelectorAll('.icon-btn.fav').forEach(function(b){
-    b.addEventListener('click', function(e){
+
+  // Favorite buttons
+  $$('.icon-btn.fav').forEach(function(b) {
+    b.addEventListener('click', function(e) {
       e.stopPropagation();
       var id = b.dataset.id;
       var i = state.favorites.indexOf(id);
-      if(i > -1) state.favorites.splice(i,1);
+      if (i > -1) state.favorites.splice(i, 1);
       else state.favorites.push(id);
       lset('sg_favorites', state.favorites);
       applyCardStates();
       applyFilter();
     });
   });
-  var noteOverlay = document.getElementById('noteOverlay');
-  var noteTextarea = document.getElementById('noteTextarea');
-  var activeNoteId = null;
-  document.querySelectorAll('.icon-btn.note').forEach(function(b){
-    b.addEventListener('click', function(e){
-      e.stopPropagation();
-      activeNoteId = b.dataset.id;
-      noteTextarea.value = state.notes[activeNoteId] || '';
-      noteOverlay.classList.add('open');
-    });
-  });
-  document.getElementById('noteSaveBtn').addEventListener('click', function(){
-    if(activeNoteId){
-      state.notes[activeNoteId] = noteTextarea.value;
-      lset('sg_notes', state.notes);
-      applyCardStates();
-    }
-    noteOverlay.classList.remove('open');
-  });
-  noteOverlay.addEventListener('click', function(e){ if(e.target === noteOverlay) noteOverlay.classList.remove('open'); });
-  document.getElementById('alertAddBtn').addEventListener('click', function(){
+
+  // Alerts
+  document.getElementById('alertAddBtn').addEventListener('click', function() {
     var input = document.getElementById('alertPriceInput');
     var val = parseFloat(input.value);
-    if(!val || val <= 0) return;
-    state.alerts.push({ id: 'a'+Date.now(), symbol: select.value, target: val, triggered: false });
+    if (!val || val <= 0) return;
+    state.alerts.push({ id: 'a' + Date.now(), symbol: select.value, target: val, triggered: false });
     lset('sg_alerts', state.alerts);
     input.value = '';
     renderAlerts();
-    if(state.settings.notifications && 'Notification' in window && Notification.permission !== 'granted'){
+    if ('Notification' in window && Notification.permission !== 'granted') {
       Notification.requestPermission();
     }
   });
-  document.getElementById('bellBtn').addEventListener('click', function(){
+
+  document.getElementById('bellBtn').addEventListener('click', function() {
     document.getElementById('alertPanel').classList.toggle('open');
   });
-  select.addEventListener('change', function(){
-    if(chartInited) initChart();
+
+  select.addEventListener('change', function() {
+    if (chartInited) initChart();
     renderAlerts();
   });
-  document.getElementById('guideSearch').addEventListener('input', function(){
+
+  document.getElementById('guideSearch').addEventListener('input', function() {
     var q = this.value.trim().toLowerCase();
     filterGuide(q);
   });
 
-  // Init
-  function init(){
-    applyLanguage(state.lang);
+  // ============================================================
+  // INIT
+  // ============================================================
+  function init() {
     applyTheme(state.theme);
-    showNoticeIfNeeded();
+    document.getElementById('switchTheme').classList.toggle('on', state.theme === 'dark');
+
+    applyLanguage(state.lang);
     fetchTicker();
     setInterval(fetchTicker, 20000);
-    setLiveRefresh(state.settings.liveRefresh);
     applyCardStates();
     applyFilter();
     renderAlerts();
     renderGuide(state.lang);
     setInterval(checkAlerts, 8000);
+
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && !lget('sg_theme', null)) {
+      applyTheme('dark');
+      document.getElementById('switchTheme').classList.add('on');
+    }
   }
 
   init();
