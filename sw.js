@@ -3,9 +3,9 @@
 // (http:// یا https://) سرو بشه؛ باز کردن مستقیم فایل (file:// یا content://)
 // باعث می‌شه ثبت service worker رد بشه — این محدودیت خود مرورگرهاست، نه این کد.
 
-const CACHE_NAME = 'dakhl-o-kharj-v1';
+const CACHE_NAME = 'دخل خرج';
 const APP_SHELL = [
-  './dakhl-o-kharj.html',
+  './index.html,
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
