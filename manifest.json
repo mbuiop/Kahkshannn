@@ -2,7 +2,7 @@
   "name": "دخل و خرج",
   "short_name": "دخل و خرج",
   "description": "مدیریت هوشمند پول، کسب‌وکار، کارمندان و رستوران",
-  "start_url": "./dakhl-o-kharj.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
