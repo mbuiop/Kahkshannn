@@ -67,6 +67,9 @@
   .price-overlay.show{display:flex;}
   .price-overlay .close-img{position:fixed; top:16px; left:16px; z-index:260; background:rgba(0,0,0,.35); color:#fff; border:none; width:38px; height:38px; border-radius:50%; font-size:18px; cursor:pointer;}
 
+  /* signal bot button */
+  .signal-bot-btn{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin:4px 0 14px; padding:13px 16px; border-radius:14px; background:var(--pistachio-gradient); color:#0a0a0a; font-weight:800; font-size:14px; text-decoration:none; font-family:inherit; box-shadow:0 4px 14px rgba(0,0,0,.18); transition:transform .15s ease, filter .15s ease;}
+  .signal-bot-btn:active{transform:scale(.98); filter:brightness(.95);}
   /* stories bar */
   .stories-bar{display:flex; gap:12px; overflow-x:auto; padding:2px 2px 14px; scrollbar-width:none;}
   .stories-bar::-webkit-scrollbar{display:none;}
@@ -289,6 +292,7 @@
     </div>
     <button class="hamburger-btn" id="openMenuBtn"><span></span><span></span><span></span></button>
   </header>
+  <a class="signal-bot-btn" href="m.html">📊 ربات تحلیلگر بازار مالی و سیگنال ترید</a>
   <div class="stories-bar" id="storiesBar"></div>
   <div class="date-line" id="todayDate">—</div>
 
